@@ -1208,7 +1208,7 @@ main(int argc, char *argv[])
       
     /* create window and renderer */
     gWindow =
-        SDL_CreateWindow("NJLIGameEngine", SDL_WINDOWPOS_CENTERED,
+        SDL_CreateWindow("JamesFolk_DSSAssignment", SDL_WINDOWPOS_CENTERED,
                          SDL_WINDOWPOS_CENTERED, gDisplayMode.w, gDisplayMode.h,
                          flags);
 

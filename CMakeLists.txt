@@ -18,7 +18,7 @@ else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-set(TARGET_EXECUTABLE_NAME "PLACEHOLDER" CACHE STRING "The name of the executable")
+set(TARGET_EXECUTABLE_NAME "JamesFolk_DSSAssignment" CACHE STRING "The name of the executable")
 set(THIRDPARTY_DIR "${CMAKE_SOURCE_DIR}/thirdparty")
 set(TARGET_DEFINITIONS "")
 set(TARGET_MAIN_SOURCES "${CMAKE_SOURCE_DIR}/main.cpp")

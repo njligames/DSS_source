@@ -17,6 +17,13 @@ list(APPEND TARGET_INCLUDE_DIRS ${THIRDPARTY_DIR}/includes/rapidjson)
 find_package(ZLIB REQUIRED)
 list(APPEND TARGET_LIBRARIES ${ZLIB_LIBRARIES})
 
+add_library(entityx UNKNOWN IMPORTED)
+set_property(TARGET entityx APPEND PROPERTY IMPORTED_LOCATION  "${THIRDPARTY_DIR}/platform/${TARGET_PLATFORM}/libentityx.a")
+list(APPEND TARGET_LIBRARIES entityx)
+set_target_properties(entityx PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${THIRDPARTY_DIR}/includes/entityx)
+list(APPEND TARGET_INCLUDE_DIRS ${THIRDPARTY_DIR}/includes/entityx)
+
+
 list(APPEND TARGET_LIBRARIES "-framework CoreVideo")
 list(APPEND TARGET_LIBRARIES "-framework Cocoa")
 list(APPEND TARGET_LIBRARIES "-framework IOKit")
