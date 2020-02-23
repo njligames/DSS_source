@@ -15,19 +15,9 @@
 
 #include "SDL.h"
 #include "curl/curl.h"
+#include "UtilDSS.h"
 
 extern int gDone;
-
-#if !(defined(NDEBUG))
-
-#define MAX_DATE 24
-
-static uint64_t timeSinceEpochMillisec() {
-  using namespace std::chrono;
-  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-}
-
-#endif
 
 struct FileData {
     char *_current_ptr;
@@ -44,10 +34,12 @@ struct FileData {
         _size = 0;
         _curlCtx = curl_easy_init();
     }
+    
     ~FileData() {
         delete [] _buffer;
         curl_easy_cleanup(_curlCtx);
     }
+    
     void append_data(char *ptr, size_t size, size_t nmemb) {
         int s = (size * nmemb);
         memcpy(_current_ptr, ptr, s);
@@ -93,7 +85,7 @@ static FileData *download_jpeg(const char* url)
     }
     
 #if !(defined(NDEBUG))
-    std::string n(std::to_string(timeSinceEpochMillisec()));
+    std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
     n += "_curl.jpg";
     FILE* fp = fopen(n.c_str(), "wb");
     if (fp) {
@@ -121,7 +113,7 @@ static bool download_detailimage(const char *url, GameModelViewData *gvd) {
             gvd->setDetailImageData(ptr, fileSize);
             
 #if !(defined(NDEBUG))
-            std::string n(std::to_string(timeSinceEpochMillisec()));
+            std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
             n += "_detail_stbi.jpg";
             stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr, 100);
 #endif
@@ -146,7 +138,7 @@ static bool download_listitemimage(const char *url, GameModelViewData *gvd) {
 
             gvd->setListItemImageData(ptr, fileSize);
 #if !(defined(NDEBUG))
-            std::string n(std::to_string(timeSinceEpochMillisec()));
+            std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
             n += "_listitem_stbi.jpg";
             stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr, 100);
 #endif
@@ -184,7 +176,7 @@ mReceivedListItemImageData(false) {
         
         int64_t w = cut.getWidth();
         int64_t h = cut.getHeight();
-        if((w*h)>largestSize) {
+        if((w*h)>largestSize && UtilDSS::validUrl(cut.getSrc())) {
             largestSize = w*h;
             largest_cut = cut;
         }
@@ -202,7 +194,7 @@ mReceivedListItemImageData(false) {
         
         int64_t w = value.getWidth();
         int64_t h = value.getHeight();
-        if((w*h)>largestSize) {
+        if((w*h)>largestSize && UtilDSS::validUrl(value.getSrc())) {
             largestSize = w*h;
             largest_cut = value;
         }
@@ -337,7 +329,7 @@ void GameModelViewData::setImageData(const std::string &url, FileData *fd) {
             size_t fileSize = ((width) * (height) * (channels_in_file));
             
 #if !(defined(NDEBUG))
-            std::string n(std::to_string(timeSinceEpochMillisec()));
+            std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
             n += "_stbi.jpg";
             stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr, 100);
 #endif

@@ -34,6 +34,7 @@ list(APPEND TARGET_LIBRARIES "-framework Carbon")
 list(APPEND TARGET_LIBRARIES "-framework CoreAudio")
 list(APPEND TARGET_LIBRARIES "-framework AudioToolbox")
 list(APPEND TARGET_LIBRARIES "-framework Metal")
+list(APPEND TARGET_LIBRARIES "-framework OpenGL")
 
 set(ASSET_CATALOGUE ${CMAKE_CURRENT_SOURCE_DIR}/resources/Assets.xcassets)
 list(APPEND TARGET_RESOURCES ${ASSET_CATALOGUE})

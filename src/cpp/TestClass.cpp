@@ -9,6 +9,11 @@
 #include "GameModelViewData.h"
 #include "GameModelData.h"
 
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+
+#include "BitmapFont.h"
+
 static void UpdateFrame(void *param)
 {
 //  njli::NJLIGameEngine::update(1.0f / ((float)gDisplayMode.refresh_rate));
@@ -142,6 +147,9 @@ void TestClass::init() {
     
     gmd->subscribe(gmd);
     
+    BitmapFont *bmf = new BitmapFont();
+    bmf->load("FranklinGothicMedium");
+    
     
     
 //    for (std::vector<MLBJson::DateElement>::iterator dateElement_iterator = data.getMutableDates().begin();
@@ -185,7 +193,11 @@ void TestClass::update() {
 
 }
 void TestClass::render() {
-    SDL_GL_SwapWindow(mWindow);
+    GLclampf red, green, blue;
+    red = green = blue = (254.0 / 255.0);
+    glClearColor(red, green, blue, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
 }
 
 void TestClass::input() {

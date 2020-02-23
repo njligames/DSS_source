@@ -10,20 +10,9 @@
 #include "curl/curl.h"
 #include "SDL.h"
 #include "GameModelViewData.h"
+#include "UtilDSS.h"
 
 extern int gDone;
-
-#if !(defined(NDEBUG))
-
-#define MAX_DATE 24
-
-static uint64_t timeSinceEpochMillisec() {
-  using namespace std::chrono;
-  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-}
-
-#endif
-
 
 struct FileData {
     char *_current_ptr;
@@ -83,7 +72,7 @@ static void download_json(GameModelData *gmd)
     curl_easy_cleanup(curlCtx);
     
 #if !(defined(NDEBUG))
-    std::string n(std::to_string(timeSinceEpochMillisec()));
+    std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
     n += "_curl.json";
     FILE* fp = fopen(n.c_str(), "wb");
     if (fp) {
@@ -103,6 +92,13 @@ static void download_json(GameModelData *gmd)
 }
 
 const std::string GameModelData::URLBase = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=%.4d-%.2d-%.2d&sportId=1";
+
+GameModelData::GameModelData(const std::string url) :
+mUrl(url) {
+    if(!UtilDSS::validUrl(mUrl)) {
+        mUrl = "";
+    }
+}
 
 GameModelData *GameModelData::generateGameModelData(struct tm time_str) {
     static char buff[4096];

@@ -23,7 +23,7 @@ class GameModelData : public Publisher, public Subscriber {
     // http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=2018-06-10&sportId=1
     static const std::string URLBase;
 
-    GameModelData(const std::string url = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=2018-06-10&sportId=1"):mUrl(url){}
+    GameModelData(const std::string url = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=2018-06-10&sportId=1");
 public:
     ~GameModelData(){}
     

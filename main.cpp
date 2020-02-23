@@ -227,6 +227,7 @@ public:
 
   void update()
   {
+      TestClass::get()->render();
 //    njli::NJLIGameEngine::render();
 
     SDL_GL_SwapWindow(_window);
@@ -1217,7 +1218,7 @@ main(int argc, char *argv[])
     createRenderer();
 #endif
 
-     SDL_SetWindowSize(gWindow, 800, 600);
+     SDL_SetWindowSize(gWindow, 1920, 1080);
 
 //    int w, h;
 //    SDL_GetWindowSize(gWindow, &w, &h);
