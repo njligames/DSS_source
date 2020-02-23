@@ -4,6 +4,11 @@
 
 #include <string>
 
+#include "MLBJsonModel.h"
+
+#include "GameModelViewData.h"
+#include "GameModelData.h"
+
 static void UpdateFrame(void *param)
 {
 //  njli::NJLIGameEngine::update(1.0f / ((float)gDisplayMode.refresh_rate));
@@ -78,7 +83,9 @@ mWindow(window),
 mRenderer(renderer),
 mIsDone(true) {
 }
-TestClass::~TestClass(){}
+TestClass::~TestClass() {
+    ThreadPool::destroy();
+}
 
 void TestClass::create() {
     if(nullptr == sInstance)
@@ -122,6 +129,54 @@ void TestClass::init() {
 //    mMutex.lock();
     mIsDone = false;
 //    mMutex.unlock();
+    
+//    GameModelData gmd;
+    struct tm time_str;
+    time_str.tm_year   = 2018;
+    time_str.tm_mon    = 6;
+    time_str.tm_mday   = 10;
+    
+//    MLBJson::Dss data = gmd.load(time_str);
+    
+    GameModelData *gmd = GameModelData::generateGameModelData(time_str);
+    
+    gmd->subscribe(gmd);
+    
+    
+    
+//    for (std::vector<MLBJson::DateElement>::iterator dateElement_iterator = data.getMutableDates().begin();
+//         dateElement_iterator != data.getMutableDates().end();
+//         ++dateElement_iterator) {
+//
+//        MLBJson::DateElement _dateElement = *dateElement_iterator;
+//
+//        std::vector<GameModelViewData*> gvdVector;
+//        GameModelViewData::loadGames(_dateElement.getMutableGames(), gvdVector);
+//
+//
+////        size_t gameNumber = 0;
+////
+////        for (std::vector<MLBJson::Game>::iterator game_iterator = _dateElement.getMutableGames().begin();
+////        game_iterator != _dateElement.getMutableGames().end();
+////        ++game_iterator) {
+////            gameNumber++;
+////
+////            MLBJson::Game _game = *game_iterator;
+////
+////            GameModelViewData gvd(_game);
+////
+////            int width, height, channels_in_file;
+////            size_t fileSize;
+////
+////            void *data1 = gvd.getDetailImageData(&width, &height, &channels_in_file, &fileSize);
+////            void *data2 = gvd.getListItemImageData(&width, &height, &channels_in_file, &fileSize);
+////
+////            gvd.getAwayName();
+////
+////        }
+//    }
+    
+//    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s", mlbJson.c_str());
 }
 void TestClass::unInit() {
 
@@ -674,4 +729,37 @@ void TestClass::resize(int w, int h)
 bool TestClass::isDone()const
 {
     return mIsDone;
+}
+
+std::string TestClass::loadStringData(char *path)
+{
+    void *buffer = nullptr;
+    long fileSize;
+    
+    SDL_RWops *rw = SDL_RWFromFile(path, "rb");
+    if (rw)
+    {
+        fileSize = SDL_RWsize(rw);
+        
+        buffer = (char *)malloc(fileSize + 1);
+
+        Sint64 nb_read_total = 0, nb_read = 1;
+        char *buf = (char *)buffer;
+        while (nb_read_total < fileSize && nb_read != 0)
+        {
+            nb_read = SDL_RWread(rw, buf, 1, (fileSize - nb_read_total));
+            nb_read_total += nb_read;
+            buf += nb_read;
+        }
+        SDL_RWclose(rw);
+        if (nb_read_total != fileSize)
+        {
+            free(buffer);
+            return std::string("");
+        }
+        
+        return std::string((char *)buffer);
+    }
+
+    return std::string("");
 }

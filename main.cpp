@@ -22,6 +22,7 @@
 #endif
 
 #include "curl.h"
+#include "nlohmann/json.hpp"
 
 //#include "SDL_test_common.h"
 //

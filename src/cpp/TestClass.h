@@ -5,6 +5,7 @@ class SDL_Window;
 #include <mutex>
 
 #include "curl.h"
+#include "PubSub.h"
  
 
 class TestClass {
@@ -36,7 +37,8 @@ public:
     void resize(int w, int h);
     
     bool isDone()const;
-    
+protected:
+    static std::string loadStringData(char *path);
 private:
 //    int mNum;
     SDL_Window *mWindow;
