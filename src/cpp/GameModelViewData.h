@@ -26,12 +26,10 @@ class GameModelViewData : public Publisher , public Subscriber {
     std::string mDetailImageDescription;
     void *mDetailImageData;
     std::string mDetailImageUrl;
-    bool mReceivedDetailImageData;
     
     std::string mListItemDescription;
     void *mListItemImageData;
     std::string mListItemImageUrl;
-    bool mReceivedListItemImageData;
     std::thread *mListItemImageThread;
     
     GameModelViewData() = delete;

@@ -9,7 +9,6 @@
 #define PubSub_hpp
 
 #include <list>
-
 class Publisher;
 
 class Subscriber

@@ -19,6 +19,10 @@
 
 extern int gDone;
 
+const int MAX_IMAGE_WIDTH = 4096;
+const int MAX_IMAGE_HEIGHT = 4096;
+const int MAX_IMAGE_COMPONENTS = 4;
+
 struct FileData {
     char *_current_ptr;
     char *_buffer;
@@ -61,9 +65,8 @@ static size_t callbackfunction(char *ptr, size_t size, size_t nmemb, void* userd
 
 static FileData *download_jpeg(const char* url)
 {
-    FileData *fd = new FileData(4096, 4096, 4);
+    FileData *fd = new FileData(MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT, MAX_IMAGE_COMPONENTS);
 
-    fd->_curlCtx = curl_easy_init();
     curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, url);
     curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
     curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
@@ -82,6 +85,9 @@ static FileData *download_jpeg(const char* url)
     {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "!!! Response code: %ld\n", res_code);
         return nullptr;
+        
+    } else {
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "Transfer completed with Response code: %ld\n", res_code);
     }
     
 #if !(defined(NDEBUG))
@@ -159,11 +165,9 @@ mDetailImageTitle(game.getContent().getEditorial().getRecap().getMlb().getMedia(
 mDetailImageDescription(game.getContent().getEditorial().getRecap().getMlb().getMedia().getDescription().c_str()),
 mDetailImageData(nullptr),
 mDetailImageUrl(""),
-mReceivedDetailImageData(false),
 mListItemDescription(game.getContent().getEditorial().getRecap().getMlb().getPhoto().getTitle().c_str()),
 mListItemImageData(nullptr),
-mListItemImageUrl(""),
-mReceivedListItemImageData(false) {
+mListItemImageUrl(""){
     
     MLBJson::MlbMedia _media = game.getContent().getEditorial().getRecap().getMlb().getMedia();
     
@@ -204,6 +208,7 @@ mReceivedListItemImageData(false) {
 }
 
 GameModelViewData::~GameModelViewData() {
+    
     if(nullptr != mDetailImageData)
         free(mDetailImageData);
     mDetailImageData = nullptr;
@@ -244,7 +249,6 @@ void *GameModelViewData::getDetailImageData(int *width, int *height, int *channe
         }
         
         if(downloadImage) {
-            mReceivedDetailImageData = false;
             ThreadPool::getInstance()->enqueue(download_detailimage, getDetailImageUrl().c_str(), this);
         }
     }
@@ -257,16 +261,12 @@ const std::string &GameModelViewData::getDetailImageUrl()const {
 }
 
 void GameModelViewData::setDetailImageData(void *ptr, size_t size) {
-    mMutex.lock();
+    std::unique_lock<std::mutex> lock(mMutex);
     
     if(nullptr != mDetailImageData)
         free(mDetailImageData);
     
     mDetailImageData = ptr;
-    
-    mReceivedDetailImageData = true;
-    
-    mMutex.unlock();
 }
 
 std::string GameModelViewData::getListItemTitle()const {
@@ -293,7 +293,6 @@ void *GameModelViewData::getListItemImageData(int *width, int *height, int *chan
         }
         
         if(downloadImage) {
-            mReceivedListItemImageData = false;
             ThreadPool::getInstance()->enqueue(download_listitemimage, getListItemImageUrl().c_str(), this);
         }
     }
@@ -307,20 +306,17 @@ const std::string &GameModelViewData::getListItemImageUrl()const {
 }
 
 void GameModelViewData::setListItemImageData(void *ptr, size_t size) {
-    
-    mMutex.lock();
+    std::unique_lock<std::mutex> lock(mMutex);
     
     if(nullptr != mListItemImageData)
         free(mListItemImageData);
     
     mListItemImageData = ptr;
-    
-    mReceivedListItemImageData = true;
-    
-    mMutex.unlock();
 }
 
 void GameModelViewData::setImageData(const std::string &url, FileData *fd) {
+    std::unique_lock<std::mutex> lock(mMutex);
+    
     if(nullptr != fd) {
         int width, height, channels_in_file;
         void *ptr = stbi_load_from_memory((const stbi_uc *)fd->_buffer, fd->_size, &width, &height, &channels_in_file, 0);
@@ -336,18 +332,18 @@ void GameModelViewData::setImageData(const std::string &url, FileData *fd) {
         }
         
         if(url == mListItemImageUrl) {
+            if(nullptr != mListItemImageData)
+                free(mListItemImageData);
             mListItemImageData = ptr;
-            mReceivedListItemImageData = true;
         } else if(url == mDetailImageUrl) {
+            if(nullptr != mDetailImageData)
+                free(mDetailImageData);
             mDetailImageData = ptr;
-            mReceivedDetailImageData = true;
         }
         
         notify(fd);
     }
 }
-
-static std::mutex sMutex;
 
 static void multi_image_download(CURLM *multi_handle, const std::vector<CURL*> &handleList, std::vector<FileData*> &fileDataVector) {
     
@@ -443,21 +439,15 @@ static void multi_image_download(CURLM *multi_handle, const std::vector<CURL*> &
         }
     }
     
-    sMutex.lock();
     while(!fileDataVector.empty()) {
         FileData *fd = fileDataVector.back();
         fd->_gvd_ptr->setImageData(fd->_url, fd);
         fileDataVector.pop_back();
         delete fd;
     }
-    sMutex.unlock();
     
     curl_multi_cleanup(multi_handle);
 }
-
-const int MAX_IMAGE_WIDTH = 4096;
-const int MAX_IMAGE_HEIGHT = 4096;
-const int MAX_IMAGE_COMPONENTS = 4;
 
 void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games, std::vector<GameModelViewData*> &gvdVector) {
     

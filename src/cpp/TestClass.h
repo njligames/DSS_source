@@ -3,10 +3,14 @@ class SDL_Window;
 
 
 #include <mutex>
+#include <vector>
 
 #include "curl.h"
 #include "PubSub.h"
  
+class GameModelData;
+class BitmapFont;
+class GameModelData;
 
 class TestClass {
     static TestClass *sInstance;
@@ -45,5 +49,7 @@ private:
     SDL_Renderer *mRenderer;
     std::mutex mMutex;
     bool mIsDone;
+    
+    std::vector<GameModelData*> mGameModelDataVector;
 
 };

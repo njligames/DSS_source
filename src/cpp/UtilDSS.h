@@ -8,6 +8,13 @@
 #ifndef UtilDSS_h
 #define UtilDSS_h
 
+#include <optional>
+#include <stdexcept>
+#include <regex>
+#include <algorithm>
+#include <cctype>
+#include <string>
+
 class UtilDSS {
 public:
     
@@ -26,6 +33,11 @@ public:
     static uint64_t timeSinceEpochMillisec() {
       using namespace std::chrono;
       return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+    }
+    
+    static std::string tolower(std::string str) {
+        std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c){ return std::tolower(c); });
+        return str;
     }
 };
 

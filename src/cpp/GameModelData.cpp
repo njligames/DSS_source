@@ -18,14 +18,17 @@ struct FileData {
     char *_current_ptr;
     char *_buffer;
     size_t _size;
+    CURL* _curlCtx;
     
     FileData(int megabytes) {
         _buffer = new char[1024 * 1024 * megabytes];
         _current_ptr = _buffer;
         _size = 0;
+        _curlCtx = curl_easy_init();
     }
     ~FileData() {
         delete [] _buffer;
+        curl_easy_cleanup(_curlCtx);
     }
     void append_data(char *ptr, size_t size, size_t nmemb) {
         int s = (size * nmemb);
@@ -34,8 +37,6 @@ struct FileData {
         _size += s;
     }
 };
-
-static std::mutex sMutex;
 
 static size_t callbackfunction(char *ptr, size_t size, size_t nmemb, void* userdata)
 {
@@ -52,24 +53,21 @@ static void download_json(GameModelData *gmd)
     int megabyteBuffer = 10;
     FileData *fd = new FileData(megabyteBuffer);
 
-    CURL* curlCtx = curl_easy_init();
-    curl_easy_setopt(curlCtx, CURLOPT_URL, gmd->getUrl().c_str());
-    curl_easy_setopt(curlCtx, CURLOPT_WRITEDATA, fd);
-    curl_easy_setopt(curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
-    curl_easy_setopt(curlCtx, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, gmd->getUrl().c_str());
+    curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
+    curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
+    curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
 
-    CURLcode rc = curl_easy_perform(curlCtx);
+    CURLcode rc = curl_easy_perform(fd->_curlCtx);
     if (rc) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "!!! Failed to download: %s\n", gmd->getUrl().c_str());
     }
 
     long res_code = 0;
-    curl_easy_getinfo(curlCtx, CURLINFO_RESPONSE_CODE, &res_code);
+    curl_easy_getinfo(fd->_curlCtx, CURLINFO_RESPONSE_CODE, &res_code);
     if (!((res_code == 200 || res_code == 201) && rc != CURLE_ABORTED_BY_CALLBACK)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "!!! Response code: %ld\n", res_code);
     }
-
-    curl_easy_cleanup(curlCtx);
     
 #if !(defined(NDEBUG))
     std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
@@ -84,9 +82,7 @@ static void download_json(GameModelData *gmd)
     }
 #endif
     
-    sMutex.lock();
     gmd->setJson(fd->_buffer);
-    sMutex.unlock();
     
     delete fd;
 }
@@ -98,25 +94,31 @@ mUrl(url) {
     if(!UtilDSS::validUrl(mUrl)) {
         mUrl = "";
     }
+    ThreadPool::getInstance()->enqueue(download_json, this);
+}
+GameModelData::~GameModelData() {
+    while(!mGameModelViewDataVector.empty()) {
+        GameModelViewData *gmvd = mGameModelViewDataVector.back();
+        mGameModelViewDataVector.pop_back();
+        
+        delete gmvd;
+    }
 }
 
-GameModelData *GameModelData::generateGameModelData(struct tm time_str) {
+GameModelData *GameModelData::generateGameModelData(const NJLIC::Date &date) {
     static char buff[4096];
 
-    int month = time_str.tm_mon;
-    int day = time_str.tm_mday;
-    int year = time_str.tm_year;
-
-    snprintf(buff, sizeof(buff), URLBase.c_str(), year, month, day);
+    snprintf(buff, sizeof(buff), URLBase.c_str(), date.getYear(), date.getMonth(), date.getDay());
     
     GameModelData *_GameModelData = new GameModelData(buff);
     
-    ThreadPool::getInstance()->enqueue(download_json, _GameModelData);
+    _GameModelData->subscribe(_GameModelData);
     
     return _GameModelData;
 }
 
 void GameModelData::setJson(char *json) {
+    std::unique_lock<std::mutex> lock(mMutex);
     
     try {
         mDssData = nlohmann::json::parse(json);
@@ -147,14 +149,13 @@ void GameModelData::update(Publisher* who, void* userdata) {
 
             //TODO: The Renderer will have to subscribe to this!
             
-            std::vector<GameModelViewData*> gvdVector;
-            GameModelViewData::loadGames(_dateElement.getMutableGames(), gvdVector);
+            GameModelViewData::loadGames(_dateElement.getMutableGames(), mGameModelViewDataVector);
             
-            for(std::vector<GameModelViewData*>::iterator iter = gvdVector.begin();
-                iter != gvdVector.end();
+            for(std::vector<GameModelViewData*>::iterator iter = mGameModelViewDataVector.begin();
+                iter != mGameModelViewDataVector.end();
                 ++iter) {
                 GameModelViewData *_GameModelViewData = *iter;
-                _GameModelViewData->subscribe(_GameModelViewData);
+                _GameModelViewData->subscribe(*iter);
             }
         }
     }

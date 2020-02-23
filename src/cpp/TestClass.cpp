@@ -14,6 +14,8 @@
 
 #include "BitmapFont.h"
 
+#include "Date.h"
+
 static void UpdateFrame(void *param)
 {
 //  njli::NJLIGameEngine::update(1.0f / ((float)gDisplayMode.refresh_rate));
@@ -80,7 +82,7 @@ TestClass *TestClass::sInstance = nullptr;
 TestClass::TestClass() :
 mWindow(nullptr),
 mRenderer(nullptr),
-mIsDone(true) {
+mIsDone(true){
 }
 
 TestClass::TestClass(SDL_Window *window, SDL_Renderer *renderer) :
@@ -88,13 +90,17 @@ mWindow(window),
 mRenderer(renderer),
 mIsDone(true) {
 }
+
 TestClass::~TestClass() {
+    BitmapFont::destroy();
     ThreadPool::destroy();
+    
+    unInit();
 }
 
 void TestClass::create() {
     if(nullptr == sInstance)
-    sInstance = new TestClass();
+        sInstance = new TestClass();
 }
 
 void TestClass::create(SDL_Window *window, SDL_Renderer *renderer) {
@@ -135,20 +141,24 @@ void TestClass::init() {
     mIsDone = false;
 //    mMutex.unlock();
     
-//    GameModelData gmd;
-    struct tm time_str;
-    time_str.tm_year   = 2018;
-    time_str.tm_mon    = 6;
-    time_str.tm_mday   = 10;
+    int numberOfDaysToGoBack((365*4) + 1);
+    numberOfDaysToGoBack = 1;
+    NJLIC::Date formatted_date(6,10,2018);
     
-//    MLBJson::Dss data = gmd.load(time_str);
+    NJLIC::Date date(formatted_date);
+    for(int i = 0;
+        i < numberOfDaysToGoBack;
+        ++i, date--) {
+        
+        printf("%s\n", std::string(date).c_str());
+        mGameModelDataVector.push_back(GameModelData::generateGameModelData(date));
+    }
     
-    GameModelData *gmd = GameModelData::generateGameModelData(time_str);
+//    BitmapFont::getInstance()->load("FranklinGothicMedium");
+//    BitmapFont::getInstance()->load("FranklinGothicMedium");
     
-    gmd->subscribe(gmd);
-    
-    BitmapFont *bmf = new BitmapFont();
-    bmf->load("FranklinGothicMedium");
+    BitmapFont::getInstance()->setCurrentFontName("FranklinGothicMedium");
+    BitmapFont::getInstance()->printf("%s - %d", "jimbo", 100);
     
     
     
@@ -187,7 +197,11 @@ void TestClass::init() {
 //    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s", mlbJson.c_str());
 }
 void TestClass::unInit() {
-
+    while(!mGameModelDataVector.empty()) {
+        GameModelData *gmd = mGameModelDataVector.back();
+        delete gmd;
+        mGameModelDataVector.pop_back();
+    }
 }
 void TestClass::update() {
 
@@ -195,6 +209,7 @@ void TestClass::update() {
 void TestClass::render() {
     GLclampf red, green, blue;
     red = green = blue = (254.0 / 255.0);
+    
     glClearColor(red, green, blue, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
