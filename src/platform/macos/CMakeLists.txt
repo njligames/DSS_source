@@ -1,5 +1,9 @@
 set(XCODE_DEVELOPMENT_TEAM $ENV{XCODE_DEVELOPMENT_TEAM})
 
+list(APPEND TARGET_DEFINITIONS "GL_SILENCE_DEPRECATION")
+# list(APPEND TARGET_DEFINITIONS "STB_IMAGE_WRITE_IMPLEMENTATION")
+# list(APPEND TARGET_DEFINITIONS "STB_IMAGE_IMPLEMENTATION")
+
 add_library(SDL2 UNKNOWN IMPORTED)
 set_property(TARGET SDL2 APPEND PROPERTY IMPORTED_LOCATION  "${THIRDPARTY_DIR}/platform/${TARGET_PLATFORM}/libSDL2.a")
 list(APPEND TARGET_LIBRARIES SDL2)
@@ -105,6 +109,13 @@ if(TARGET_PROJECT_SOURCES)
         RUNTIME DESTINATION bin
         FRAMEWORK DESTINATION framework)
 
+    set(CLANG_FORMAT_BIN "/usr/local/bin/clang-format" CACHE STRING "use: `brew install clang-format` to install")
+    add_custom_target(
+        clang-format
+        COMMAND ${CLANG_FORMAT_BIN} -style=file -i ${TARGET_PROJECT_SOURCES} -verbose
+        SOURCES
+        "${CMAKE_SOURCE_DIR}/.clang-format"
+    )
 endif()
 
 

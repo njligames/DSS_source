@@ -7,11 +7,17 @@
 
 #include "GameModelViewData.h"
 
+//#define STB_IMAGE_IMPLEMENTATION
+#ifndef njlic_stb_image
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#endif
 
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+#ifndef njlic_stb_image_write
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#endif
 
 #include "SDL.h"
 #include "curl/curl.h"

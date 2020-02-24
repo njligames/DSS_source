@@ -21,10 +21,12 @@
 #include <optional>
 #include <stdexcept>
 #include <regex>
+#include <stdio.h>
 
 #include "SDL.h"
 
 #include "stb_image.h"
+#include "stb_image_write.h"
 
 namespace BMF {
     using nlohmann::json;
@@ -163,43 +165,34 @@ bool BitmapFont::load(const std::string &fontName) {
     std::string fontNameLower(UtilDSS::tolower(fontName));
     
     if(mFontMap.find(fontNameLower) == mFontMap.end()) {
-
+        const std::string base_path(SDL_GetBasePath());
+        static char buff[4096];
+        
         BitmapFontData *bfd = new BitmapFontData();
         
-        static char buff[4096];
-        const std::string base_path(SDL_GetBasePath());
-        
+        size_t jsonFileSize;
         std::string defaultJson("assets/fonts/%s.json");
         snprintf(buff, sizeof(buff), defaultJson.c_str(), fontName.c_str());
-        std::string jsonFilePath = base_path + std::string(buff);
-        size_t jsonFileSize = 0;
-        char *jsonFileBuffer = nullptr;
-        
-        SDL_RWops *rw = SDL_RWFromFile(jsonFilePath.c_str(), "rb");
-        if (rw)
-        {
-            jsonFileSize = SDL_RWsize(rw);
-            
-            jsonFileBuffer = (char *)malloc(jsonFileSize + 1);
+        char *jsonFileBuffer = UtilDSS::loadFile(std::string(buff), jsonFileSize);
+        if(nullptr != jsonFileBuffer) {
 
-            Sint64 nb_read_total = 0, nb_read = 1;
-            char *buf = (char *)jsonFileBuffer;
-            while (nb_read_total < jsonFileSize && nb_read != 0)
-            {
-                nb_read = SDL_RWread(rw, buf, 1, (jsonFileSize - nb_read_total));
-                nb_read_total += nb_read;
-                buf += nb_read;
+#if !(defined(NDEBUG))
+            std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
+            n += "_bitmapfont_";
+            n += fontName;
+            n += ".json";
+            FILE* fp = fopen(n.c_str(), "wb");
+            if (fp) {
+                fwrite(jsonFileBuffer, sizeof(char), jsonFileSize, fp);
+                
+                fclose(fp);
+            } else {
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "!!! Failed to create file on the disk\n");
             }
-            SDL_RWclose(rw);
-            if (nb_read_total != jsonFileSize)
-            {
-                free(jsonFileBuffer);
-            }
+#endif
             
-            if(nullptr != jsonFileBuffer) {
-                bfd->_jsonData = nlohmann::json::parse(jsonFileBuffer);
-                free(jsonFileBuffer);
-            }
+            bfd->_jsonData = nlohmann::json::parse(jsonFileBuffer);
+            free(jsonFileBuffer);
         }
         
         std::string defaultImage("assets/fonts/%s.png");
@@ -208,6 +201,13 @@ bool BitmapFont::load(const std::string &fontName) {
         
         bfd->_imageFileData = (void *)stbi_load(imageFilePath.c_str(), &bfd->_width, &bfd->_height, &bfd->_channels_in_file, 0);
         
+#if !(defined(NDEBUG))
+        std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
+        n += "_bitmapfont_";
+        n += fontName;
+        n += ".jpg";
+        stbi_write_jpg(n.c_str(), bfd->_width, bfd->_height, bfd->_channels_in_file, bfd->_imageFileData, 100);
+#endif
         mFontMap.insert(Pair(fontNameLower, bfd));
         
         return true;
@@ -244,6 +244,7 @@ void BitmapFont::setCurrentBounds(const glm::vec2 &bounds) {
 
 void BitmapFont::setCurrentFontName(const std::string &fontName) {
     mCurrentFontName = fontName;
+    load(mCurrentFontName);
 }
 
 void BitmapFont::printf(const char *fmt, ...) {

@@ -1156,35 +1156,35 @@ main(int argc, char *argv[])
 
       
       
-#if defined(__GL_ES2__)
-      
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-      
-#elif defined(__GL_ES3__)
-      
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-      
-#elif defined(__GL_2__)
-      
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-#if defined(__MACOSX__)
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-#endif
-      
-#elif defined(__GL_3__)
-      
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-#if defined(__MACOSX__)
-//      SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-//      SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-//      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-//      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+//#if defined(__GL_ES2__)
 //
+//      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+//
+//#elif defined(__GL_ES3__)
+//
+//      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+//
+//#elif defined(__GL_2__)
       
-//      SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-#endif
+      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+//#if defined(__MACOSX__)
+      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+//#endif
       
-#endif
+//#elif defined(__GL_3__)
+//
+//      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+//#if defined(__MACOSX__)
+////      SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+////      SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+////      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+////      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+////
+//
+////      SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+//#endif
+      
+//#endif
       
 #if defined(__MACOSX__) || defined(__WINDOWS32__) || defined(__WINDOWS64__)
     SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
@@ -1194,7 +1194,7 @@ main(int argc, char *argv[])
       
       
 #if defined(__MACOSX__)
-      flags |= SDL_WINDOW_RESIZABLE;
+//      flags |= SDL_WINDOW_RESIZABLE;
 //      flags |= SDL_WINDOW_MAXIMIZED;
       flags |= SDL_WINDOW_ALWAYS_ON_TOP;
       flags |= SDL_WINDOW_UTILITY;

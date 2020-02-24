@@ -15,6 +15,7 @@
 #include "BitmapFont.h"
 
 #include "Date.h"
+#include "UtilDSS.h"
 
 static void UpdateFrame(void *param)
 {
@@ -140,6 +141,61 @@ void TestClass::init() {
 //    mMutex.lock();
     mIsDone = false;
 //    mMutex.unlock();
+    
+    mShader = new NJLIC::Shader();
+    
+//    size_t vsSize = 0;
+//    char *vsFileBuffer = UtilDSS::loadFile("assets/shaders/shader.vsh", vsSize);
+//
+//    size_t fsSize = 0;
+//    char *fsFileBuffer = UtilDSS::loadFile("assets/shaders/shader.fsh", fsSize);
+//
+//    mShader->load(vsFileBuffer, fsFileBuffer);
+    
+//    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "ERROR");
+    
+    
+    const std::string fragmentSource = R"(
+    //#version 100
+                                                                                           
+    uniform sampler2D videoFrame;
+                                                                                           
+    varying vec2 textureCoordinate;
+    varying vec4 frag_Color;
+                                                                                           
+    void main(void) {
+        gl_FragColor = texture2D(videoFrame, textureCoordinate) * frag_Color;
+    }
+                                                                                           
+    )";
+                                                                                           
+    const std::string vertexSource = R"(
+    //#version 100
+                                                                                           
+    attribute vec4 a_Position;
+    attribute vec4 a_Color;
+    attribute vec4 a_Texture;
+                                                                                           
+    varying vec2 textureCoordinate;
+    varying vec4 frag_Color;
+                                                                                           
+    void main(void) {
+        frag_Color = a_Color;
+        gl_Position = a_Position;
+        textureCoordinate = a_Texture.xy;
+    }
+                                                                                           
+                                                                                           
+    )";
+    
+    if(mShader->load(vertexSource, fragmentSource)) {
+        
+    }
+    
+    
+    
+    
+    
     
     int numberOfDaysToGoBack((365*4) + 1);
     numberOfDaysToGoBack = 1;

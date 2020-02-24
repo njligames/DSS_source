@@ -7,7 +7,8 @@ class SDL_Window;
 
 #include "curl.h"
 #include "PubSub.h"
- 
+#include "Shader.h"
+
 class GameModelData;
 class BitmapFont;
 class GameModelData;
@@ -51,5 +52,6 @@ private:
     bool mIsDone;
     
     std::vector<GameModelData*> mGameModelDataVector;
+    NJLIC::Shader *mShader;
 
 };
