@@ -49,24 +49,24 @@ class UtilDSS {
         char *_buffer = nullptr;
 
         SDL_RWops *rw = SDL_RWFromFile(jsonFilePath.c_str(), "rb");
-            if (rw) {
-                fileSize = SDL_RWsize(rw);
+        if (rw) {
+            fileSize = SDL_RWsize(rw);
 
-                _buffer = (char *)malloc(fileSize + 1);
+            _buffer = (char *)malloc(fileSize + 1);
+            memset(_buffer, 0, sizeof(char) * fileSize + 1);
 
-                Sint64 nb_read_total = 0, nb_read = 1;
-                char *buf = (char *)_buffer;
-                    while (nb_read_total < fileSize && nb_read != 0) {
-                        nb_read =
-                            SDL_RWread(rw, buf, 1, (fileSize - nb_read_total));
-                        nb_read_total += nb_read;
-                        buf += nb_read;
-                    }
-                SDL_RWclose(rw);
-                    if (nb_read_total != fileSize) {
-                        free(_buffer);
-                        _buffer = nullptr;
-                }
+            Sint64 nb_read_total = 0, nb_read = 1;
+            char *buf = (char *)_buffer;
+            while (nb_read_total < fileSize && nb_read != 0) {
+                nb_read = SDL_RWread(rw, buf, 1, (fileSize - nb_read_total));
+                nb_read_total += nb_read;
+                buf += nb_read;
+            }
+            SDL_RWclose(rw);
+            if (nb_read_total != fileSize) {
+                free(_buffer);
+                _buffer = nullptr;
+            }
         }
         return _buffer;
     }

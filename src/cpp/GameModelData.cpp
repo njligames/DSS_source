@@ -58,31 +58,31 @@ static void download_json(GameModelData *gmd) {
     curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
 
     CURLcode rc = curl_easy_perform(fd->_curlCtx);
-        if (rc) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "!!! Failed to download: %s\n", gmd->getUrl().c_str());
+    if (rc) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "!!! Failed to download: %s\n", gmd->getUrl().c_str());
     }
 
     long res_code = 0;
     curl_easy_getinfo(fd->_curlCtx, CURLINFO_RESPONSE_CODE, &res_code);
-        if (!((res_code == 200 || res_code == 201) &&
-              rc != CURLE_ABORTED_BY_CALLBACK)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "!!! Response code: %ld\n", res_code);
+    if (!((res_code == 200 || res_code == 201) &&
+          rc != CURLE_ABORTED_BY_CALLBACK)) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "!!! Response code: %ld\n",
+                     res_code);
     }
 
 #if !(defined(NDEBUG))
     std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
     n += "_curl.json";
     FILE *fp = fopen(n.c_str(), "wb");
-        if (fp) {
-            fwrite(fd->_buffer, sizeof(char), fd->_size, fp);
+    if (fp) {
+        fwrite(fd->_buffer, sizeof(char), fd->_size, fp);
 
-            fclose(fp);
-        } else {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "!!! Failed to create file on the disk\n");
-        }
+        fclose(fp);
+    } else {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "!!! Failed to create file on the disk\n");
+    }
 #endif
 
     gmd->setJson(fd->_buffer);
@@ -96,18 +96,18 @@ const std::string GameModelData::URLBase =
     "%.2d&sportId=1";
 
 GameModelData::GameModelData(const std::string url) : mUrl(url) {
-        if (!UtilDSS::validUrl(mUrl)) {
-            mUrl = "";
+    if (!UtilDSS::validUrl(mUrl)) {
+        mUrl = "";
     }
     ThreadPool::getInstance()->enqueue(download_json, this);
 }
 GameModelData::~GameModelData() {
-        while (!mGameModelViewDataVector.empty()) {
-            GameModelViewData *gmvd = mGameModelViewDataVector.back();
-            mGameModelViewDataVector.pop_back();
+    while (!mGameModelViewDataVector.empty()) {
+        GameModelViewData *gmvd = mGameModelViewDataVector.back();
+        mGameModelViewDataVector.pop_back();
 
-            delete gmvd;
-        }
+        delete gmvd;
+    }
 }
 
 GameModelData *GameModelData::generateGameModelData(const NJLIC::Date &date) {
@@ -126,13 +126,13 @@ GameModelData *GameModelData::generateGameModelData(const NJLIC::Date &date) {
 void GameModelData::setJson(char *json) {
     std::unique_lock<std::mutex> lock(mMutex);
 
-        try {
-            mDssData = nlohmann::json::parse(json);
-            notify();
-        } catch (nlohmann::json::exception &e) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "exception message: %s \nexception id: %d", e.what(),
-                         e.id);
+    try {
+        mDssData = nlohmann::json::parse(json);
+        notify();
+    } catch (nlohmann::json::exception &e) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "exception message: %s \nexception id: %d", e.what(),
+                     e.id);
     }
 }
 
@@ -143,28 +143,27 @@ const MLBJson::Dss &GameModelData::getMLBData() const { return mDssData; }
 void GameModelData::update(Publisher *who, void *userdata) {
     GameModelData *completed_me = dynamic_cast<GameModelData *>(who);
 
-        if (nullptr != completed_me) {
+    if (nullptr != completed_me) {
 
-                for (std::vector<MLBJson::DateElement>::iterator
-                         dateElement_iterator =
-                             completed_me->mDssData.getMutableDates().begin();
-                     dateElement_iterator !=
-                     completed_me->mDssData.getMutableDates().end();
-                     ++dateElement_iterator) {
+        for (std::vector<MLBJson::DateElement>::iterator dateElement_iterator =
+                 completed_me->mDssData.getMutableDates().begin();
+             dateElement_iterator !=
+             completed_me->mDssData.getMutableDates().end();
+             ++dateElement_iterator) {
 
-                    MLBJson::DateElement _dateElement = *dateElement_iterator;
+            MLBJson::DateElement _dateElement = *dateElement_iterator;
 
-                    // TODO: The Renderer will have to subscribe to this!
+            // TODO: The Renderer will have to subscribe to this!
 
-                    GameModelViewData::loadGames(_dateElement.getMutableGames(),
-                                                 mGameModelViewDataVector);
+            GameModelViewData::loadGames(_dateElement.getMutableGames(),
+                                         mGameModelViewDataVector);
 
-                        for (std::vector<GameModelViewData *>::iterator iter =
-                                 mGameModelViewDataVector.begin();
-                             iter != mGameModelViewDataVector.end(); ++iter) {
-                            GameModelViewData *_GameModelViewData = *iter;
-                            _GameModelViewData->subscribe(*iter);
-                        }
-                }
+            for (std::vector<GameModelViewData *>::iterator iter =
+                     mGameModelViewDataVector.begin();
+                 iter != mGameModelViewDataVector.end(); ++iter) {
+                GameModelViewData *_GameModelViewData = *iter;
+                _GameModelViewData->subscribe(*iter);
+            }
+        }
     }
 }

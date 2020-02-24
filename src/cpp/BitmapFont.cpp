@@ -32,8 +32,8 @@ namespace BMF {
     using nlohmann::json;
 
     inline json get_untyped(const json &j, const char *property) {
-            if (j.find(property) != j.end()) {
-                return j.at(property).get<json>();
+        if (j.find(property) != j.end()) {
+            return j.at(property).get<json>();
         }
         return json();
     }
@@ -166,71 +166,67 @@ BitmapFont::BitmapFont()
       mCurrentFontName(""), mCurrentPrintf("") {}
 
 BitmapFont::~BitmapFont() {
-        for (Map::iterator iter = mFontMap.begin(); iter != mFontMap.end();
-             ++iter) {
-            delete iter->second;
-        }
+    for (Map::iterator iter = mFontMap.begin(); iter != mFontMap.end();
+         ++iter) {
+        delete iter->second;
+    }
 }
 
 bool BitmapFont::load(const std::string &fontName) {
     std::string fontNameLower(UtilDSS::tolower(fontName));
 
-        if (mFontMap.find(fontNameLower) == mFontMap.end()) {
-            const std::string base_path(SDL_GetBasePath());
-            static char buff[4096];
+    if (mFontMap.find(fontNameLower) == mFontMap.end()) {
+        const std::string base_path(SDL_GetBasePath());
+        static char buff[4096];
 
-            BitmapFontData *bfd = new BitmapFontData();
+        BitmapFontData *bfd = new BitmapFontData();
 
-            size_t jsonFileSize;
-            std::string defaultJson("assets/fonts/%s.json");
-            snprintf(buff, sizeof(buff), defaultJson.c_str(), fontName.c_str());
-            char *jsonFileBuffer =
-                UtilDSS::loadFile(std::string(buff), jsonFileSize);
-                if (nullptr != jsonFileBuffer) {
-
-#if !(defined(NDEBUG))
-                    std::string n(
-                        std::to_string(UtilDSS::timeSinceEpochMillisec()));
-                    n += "_bitmapfont_";
-                    n += fontName;
-                    n += ".json";
-                    FILE *fp = fopen(n.c_str(), "wb");
-                        if (fp) {
-                            fwrite(jsonFileBuffer, sizeof(char), jsonFileSize,
-                                   fp);
-
-                            fclose(fp);
-                        } else {
-                            SDL_LogError(
-                                SDL_LOG_CATEGORY_APPLICATION,
-                                "!!! Failed to create file on the disk\n");
-                        }
-#endif
-
-                    bfd->_jsonData = nlohmann::json::parse(jsonFileBuffer);
-                    free(jsonFileBuffer);
-            }
-
-            std::string defaultImage("assets/fonts/%s.png");
-            snprintf(buff, sizeof(buff), defaultImage.c_str(),
-                     fontName.c_str());
-            std::string imageFilePath = base_path + std::string(buff);
-
-            bfd->_imageFileData =
-                (void *)stbi_load(imageFilePath.c_str(), &bfd->_width,
-                                  &bfd->_height, &bfd->_channels_in_file, 0);
+        size_t jsonFileSize;
+        std::string defaultJson("assets/fonts/%s.json");
+        snprintf(buff, sizeof(buff), defaultJson.c_str(), fontName.c_str());
+        char *jsonFileBuffer =
+            UtilDSS::loadFile(std::string(buff), jsonFileSize);
+        if (nullptr != jsonFileBuffer) {
 
 #if !(defined(NDEBUG))
             std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
             n += "_bitmapfont_";
             n += fontName;
-            n += ".jpg";
-            stbi_write_jpg(n.c_str(), bfd->_width, bfd->_height,
-                           bfd->_channels_in_file, bfd->_imageFileData, 100);
-#endif
-            mFontMap.insert(Pair(fontNameLower, bfd));
+            n += ".json";
+            FILE *fp = fopen(n.c_str(), "wb");
+            if (fp) {
+                fwrite(jsonFileBuffer, sizeof(char), jsonFileSize, fp);
 
-            return true;
+                fclose(fp);
+            } else {
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                             "!!! Failed to create file on the disk\n");
+            }
+#endif
+
+            bfd->_jsonData = nlohmann::json::parse(jsonFileBuffer);
+            free(jsonFileBuffer);
+        }
+
+        std::string defaultImage("assets/fonts/%s.png");
+        snprintf(buff, sizeof(buff), defaultImage.c_str(), fontName.c_str());
+        std::string imageFilePath = base_path + std::string(buff);
+
+        bfd->_imageFileData =
+            (void *)stbi_load(imageFilePath.c_str(), &bfd->_width,
+                              &bfd->_height, &bfd->_channels_in_file, 0);
+
+#if !(defined(NDEBUG))
+        std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
+        n += "_bitmapfont_";
+        n += fontName;
+        n += ".jpg";
+        stbi_write_jpg(n.c_str(), bfd->_width, bfd->_height,
+                       bfd->_channels_in_file, bfd->_imageFileData, 100);
+#endif
+        mFontMap.insert(Pair(fontNameLower, bfd));
+
+        return true;
     }
     return false;
 }
@@ -239,13 +235,13 @@ bool BitmapFont::unLoad(const std::string &fontName) {
     std::string fontNameLower(UtilDSS::tolower(fontName));
 
     Map::iterator iter = mFontMap.find(fontNameLower);
-        if (iter != mFontMap.end()) {
-            BitmapFontData *bfd = iter->second;
-            delete bfd;
+    if (iter != mFontMap.end()) {
+        BitmapFontData *bfd = iter->second;
+        delete bfd;
 
-            mFontMap.erase(iter);
+        mFontMap.erase(iter);
 
-            return true;
+        return true;
     }
     return false;
 }

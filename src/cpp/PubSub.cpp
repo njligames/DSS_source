@@ -17,13 +17,13 @@ void Publisher::unsubscribe(Subscriber *s) { mSubscribers.remove(s); }
 
 void Publisher::notify(void *what, Subscriber *s) {
 
-        if (mNotifyEnabled) {
+    if (mNotifyEnabled) {
 
-            std::list<Subscriber *>::iterator p;
+        std::list<Subscriber *>::iterator p;
 
-            for (p = mSubscribers.begin(); p != mSubscribers.end(); p++)
-                if (*p != s)
-                    (*p)->update(this, what);
+        for (p = mSubscribers.begin(); p != mSubscribers.end(); p++)
+            if (*p != s)
+                (*p)->update(this, what);
     }
     mNotifyEnabled = true;
 }

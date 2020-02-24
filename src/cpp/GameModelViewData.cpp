@@ -79,37 +79,37 @@ static FileData *download_jpeg(const char *url) {
     curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
 
     CURLcode rc = curl_easy_perform(fd->_curlCtx);
-        if (rc) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "!!! Failed to download: %s\n", url);
-            return nullptr;
+    if (rc) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "!!! Failed to download: %s\n", url);
+        return nullptr;
     }
 
     long res_code = 0;
     curl_easy_getinfo(fd->_curlCtx, CURLINFO_RESPONSE_CODE, &res_code);
-        if (!((res_code == 200 || res_code == 201) &&
-              rc != CURLE_ABORTED_BY_CALLBACK)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "!!! Response code: %ld\n", res_code);
-            return nullptr;
-        } else {
-            SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
-                           "Transfer completed with Response code: %ld\n",
-                           res_code);
-        }
+    if (!((res_code == 200 || res_code == 201) &&
+          rc != CURLE_ABORTED_BY_CALLBACK)) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "!!! Response code: %ld\n",
+                     res_code);
+        return nullptr;
+    } else {
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
+                       "Transfer completed with Response code: %ld\n",
+                       res_code);
+    }
 
 #if !(defined(NDEBUG))
     std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
     n += "_curl.jpg";
     FILE *fp = fopen(n.c_str(), "wb");
-        if (fp) {
-            fwrite(fd->_buffer, sizeof(char), fd->_size, fp);
+    if (fp) {
+        fwrite(fd->_buffer, sizeof(char), fd->_size, fp);
 
-            fclose(fp);
-        } else {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "!!! Failed to create file on the disk\n");
-        }
+        fclose(fp);
+    } else {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "!!! Failed to create file on the disk\n");
+    }
 #endif
 
     return fd;
@@ -117,57 +117,55 @@ static FileData *download_jpeg(const char *url) {
 
 static bool download_detailimage(const char *url, GameModelViewData *gvd) {
     FileData *fd = download_jpeg(url);
-        if (nullptr != fd) {
+    if (nullptr != fd) {
 
-            int width, height, channels_in_file;
-            void *ptr =
-                stbi_load_from_memory((const stbi_uc *)fd->_buffer, fd->_size,
-                                      &width, &height, &channels_in_file, 0);
+        int width, height, channels_in_file;
+        void *ptr =
+            stbi_load_from_memory((const stbi_uc *)fd->_buffer, fd->_size,
+                                  &width, &height, &channels_in_file, 0);
 
-                if (nullptr != ptr) {
-                    size_t fileSize = ((width) * (height) * (channels_in_file));
+        if (nullptr != ptr) {
+            size_t fileSize = ((width) * (height) * (channels_in_file));
 
-                    gvd->setDetailImageData(ptr, fileSize);
+            gvd->setDetailImageData(ptr, fileSize);
 
 #if !(defined(NDEBUG))
-                    std::string n(
-                        std::to_string(UtilDSS::timeSinceEpochMillisec()));
-                    n += "_detail_stbi.jpg";
-                    stbi_write_jpg(n.c_str(), width, height, channels_in_file,
-                                   ptr, 100);
+            std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
+            n += "_detail_stbi.jpg";
+            stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr,
+                           100);
 #endif
-            }
-            delete fd;
+        }
+        delete fd;
 
-            return true;
+        return true;
     }
     return false;
 }
 
 static bool download_listitemimage(const char *url, GameModelViewData *gvd) {
     FileData *fd = download_jpeg(url);
-        if (nullptr != fd) {
+    if (nullptr != fd) {
 
-            int width, height, channels_in_file;
-            void *ptr =
-                stbi_load_from_memory((const stbi_uc *)fd->_buffer, fd->_size,
-                                      &width, &height, &channels_in_file, 0);
+        int width, height, channels_in_file;
+        void *ptr =
+            stbi_load_from_memory((const stbi_uc *)fd->_buffer, fd->_size,
+                                  &width, &height, &channels_in_file, 0);
 
-                if (nullptr != ptr) {
-                    size_t fileSize = ((width) * (height) * (channels_in_file));
+        if (nullptr != ptr) {
+            size_t fileSize = ((width) * (height) * (channels_in_file));
 
-                    gvd->setListItemImageData(ptr, fileSize);
+            gvd->setListItemImageData(ptr, fileSize);
 #if !(defined(NDEBUG))
-                    std::string n(
-                        std::to_string(UtilDSS::timeSinceEpochMillisec()));
-                    n += "_listitem_stbi.jpg";
-                    stbi_write_jpg(n.c_str(), width, height, channels_in_file,
-                                   ptr, 100);
+            std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
+            n += "_listitem_stbi.jpg";
+            stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr,
+                           100);
 #endif
-            }
-            delete fd;
+        }
+        delete fd;
 
-            return true;
+        return true;
     }
     return fd;
 }
@@ -206,19 +204,18 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
 
     MLBJson::Cut largest_cut;
     int64_t largestSize = 0;
-        for (std::vector<MLBJson::Cut>::const_iterator cut_iterator =
-                 _media.getImage().getCuts().begin();
-             cut_iterator != _media.getImage().getCuts().end();
-             ++cut_iterator) {
-            MLBJson::Cut cut = *cut_iterator;
+    for (std::vector<MLBJson::Cut>::const_iterator cut_iterator =
+             _media.getImage().getCuts().begin();
+         cut_iterator != _media.getImage().getCuts().end(); ++cut_iterator) {
+        MLBJson::Cut cut = *cut_iterator;
 
-            int64_t w = cut.getWidth();
-            int64_t h = cut.getHeight();
-                if ((w * h) > largestSize && UtilDSS::validUrl(cut.getSrc())) {
-                    largestSize = w * h;
-                    largest_cut = cut;
-            }
+        int64_t w = cut.getWidth();
+        int64_t h = cut.getHeight();
+        if ((w * h) > largestSize && UtilDSS::validUrl(cut.getSrc())) {
+            largestSize = w * h;
+            largest_cut = cut;
         }
+    }
 
     mDetailImageUrl = largest_cut.getSrc().c_str();
 
@@ -226,21 +223,20 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
         game.getContent().getEditorial().getRecap().getMlb().getPhoto();
 
     largestSize = 0;
-        for (std::map<std::string, MLBJson::Cut>::const_iterator cuts_iterator =
-                 _photo.getCuts().begin();
-             cuts_iterator != _photo.getCuts().end(); ++cuts_iterator) {
+    for (std::map<std::string, MLBJson::Cut>::const_iterator cuts_iterator =
+             _photo.getCuts().begin();
+         cuts_iterator != _photo.getCuts().end(); ++cuts_iterator) {
 
-            std::string key = cuts_iterator->first;
-            MLBJson::Cut value = cuts_iterator->second;
+        std::string key = cuts_iterator->first;
+        MLBJson::Cut value = cuts_iterator->second;
 
-            int64_t w = value.getWidth();
-            int64_t h = value.getHeight();
-                if ((w * h) > largestSize &&
-                    UtilDSS::validUrl(value.getSrc())) {
-                    largestSize = w * h;
-                    largest_cut = value;
-            }
+        int64_t w = value.getWidth();
+        int64_t h = value.getHeight();
+        if ((w * h) > largestSize && UtilDSS::validUrl(value.getSrc())) {
+            largestSize = w * h;
+            largest_cut = value;
         }
+    }
 
     mListItemImageUrl = largest_cut.getSrc().c_str();
 }
@@ -273,24 +269,23 @@ void *GameModelViewData::getDetailImageData(int *width, int *height,
                                             size_t *fileSize,
                                             bool downloadImage) {
 
-        if (nullptr == mDetailImageData) {
+    if (nullptr == mDetailImageData) {
 
-            std::string base_path(SDL_GetBasePath());
-            std::string defaultImage("assets/Default.png");
-            base_path += defaultImage;
+        std::string base_path(SDL_GetBasePath());
+        std::string defaultImage("assets/Default.png");
+        base_path += defaultImage;
 
-            mDetailImageData = (void *)stbi_load(base_path.c_str(), width,
-                                                 height, channels_in_file, 0);
+        mDetailImageData = (void *)stbi_load(base_path.c_str(), width, height,
+                                             channels_in_file, 0);
 
-                if (nullptr != mDetailImageData) {
-                    *fileSize = ((*width) * (*height) * (*channels_in_file));
-            }
+        if (nullptr != mDetailImageData) {
+            *fileSize = ((*width) * (*height) * (*channels_in_file));
+        }
 
-                if (downloadImage) {
-                    ThreadPool::getInstance()->enqueue(
-                        download_detailimage, getDetailImageUrl().c_str(),
-                        this);
-            }
+        if (downloadImage) {
+            ThreadPool::getInstance()->enqueue(
+                download_detailimage, getDetailImageUrl().c_str(), this);
+        }
     }
 
     return mDetailImageData;
@@ -323,24 +318,23 @@ void *GameModelViewData::getListItemImageData(int *width, int *height,
                                               size_t *fileSize,
                                               bool downloadImage) {
 
-        if (nullptr == mListItemImageData) {
+    if (nullptr == mListItemImageData) {
 
-            std::string base_path(SDL_GetBasePath());
-            std::string defaultImage("assets/Default.png");
-            base_path += defaultImage;
+        std::string base_path(SDL_GetBasePath());
+        std::string defaultImage("assets/Default.png");
+        base_path += defaultImage;
 
-            mListItemImageData = (void *)stbi_load(base_path.c_str(), width,
-                                                   height, channels_in_file, 0);
+        mListItemImageData = (void *)stbi_load(base_path.c_str(), width, height,
+                                               channels_in_file, 0);
 
-                if (nullptr != mListItemImageData) {
-                    *fileSize = ((*width) * (*height) * (*channels_in_file));
-            }
+        if (nullptr != mListItemImageData) {
+            *fileSize = ((*width) * (*height) * (*channels_in_file));
+        }
 
-                if (downloadImage) {
-                    ThreadPool::getInstance()->enqueue(
-                        download_listitemimage, getListItemImageUrl().c_str(),
-                        this);
-            }
+        if (downloadImage) {
+            ThreadPool::getInstance()->enqueue(
+                download_listitemimage, getListItemImageUrl().c_str(), this);
+        }
     }
 
     return mListItemImageData;
@@ -362,35 +356,34 @@ void GameModelViewData::setListItemImageData(void *ptr, size_t size) {
 void GameModelViewData::setImageData(const std::string &url, FileData *fd) {
     std::unique_lock<std::mutex> lock(mMutex);
 
-        if (nullptr != fd) {
-            int width, height, channels_in_file;
-            void *ptr =
-                stbi_load_from_memory((const stbi_uc *)fd->_buffer, fd->_size,
-                                      &width, &height, &channels_in_file, 0);
+    if (nullptr != fd) {
+        int width, height, channels_in_file;
+        void *ptr =
+            stbi_load_from_memory((const stbi_uc *)fd->_buffer, fd->_size,
+                                  &width, &height, &channels_in_file, 0);
 
-                if (nullptr != ptr) {
-                    size_t fileSize = ((width) * (height) * (channels_in_file));
+        if (nullptr != ptr) {
+            size_t fileSize = ((width) * (height) * (channels_in_file));
 
 #if !(defined(NDEBUG))
-                    std::string n(
-                        std::to_string(UtilDSS::timeSinceEpochMillisec()));
-                    n += "_stbi.jpg";
-                    stbi_write_jpg(n.c_str(), width, height, channels_in_file,
-                                   ptr, 100);
+            std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
+            n += "_stbi.jpg";
+            stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr,
+                           100);
 #endif
-            }
+        }
 
-                if (url == mListItemImageUrl) {
-                    if (nullptr != mListItemImageData)
-                        free(mListItemImageData);
-                    mListItemImageData = ptr;
-                } else if (url == mDetailImageUrl) {
-                    if (nullptr != mDetailImageData)
-                        free(mDetailImageData);
-                    mDetailImageData = ptr;
-            }
+        if (url == mListItemImageUrl) {
+            if (nullptr != mListItemImageData)
+                free(mListItemImageData);
+            mListItemImageData = ptr;
+        } else if (url == mDetailImageUrl) {
+            if (nullptr != mDetailImageData)
+                free(mDetailImageData);
+            mDetailImageData = ptr;
+        }
 
-            notify(fd);
+        notify(fd);
     }
 }
 
@@ -405,103 +398,101 @@ static void multi_image_download(CURLM *multi_handle,
 
     CURLMsg *msg;  /* for picking up messages with the transfer status */
     int msgs_left; /* how many messages are left */
-        while (still_running) {
-            struct timeval timeout;
-            int rc;       /* select() return code */
-            CURLMcode mc; /* curl_multi_fdset() return code */
+    while (still_running) {
+        struct timeval timeout;
+        int rc;       /* select() return code */
+        CURLMcode mc; /* curl_multi_fdset() return code */
 
-            fd_set fdread;
-            fd_set fdwrite;
-            fd_set fdexcep;
-            int maxfd = -1;
+        fd_set fdread;
+        fd_set fdwrite;
+        fd_set fdexcep;
+        int maxfd = -1;
 
-            long curl_timeo = -1;
+        long curl_timeo = -1;
 
-            FD_ZERO(&fdread);
-            FD_ZERO(&fdwrite);
-            FD_ZERO(&fdexcep);
+        FD_ZERO(&fdread);
+        FD_ZERO(&fdwrite);
+        FD_ZERO(&fdexcep);
 
-            /* set a suitable timeout to play around with */
-            timeout.tv_sec = 1;
-            timeout.tv_usec = 0;
+        /* set a suitable timeout to play around with */
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
 
-            curl_multi_timeout(multi_handle, &curl_timeo);
-                if (curl_timeo >= 0) {
-                    timeout.tv_sec = curl_timeo / 1000;
-                    if (timeout.tv_sec > 1)
-                        timeout.tv_sec = 1;
-                    else
-                        timeout.tv_usec = (curl_timeo % 1000) * 1000;
-            }
+        curl_multi_timeout(multi_handle, &curl_timeo);
+        if (curl_timeo >= 0) {
+            timeout.tv_sec = curl_timeo / 1000;
+            if (timeout.tv_sec > 1)
+                timeout.tv_sec = 1;
+            else
+                timeout.tv_usec = (curl_timeo % 1000) * 1000;
+        }
 
-            /* get file descriptors from the transfers */
-            mc = curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep,
-                                  &maxfd);
+        /* get file descriptors from the transfers */
+        mc =
+            curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
 
-                if (mc != CURLM_OK) {
-                    fprintf(stderr, "curl_multi_fdset() failed, code %d.\n",
-                            mc);
-                    break;
-            }
+        if (mc != CURLM_OK) {
+            fprintf(stderr, "curl_multi_fdset() failed, code %d.\n", mc);
+            break;
+        }
 
-            /* On success the value of maxfd is guaranteed to be >= -1. We call
-               select(maxfd + 1, ...); specially in case of (maxfd == -1) there
-               are no fds ready yet so we call select(0, ...) --or Sleep() on
-               Windows-- to sleep 100ms, which is the minimum suggested value in
-               the curl_multi_fdset() doc. */
+        /* On success the value of maxfd is guaranteed to be >= -1. We call
+           select(maxfd + 1, ...); specially in case of (maxfd == -1) there
+           are no fds ready yet so we call select(0, ...) --or Sleep() on
+           Windows-- to sleep 100ms, which is the minimum suggested value in
+           the curl_multi_fdset() doc. */
 
-                if (maxfd == -1) {
+        if (maxfd == -1) {
 #ifdef _WIN32
-                    Sleep(100);
-                    rc = 0;
+            Sleep(100);
+            rc = 0;
 #else
-                    /* Portable sleep for platforms other than Windows. */
-                    struct timeval wait = {0, 100 * 1000}; /* 100ms */
-                    rc = select(0, NULL, NULL, NULL, &wait);
+            /* Portable sleep for platforms other than Windows. */
+            struct timeval wait = {0, 100 * 1000}; /* 100ms */
+            rc = select(0, NULL, NULL, NULL, &wait);
 #endif
-                } else {
-                    /* Note that on some platforms 'timeout' may be modified by
-                     select(). If you need access to the original value save a
-                     copy beforehand. */
-                    rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep,
-                                &timeout);
-                }
-
-                switch (rc) {
-                case -1:
-                    /* select error */
-                    break;
-                case 0:  /* timeout */
-                default: /* action */
-                    curl_multi_perform(multi_handle, &still_running);
-                    break;
-                }
+        } else {
+            /* Note that on some platforms 'timeout' may be modified by
+             select(). If you need access to the original value save a
+             copy beforehand. */
+            rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
         }
 
-        /* See how the transfers went */
-        while ((msg = curl_multi_info_read(multi_handle, &msgs_left))) {
-                if (msg->msg == CURLMSG_DONE) {
-                    int idx;
+        switch (rc) {
+        case -1:
+            /* select error */
+            break;
+        case 0:  /* timeout */
+        default: /* action */
+            curl_multi_perform(multi_handle, &still_running);
+            break;
+        }
+    }
 
-                        /* Find out which handle this message is about */
-                        for (idx = 0; idx < handleList.size(); idx++) {
-                            int found = (msg->easy_handle == handleList[idx]);
-                            if (found)
-                                break;
-                        }
+    /* See how the transfers went */
+    while ((msg = curl_multi_info_read(multi_handle, &msgs_left))) {
+        if (msg->msg == CURLMSG_DONE) {
+            int idx;
 
-                    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
-                                   "Transfer completed with status %d\n",
-                                   msg->data.result);
+            /* Find out which handle this message is about */
+            for (idx = 0; idx < handleList.size(); idx++) {
+                int found = (msg->easy_handle == handleList[idx]);
+                if (found)
+                    break;
             }
-        }
 
-        while (!fileDataVector.empty()) {
-            FileData *fd = fileDataVector.back();
-            fd->_gvd_ptr->setImageData(fd->_url, fd);
-            fileDataVector.pop_back();
-            delete fd;
+            SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
+                           "Transfer completed with status %d\n",
+                           msg->data.result);
         }
+    }
+
+    while (!fileDataVector.empty()) {
+        FileData *fd = fileDataVector.back();
+        fd->_gvd_ptr->setImageData(fd->_url, fd);
+        fileDataVector.pop_back();
+        delete fd;
+    }
 
     curl_multi_cleanup(multi_handle);
 }
@@ -515,36 +506,34 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
     std::vector<FileData *> fileDataVector;
     FileData *fd = nullptr;
 
-        for (std::vector<MLBJson::Game>::const_iterator iter = games.begin();
-             iter != games.end(); ++iter) {
+    for (std::vector<MLBJson::Game>::const_iterator iter = games.begin();
+         iter != games.end(); ++iter) {
 
-            GameModelViewData *gvd = new GameModelViewData(*iter);
-            gvdVector.push_back(gvd);
+        GameModelViewData *gvd = new GameModelViewData(*iter);
+        gvdVector.push_back(gvd);
 
-            fd = new FileData(MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT,
-                              MAX_IMAGE_COMPONENTS);
-            fd->_url = gvd->getDetailImageUrl();
-            fd->_gvd_ptr = gvd;
-            curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
-            curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
-            curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
-                             callbackfunction);
-            curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
-            curl_multi_add_handle(multi_handle, fd->_curlCtx);
-            fileDataVector.push_back(fd);
+        fd = new FileData(MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT,
+                          MAX_IMAGE_COMPONENTS);
+        fd->_url = gvd->getDetailImageUrl();
+        fd->_gvd_ptr = gvd;
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
+        curl_multi_add_handle(multi_handle, fd->_curlCtx);
+        fileDataVector.push_back(fd);
 
-            fd = new FileData(MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT,
-                              MAX_IMAGE_COMPONENTS);
-            fd->_url = gvd->getListItemImageUrl();
-            fd->_gvd_ptr = gvd;
-            curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
-            curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
-            curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
-                             callbackfunction);
-            curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
-            curl_multi_add_handle(multi_handle, fd->_curlCtx);
-            fileDataVector.push_back(fd);
-        }
+        fd = new FileData(MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT,
+                          MAX_IMAGE_COMPONENTS);
+        fd->_url = gvd->getListItemImageUrl();
+        fd->_gvd_ptr = gvd;
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
+        curl_multi_add_handle(multi_handle, fd->_curlCtx);
+        fileDataVector.push_back(fd);
+    }
 
     ThreadPool::getInstance()->enqueue(multi_image_download, multi_handle,
                                        handleList, fileDataVector);
@@ -554,9 +543,8 @@ void GameModelViewData::update(Publisher *who, void *userdata) {
     GameModelViewData *completed_me = dynamic_cast<GameModelViewData *>(who);
     FileData *fd = static_cast<FileData *>(userdata);
 
-        if (nullptr != completed_me && nullptr != fd) {
-            SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
-                           "This image is now loaded. (%s)\n",
-                           fd->_url.c_str());
+    if (nullptr != completed_me && nullptr != fd) {
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
+                       "This image is now loaded. (%s)\n", fd->_url.c_str());
     }
 }

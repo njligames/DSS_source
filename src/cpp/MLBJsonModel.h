@@ -43,8 +43,8 @@ namespace MLBJson {
     using nlohmann::json;
 
     inline json get_untyped(const json &j, const char *property) {
-            if (j.find(property) != j.end()) {
-                return j.at(property).get<json>();
+        if (j.find(property) != j.end()) {
+            return j.at(property).get<json>();
         }
         return json();
     }
@@ -56,8 +56,8 @@ namespace MLBJson {
     template <typename T>
     inline std::shared_ptr<T> get_optional(const json &j,
                                            const char *property) {
-            if (j.find(property) != j.end()) {
-                return j.at(property).get<std::shared_ptr<T>>();
+        if (j.find(property) != j.end()) {
+            return j.at(property).get<std::shared_ptr<T>>();
         }
         return std::shared_ptr<T>();
     }
@@ -7235,13 +7235,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::Source &x) {
-            switch (x) {
-            case MLBJson::Source::MLB_COM:
-                j = "MLB.com";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::Source::MLB_COM:
+            j = "MLB.com";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::AspectRatio &x) {
@@ -7260,25 +7260,25 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::AspectRatio &x) {
-            switch (x) {
-            case MLBJson::AspectRatio::EMPTY:
-                j = "";
-                break;
-            case MLBJson::AspectRatio::THE_169:
-                j = "16:9";
-                break;
-            case MLBJson::AspectRatio::THE_43:
-                j = "4:3";
-                break;
-            case MLBJson::AspectRatio::THE_52:
-                j = "5:2";
-                break;
-            case MLBJson::AspectRatio::THE_6427:
-                j = "64:27";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::AspectRatio::EMPTY:
+            j = "";
+            break;
+        case MLBJson::AspectRatio::THE_169:
+            j = "16:9";
+            break;
+        case MLBJson::AspectRatio::THE_43:
+            j = "4:3";
+            break;
+        case MLBJson::AspectRatio::THE_52:
+            j = "5:2";
+            break;
+        case MLBJson::AspectRatio::THE_6427:
+            j = "64:27";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::TypeEnum &x) {
@@ -7349,103 +7349,103 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::TypeEnum &x) {
-            switch (x) {
-            case MLBJson::TypeEnum::ACTIVE_BEATWRITERS:
-                j = "active_beatwriters";
-                break;
-            case MLBJson::TypeEnum::ACTIVE_COLUMNISTS:
-                j = "active_columnists";
-                break;
-            case MLBJson::TypeEnum::ALL_STAR:
-                j = "all_star";
-                break;
-            case MLBJson::TypeEnum::ARCHIVE_ELEMENT:
-                j = "archive-element";
-                break;
-            case MLBJson::TypeEnum::AUTHFLOW:
-                j = "authflow";
-                break;
-            case MLBJson::TypeEnum::AWAY_TEAM_ID:
-                j = "away_team_id";
-                break;
-            case MLBJson::TypeEnum::BODY_PARAGRAPH_COUNT:
-                j = "bodyParagraphCount";
-                break;
-            case MLBJson::TypeEnum::BODY_WORD_COUNT:
-                j = "bodyWordCount";
-                break;
-            case MLBJson::TypeEnum::CALENDAR_EVENT_ID:
-                j = "calendar_event_id";
-                break;
-            case MLBJson::TypeEnum::CBSSPORTS_PLAYER_ID:
-                j = "cbssports_player_id";
-                break;
-            case MLBJson::TypeEnum::CLOB_AUTO_TAG_SKIP_PLAYER_CARDS:
-                j = "clob_autoTagSkip_playerCards";
-                break;
-            case MLBJson::TypeEnum::CLOSED_CAPTIONS_LOCATION_TTML:
-                j = "closed_captions_location_ttml";
-                break;
-            case MLBJson::TypeEnum::CLOSED_CAPTIONS_LOCATION_VTT:
-                j = "closed_captions_location_vtt";
-                break;
-            case MLBJson::TypeEnum::COMBINED_MEDIA_STATE:
-                j = "combined_media_state";
-                break;
-            case MLBJson::TypeEnum::CONTENT:
-                j = "content";
-                break;
-            case MLBJson::TypeEnum::EVENT_DATE:
-                j = "event_date";
-                break;
-            case MLBJson::TypeEnum::GAME_EVENTS_LOCATION_PLIST:
-                j = "game_events_location_plist";
-                break;
-            case MLBJson::TypeEnum::GAME_ID:
-                j = "game_id";
-                break;
-            case MLBJson::TypeEnum::GAME_PK:
-                j = "game_pk";
-                break;
-            case MLBJson::TypeEnum::HOME_TEAM_ID:
-                j = "home_team_id";
-                break;
-            case MLBJson::TypeEnum::INNING_INDEX_LOCATION_PLIST:
-                j = "inning_index_location_plist";
-                break;
-            case MLBJson::TypeEnum::INNING_INDEX_LOCATION_XML:
-                j = "inning_index_location_xml";
-                break;
-            case MLBJson::TypeEnum::LANGUAGE:
-                j = "language";
-                break;
-            case MLBJson::TypeEnum::MLBTAX:
-                j = "mlbtax";
-                break;
-            case MLBJson::TypeEnum::MMTAX:
-                j = "mmtax";
-                break;
-            case MLBJson::TypeEnum::PLAYER_ID:
-                j = "player_id";
-                break;
-            case MLBJson::TypeEnum::RUN_SCORING_PLAYS_LOCATION_PLIST:
-                j = "run_scoring_plays_location_plist";
-                break;
-            case MLBJson::TypeEnum::SUBJECT:
-                j = "subject";
-                break;
-            case MLBJson::TypeEnum::SV_ID:
-                j = "sv_id";
-                break;
-            case MLBJson::TypeEnum::TEAM_FILE_CODE:
-                j = "team_file_code";
-                break;
-            case MLBJson::TypeEnum::TEAM_ID:
-                j = "team_id";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::TypeEnum::ACTIVE_BEATWRITERS:
+            j = "active_beatwriters";
+            break;
+        case MLBJson::TypeEnum::ACTIVE_COLUMNISTS:
+            j = "active_columnists";
+            break;
+        case MLBJson::TypeEnum::ALL_STAR:
+            j = "all_star";
+            break;
+        case MLBJson::TypeEnum::ARCHIVE_ELEMENT:
+            j = "archive-element";
+            break;
+        case MLBJson::TypeEnum::AUTHFLOW:
+            j = "authflow";
+            break;
+        case MLBJson::TypeEnum::AWAY_TEAM_ID:
+            j = "away_team_id";
+            break;
+        case MLBJson::TypeEnum::BODY_PARAGRAPH_COUNT:
+            j = "bodyParagraphCount";
+            break;
+        case MLBJson::TypeEnum::BODY_WORD_COUNT:
+            j = "bodyWordCount";
+            break;
+        case MLBJson::TypeEnum::CALENDAR_EVENT_ID:
+            j = "calendar_event_id";
+            break;
+        case MLBJson::TypeEnum::CBSSPORTS_PLAYER_ID:
+            j = "cbssports_player_id";
+            break;
+        case MLBJson::TypeEnum::CLOB_AUTO_TAG_SKIP_PLAYER_CARDS:
+            j = "clob_autoTagSkip_playerCards";
+            break;
+        case MLBJson::TypeEnum::CLOSED_CAPTIONS_LOCATION_TTML:
+            j = "closed_captions_location_ttml";
+            break;
+        case MLBJson::TypeEnum::CLOSED_CAPTIONS_LOCATION_VTT:
+            j = "closed_captions_location_vtt";
+            break;
+        case MLBJson::TypeEnum::COMBINED_MEDIA_STATE:
+            j = "combined_media_state";
+            break;
+        case MLBJson::TypeEnum::CONTENT:
+            j = "content";
+            break;
+        case MLBJson::TypeEnum::EVENT_DATE:
+            j = "event_date";
+            break;
+        case MLBJson::TypeEnum::GAME_EVENTS_LOCATION_PLIST:
+            j = "game_events_location_plist";
+            break;
+        case MLBJson::TypeEnum::GAME_ID:
+            j = "game_id";
+            break;
+        case MLBJson::TypeEnum::GAME_PK:
+            j = "game_pk";
+            break;
+        case MLBJson::TypeEnum::HOME_TEAM_ID:
+            j = "home_team_id";
+            break;
+        case MLBJson::TypeEnum::INNING_INDEX_LOCATION_PLIST:
+            j = "inning_index_location_plist";
+            break;
+        case MLBJson::TypeEnum::INNING_INDEX_LOCATION_XML:
+            j = "inning_index_location_xml";
+            break;
+        case MLBJson::TypeEnum::LANGUAGE:
+            j = "language";
+            break;
+        case MLBJson::TypeEnum::MLBTAX:
+            j = "mlbtax";
+            break;
+        case MLBJson::TypeEnum::MMTAX:
+            j = "mmtax";
+            break;
+        case MLBJson::TypeEnum::PLAYER_ID:
+            j = "player_id";
+            break;
+        case MLBJson::TypeEnum::RUN_SCORING_PLAYS_LOCATION_PLIST:
+            j = "run_scoring_plays_location_plist";
+            break;
+        case MLBJson::TypeEnum::SUBJECT:
+            j = "subject";
+            break;
+        case MLBJson::TypeEnum::SV_ID:
+            j = "sv_id";
+            break;
+        case MLBJson::TypeEnum::TEAM_FILE_CODE:
+            j = "team_file_code";
+            break;
+        case MLBJson::TypeEnum::TEAM_ID:
+            j = "team_id";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::State &x) {
@@ -7456,13 +7456,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::State &x) {
-            switch (x) {
-            case MLBJson::State::A:
-                j = "A";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::State::A:
+            j = "A";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::PurpleType &x) {
@@ -7473,13 +7473,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::PurpleType &x) {
-            switch (x) {
-            case MLBJson::PurpleType::PLAYER_CARD:
-                j = "playerCard";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::PurpleType::PLAYER_CARD:
+            j = "playerCard";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::DateEnum &x) {
@@ -7510,43 +7510,43 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::DateEnum &x) {
-            switch (x) {
-            case MLBJson::DateEnum::THE_20180610_T13_05000400:
-                j = "2018-06-10T13:05:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T13_07000400:
-                j = "2018-06-10T13:07:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T13_10000400:
-                j = "2018-06-10T13:10:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T13_35000400:
-                j = "2018-06-10T13:35:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T14_10000400:
-                j = "2018-06-10T14:10:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T14_20000400:
-                j = "2018-06-10T14:20:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T15_05000400:
-                j = "2018-06-10T15:05:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T15_10000400:
-                j = "2018-06-10T15:10:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T16_05000400:
-                j = "2018-06-10T16:05:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T16_10000400:
-                j = "2018-06-10T16:10:00-0400";
-                break;
-            case MLBJson::DateEnum::THE_20180610_T20_05000400:
-                j = "2018-06-10T20:05:00-0400";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::DateEnum::THE_20180610_T13_05000400:
+            j = "2018-06-10T13:05:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T13_07000400:
+            j = "2018-06-10T13:07:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T13_10000400:
+            j = "2018-06-10T13:10:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T13_35000400:
+            j = "2018-06-10T13:35:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T14_10000400:
+            j = "2018-06-10T14:10:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T14_20000400:
+            j = "2018-06-10T14:20:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T15_05000400:
+            j = "2018-06-10T15:05:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T15_10000400:
+            j = "2018-06-10T15:10:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T16_05000400:
+            j = "2018-06-10T16:05:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T16_10000400:
+            j = "2018-06-10T16:10:00-0400";
+            break;
+        case MLBJson::DateEnum::THE_20180610_T20_05000400:
+            j = "2018-06-10T20:05:00-0400";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::FluffyType &x) {
@@ -7557,13 +7557,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::FluffyType &x) {
-            switch (x) {
-            case MLBJson::FluffyType::VIDEO:
-                j = "video";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::FluffyType::VIDEO:
+            j = "video";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::TentacledType &x) {
@@ -7574,13 +7574,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::TentacledType &x) {
-            switch (x) {
-            case MLBJson::TentacledType::HYPER_LINK:
-                j = "hyperLink";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::TentacledType::HYPER_LINK:
+            j = "hyperLink";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::AwayType &x) {
@@ -7591,13 +7591,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::AwayType &x) {
-            switch (x) {
-            case MLBJson::AwayType::ARTICLE:
-                j = "article";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::AwayType::ARTICLE:
+            j = "article";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::Language &x) {
@@ -7608,13 +7608,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::Language &x) {
-            switch (x) {
-            case MLBJson::Language::EN:
-                j = "en";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::Language::EN:
+            j = "en";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::MediaState &x) {
@@ -7625,13 +7625,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::MediaState &x) {
-            switch (x) {
-            case MLBJson::MediaState::MEDIA_ARCHIVE:
-                j = "MEDIA_ARCHIVE";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::MediaState::MEDIA_ARCHIVE:
+            j = "MEDIA_ARCHIVE";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::Name &x) {
@@ -7662,43 +7662,43 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::Name &x) {
-            switch (x) {
-            case MLBJson::Name::FLASH_1200_K_640_X360:
-                j = "FLASH_1200K_640X360";
-                break;
-            case MLBJson::Name::FLASH_1800_K_960_X540:
-                j = "FLASH_1800K_960X540";
-                break;
-            case MLBJson::Name::FLASH_2500_K_1280_X720:
-                j = "FLASH_2500K_1280X720";
-                break;
-            case MLBJson::Name::FLASH_450_K_400_X224:
-                j = "FLASH_450K_400X224";
-                break;
-            case MLBJson::Name::HTTP_CLOUD_ANDROID_TABLET:
-                j = "HTTP_CLOUD_ANDROID_TABLET";
-                break;
-            case MLBJson::Name::HTTP_CLOUD_MOBILE:
-                j = "HTTP_CLOUD_MOBILE";
-                break;
-            case MLBJson::Name::HTTP_CLOUD_TABLET:
-                j = "HTTP_CLOUD_TABLET";
-                break;
-            case MLBJson::Name::HTTP_CLOUD_TABLET_60:
-                j = "HTTP_CLOUD_TABLET_60";
-                break;
-            case MLBJson::Name::HTTP_CLOUD_WIRED:
-                j = "HTTP_CLOUD_WIRED";
-                break;
-            case MLBJson::Name::HTTP_CLOUD_WIRED_60:
-                j = "HTTP_CLOUD_WIRED_60";
-                break;
-            case MLBJson::Name::HTTP_CLOUD_WIRED_WEB:
-                j = "HTTP_CLOUD_WIRED_WEB";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::Name::FLASH_1200_K_640_X360:
+            j = "FLASH_1200K_640X360";
+            break;
+        case MLBJson::Name::FLASH_1800_K_960_X540:
+            j = "FLASH_1800K_960X540";
+            break;
+        case MLBJson::Name::FLASH_2500_K_1280_X720:
+            j = "FLASH_2500K_1280X720";
+            break;
+        case MLBJson::Name::FLASH_450_K_400_X224:
+            j = "FLASH_450K_400X224";
+            break;
+        case MLBJson::Name::HTTP_CLOUD_ANDROID_TABLET:
+            j = "HTTP_CLOUD_ANDROID_TABLET";
+            break;
+        case MLBJson::Name::HTTP_CLOUD_MOBILE:
+            j = "HTTP_CLOUD_MOBILE";
+            break;
+        case MLBJson::Name::HTTP_CLOUD_TABLET:
+            j = "HTTP_CLOUD_TABLET";
+            break;
+        case MLBJson::Name::HTTP_CLOUD_TABLET_60:
+            j = "HTTP_CLOUD_TABLET_60";
+            break;
+        case MLBJson::Name::HTTP_CLOUD_WIRED:
+            j = "HTTP_CLOUD_WIRED";
+            break;
+        case MLBJson::Name::HTTP_CLOUD_WIRED_60:
+            j = "HTTP_CLOUD_WIRED_60";
+            break;
+        case MLBJson::Name::HTTP_CLOUD_WIRED_WEB:
+            j = "HTTP_CLOUD_WIRED_WEB";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::DayNight &x) {
@@ -7711,16 +7711,16 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::DayNight &x) {
-            switch (x) {
-            case MLBJson::DayNight::DAY:
-                j = "day";
-                break;
-            case MLBJson::DayNight::NIGHT:
-                j = "night";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::DayNight::DAY:
+            j = "day";
+            break;
+        case MLBJson::DayNight::NIGHT:
+            j = "night";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::DoubleHeader &x) {
@@ -7731,13 +7731,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::DoubleHeader &x) {
-            switch (x) {
-            case MLBJson::DoubleHeader::N:
-                j = "N";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::DoubleHeader::N:
+            j = "N";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::GameType &x) {
@@ -7748,13 +7748,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::GameType &x) {
-            switch (x) {
-            case MLBJson::GameType::R:
-                j = "R";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::GameType::R:
+            j = "R";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::GamedayType &x) {
@@ -7765,13 +7765,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::GamedayType &x) {
-            switch (x) {
-            case MLBJson::GamedayType::P:
-                j = "P";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::GamedayType::P:
+            j = "P";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::IfNecessaryDescription &x) {
@@ -7782,13 +7782,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::IfNecessaryDescription &x) {
-            switch (x) {
-            case MLBJson::IfNecessaryDescription::NORMAL_GAME:
-                j = "Normal Game";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::IfNecessaryDescription::NORMAL_GAME:
+            j = "Normal Game";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::RecordSource &x) {
@@ -7799,13 +7799,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::RecordSource &x) {
-            switch (x) {
-            case MLBJson::RecordSource::S:
-                j = "S";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::RecordSource::S:
+            j = "S";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::SeriesDescription &x) {
@@ -7816,13 +7816,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::SeriesDescription &x) {
-            switch (x) {
-            case MLBJson::SeriesDescription::REGULAR_SEASON:
-                j = "Regular Season";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::SeriesDescription::REGULAR_SEASON:
+            j = "Regular Season";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::AbstractGameCode &x) {
@@ -7833,13 +7833,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::AbstractGameCode &x) {
-            switch (x) {
-            case MLBJson::AbstractGameCode::F:
-                j = "F";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::AbstractGameCode::F:
+            j = "F";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 
     inline void from_json(const json &j, MLBJson::AbstractGameStateEnum &x) {
@@ -7850,13 +7850,13 @@ namespace nlohmann {
     }
 
     inline void to_json(json &j, const MLBJson::AbstractGameStateEnum &x) {
-            switch (x) {
-            case MLBJson::AbstractGameStateEnum::FINAL:
-                j = "Final";
-                break;
-            default:
-                throw "This should not happen";
-            }
+        switch (x) {
+        case MLBJson::AbstractGameStateEnum::FINAL:
+            j = "Final";
+            break;
+        default:
+            throw "This should not happen";
+        }
     }
 } // namespace nlohmann
 

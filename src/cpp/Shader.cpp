@@ -103,48 +103,47 @@ namespace NJLIC {
 
         m_Program = glCreateProgram();
 
-            if (!(vertShader = compileShader(vertexSource, GL_VERTEX_SHADER))) {
-                glDeleteProgram(m_Program);
-                return false;
+        if (!(vertShader = compileShader(vertexSource, GL_VERTEX_SHADER))) {
+            glDeleteProgram(m_Program);
+            return false;
         }
 
-            if (!(fragShader =
-                      compileShader(fragmentSource, GL_FRAGMENT_SHADER))) {
-                glDeleteProgram(m_Program);
-                glDeleteShader(vertShader);
-                return false;
+        if (!(fragShader = compileShader(fragmentSource, GL_FRAGMENT_SHADER))) {
+            glDeleteProgram(m_Program);
+            glDeleteShader(vertShader);
+            return false;
         }
 
         glAttachShader(m_Program, vertShader);
         glAttachShader(m_Program, fragShader);
 
-            if (!linkProgram(m_Program)) {
-                    if (vertShader) {
-                        glDeleteShader(vertShader);
-                        vertShader = 0;
-                }
-                    if (fragShader) {
-                        glDeleteShader(fragShader);
-                        fragShader = 0;
-                }
-                    if (m_Program) {
-                        glDeleteProgram(m_Program);
-                        m_Program = 0;
-                }
-                return false;
+        if (!linkProgram(m_Program)) {
+            if (vertShader) {
+                glDeleteShader(vertShader);
+                vertShader = 0;
+            }
+            if (fragShader) {
+                glDeleteShader(fragShader);
+                fragShader = 0;
+            }
+            if (m_Program) {
+                glDeleteProgram(m_Program);
+                m_Program = 0;
+            }
+            return false;
         }
 #if !defined(NDEBUG)
-            if (!validateProgram(m_Program)) {
-                return false;
+        if (!validateProgram(m_Program)) {
+            return false;
         }
 #endif
 
-            if (vertShader) {
-                glDeleteShader(vertShader);
+        if (vertShader) {
+            glDeleteShader(vertShader);
         }
 
-            if (fragShader) {
-                glDeleteShader(fragShader);
+        if (fragShader) {
+            glDeleteShader(fragShader);
         }
         return true;
     }
@@ -158,12 +157,12 @@ namespace NJLIC {
     bool Shader::isLoaded() const { return (m_Program != 0); }
 
     bool Shader::use() const {
-            if (m_Program) {
-                GLint id;
-                glGetIntegerv(GL_CURRENT_PROGRAM, &id);
-                if (id != m_Program)
-                    glUseProgram(m_Program);
-                return true;
+        if (m_Program) {
+            GLint id;
+            glGetIntegerv(GL_CURRENT_PROGRAM, &id);
+            if (id != m_Program)
+                glUseProgram(m_Program);
+            return true;
         }
         return false;
     }
@@ -172,13 +171,12 @@ namespace NJLIC {
         int location = glGetAttribLocation(m_Program, attributeName.c_str());
 
 #if !defined(NDEBUG)
-            if (location == -1) {
-                SDL_LogError(
-                    SDL_LOG_CATEGORY_APPLICATION,
-                    "The named attribute variable %s is not an active "
-                    "attribute in the specified program object or if name "
-                    "starts with the reserved prefix \"gl_\"",
-                    attributeName.c_str());
+        if (location == -1) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "The named attribute variable %s is not an active "
+                         "attribute in the specified program object or if name "
+                         "starts with the reserved prefix \"gl_\"",
+                         attributeName.c_str());
         }
 #endif
         return location;
@@ -188,21 +186,20 @@ namespace NJLIC {
         int location = -1;
 
         UniformMap::iterator iter = m_UniformMap.find(uniformName);
-            if (iter != m_UniformMap.end()) {
-                location = iter->second;
-            } else {
-                location = glGetUniformLocation(m_Program, uniformName.c_str());
-                m_UniformMap.insert(UniformPair(uniformName, location));
-            }
+        if (iter != m_UniformMap.end()) {
+            location = iter->second;
+        } else {
+            location = glGetUniformLocation(m_Program, uniformName.c_str());
+            m_UniformMap.insert(UniformPair(uniformName, location));
+        }
 
 #if !defined(NDEBUG)
-            if (location == -1) {
-                SDL_LogError(
-                    SDL_LOG_CATEGORY_APPLICATION,
-                    "The named attribute variable %s is not an active "
-                    "attribute in the specified program object or if name "
-                    "starts with the reserved prefix \"gl_\"",
-                    uniformName.c_str());
+        if (location == -1) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "The named attribute variable %s is not an active "
+                         "attribute in the specified program object or if name "
+                         "starts with the reserved prefix \"gl_\"",
+                         uniformName.c_str());
         }
 #endif
         return location;
@@ -214,12 +211,11 @@ namespace NJLIC {
         //        return setUniformValue(uniformName, value, transpose);
 
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                memcpy(m_mat4Buffer, &value[0], sizeof(GLfloat) * 16);
-                glUniformMatrix4fv(location, 1,
-                                   (transpose) ? GL_TRUE : GL_FALSE,
-                                   m_mat4Buffer);
-                return true;
+        if (location != -1) {
+            memcpy(m_mat4Buffer, &value[0], sizeof(GLfloat) * 16);
+            glUniformMatrix4fv(location, 1, (transpose) ? GL_TRUE : GL_FALSE,
+                               m_mat4Buffer);
+            return true;
         }
         return false;
     }
@@ -227,10 +223,10 @@ namespace NJLIC {
     bool Shader::setUniformValue(const std::string &uniformName,
                                  GLfloat *matrix4x4, bool transpose) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                glUniformMatrix4fv(location, 1,
-                                   (transpose) ? GL_TRUE : GL_FALSE, matrix4x4);
-                return true;
+        if (location != -1) {
+            glUniformMatrix4fv(location, 1, (transpose) ? GL_TRUE : GL_FALSE,
+                               matrix4x4);
+            return true;
         }
         return false;
     }
@@ -238,39 +234,39 @@ namespace NJLIC {
     bool Shader::getUniformValue(const std::string &uniformName,
                                  glm::mat4x4 &value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                glGetUniformfv(m_Program, location, m_mat4Buffer);
-                //            value.setFromOpenGLMatrix(m_mat4Buffer);
+        if (location != -1) {
+            glGetUniformfv(m_Program, location, m_mat4Buffer);
+            //            value.setFromOpenGLMatrix(m_mat4Buffer);
 
-                memcpy(&value[0], m_mat4Buffer, sizeof(GLfloat) * 16);
+            memcpy(&value[0], m_mat4Buffer, sizeof(GLfloat) * 16);
 
-                return true;
+            return true;
         }
         return false;
     }
 
     bool Shader::setUniformValue(const char *uniformName, GLuint value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                GLuint oldValue;
-                    if (getUniformValue(uniformName, oldValue)) {
-                        if (oldValue == value)
-                            return true;
-                }
+        if (location != -1) {
+            GLuint oldValue;
+            if (getUniformValue(uniformName, oldValue)) {
+                if (oldValue == value)
+                    return true;
+            }
 
-                glUniform1i(location, value);
-                return true;
+            glUniform1i(location, value);
+            return true;
         }
         return false;
     }
 
     bool Shader::getUniformValue(const char *uniformName, GLuint &value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                GLint t;
-                glGetUniformiv(m_Program, location, &t);
-                value = t;
-                return true;
+        if (location != -1) {
+            GLint t;
+            glGetUniformiv(m_Program, location, &t);
+            value = t;
+            return true;
         }
         return false;
     }
@@ -278,57 +274,57 @@ namespace NJLIC {
     bool Shader::setUniformValue(const char *uniformName,
                                  const glm::vec3 &value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                glm::vec3 oldValue;
-                    if (getUniformValue(uniformName, oldValue)) {
-                        if (oldValue == value)
-                            return true;
-                }
+        if (location != -1) {
+            glm::vec3 oldValue;
+            if (getUniformValue(uniformName, oldValue)) {
+                if (oldValue == value)
+                    return true;
+            }
 
-                glUniform3f(location, value.x, value.y, value.z);
+            glUniform3f(location, value.x, value.y, value.z);
 
-                return true;
+            return true;
         }
         return false;
     }
 
     bool Shader::getUniformValue(const char *uniformName, glm::vec3 &value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                glGetUniformfv(m_Program, location, m_vec3Buffer);
+        if (location != -1) {
+            glGetUniformfv(m_Program, location, m_vec3Buffer);
 
-                //            value.setX(m_vec3Buffer[0]);
-                //            value.setY(m_vec3Buffer[1]);
-                //            value.setZ(m_vec3Buffer[2]);
-                //            value.setW(0.0);
+            //            value.setX(m_vec3Buffer[0]);
+            //            value.setY(m_vec3Buffer[1]);
+            //            value.setZ(m_vec3Buffer[2]);
+            //            value.setW(0.0);
 
-                memcpy(&value[0], m_vec3Buffer, sizeof(GLfloat) * 3);
+            memcpy(&value[0], m_vec3Buffer, sizeof(GLfloat) * 3);
 
-                return true;
+            return true;
         }
         return false;
     }
 
     bool Shader::setUniformValue(const char *uniformName, float value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                float oldValue;
-                    if (getUniformValue(uniformName, oldValue)) {
-                        if (oldValue == value)
-                            return true;
-                }
+        if (location != -1) {
+            float oldValue;
+            if (getUniformValue(uniformName, oldValue)) {
+                if (oldValue == value)
+                    return true;
+            }
 
-                glUniform1f(location, value);
-                return true;
+            glUniform1f(location, value);
+            return true;
         }
         return false;
     }
 
     bool Shader::getUniformValue(const char *uniformName, float &value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                glGetUniformfv(m_Program, location, &value);
-                return true;
+        if (location != -1) {
+            glGetUniformfv(m_Program, location, &value);
+            return true;
         }
         return false;
     }
@@ -336,50 +332,50 @@ namespace NJLIC {
     bool Shader::setUniformValue(const char *uniformName,
                                  const glm::vec4 &value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                glm::vec4 oldValue;
-                    if (getUniformValue(uniformName, oldValue)) {
-                        if (oldValue == value)
-                            return true;
-                }
+        if (location != -1) {
+            glm::vec4 oldValue;
+            if (getUniformValue(uniformName, oldValue)) {
+                if (oldValue == value)
+                    return true;
+            }
 
-                glUniform4f(location, value.x, value.y, value.z, value.w);
+            glUniform4f(location, value.x, value.y, value.z, value.w);
 
-                return true;
+            return true;
         }
         return false;
     }
 
     bool Shader::getUniformValue(const char *uniformName, glm::vec4 &value) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                glGetUniformfv(m_Program, location, m_vec4Buffer);
+        if (location != -1) {
+            glGetUniformfv(m_Program, location, m_vec4Buffer);
 
-                //            value.setX(m_vec4Buffer[0]);
-                //            value.setY(m_vec4Buffer[1]);
-                //            value.setZ(m_vec4Buffer[2]);
-                //            value.setW(m_vec4Buffer[3]);
-                memcpy(&value[0], m_vec4Buffer, sizeof(GLfloat) * 4);
+            //            value.setX(m_vec4Buffer[0]);
+            //            value.setY(m_vec4Buffer[1]);
+            //            value.setZ(m_vec4Buffer[2]);
+            //            value.setW(m_vec4Buffer[3]);
+            memcpy(&value[0], m_vec4Buffer, sizeof(GLfloat) * 4);
 
-                return true;
+            return true;
         }
         return false;
     }
 
     bool Shader::setUniformValue(const char *uniformName, float f1, float f2) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                float oldValue1, oldValue2;
-                    if (getUniformValue(uniformName, oldValue1, oldValue2)) {
-                        if (oldValue1 == f1)
-                            return true;
-                        if (oldValue2 == f2)
-                            return true;
-                }
+        if (location != -1) {
+            float oldValue1, oldValue2;
+            if (getUniformValue(uniformName, oldValue1, oldValue2)) {
+                if (oldValue1 == f1)
+                    return true;
+                if (oldValue2 == f2)
+                    return true;
+            }
 
-                glUniform2f(location, f1, f2);
+            glUniform2f(location, f1, f2);
 
-                return true;
+            return true;
         }
         return false;
     }
@@ -387,13 +383,13 @@ namespace NJLIC {
     bool Shader::getUniformValue(const char *uniformName, float &f1,
                                  float &f2) {
         int location = getUniformLocation(uniformName);
-            if (location != -1) {
-                glGetUniformfv(m_Program, location, m_vec4Buffer);
+        if (location != -1) {
+            glGetUniformfv(m_Program, location, m_vec4Buffer);
 
-                f1 = m_vec4Buffer[0];
-                f2 = m_vec4Buffer[1];
+            f1 = m_vec4Buffer[0];
+            f2 = m_vec4Buffer[1];
 
-                return true;
+            return true;
         }
         return false;
     }
@@ -411,20 +407,20 @@ namespace NJLIC {
 #if !defined(NDEBUG)
         GLint logLength;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-            if (logLength > 0) {
-                GLchar *log = (GLchar *)malloc(logLength);
-                glGetShaderInfoLog(shader, logLength, &logLength, log);
-                //            std::cout << "Shader compile log:" << std::endl <<
-                //            log;
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "Shader compile log: %s", log);
-                free(log);
+        if (logLength > 0) {
+            GLchar *log = (GLchar *)malloc(logLength);
+            glGetShaderInfoLog(shader, logLength, &logLength, log);
+            //            std::cout << "Shader compile log:" << std::endl <<
+            //            log;
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Shader compile log: %s",
+                         log);
+            free(log);
         }
 #endif
 
-            if (!compileStatus(shader)) {
-                glDeleteShader(shader);
-                shader = 0;
+        if (!compileStatus(shader)) {
+            glDeleteShader(shader);
+            shader = 0;
         }
 
         return shader;
@@ -437,11 +433,11 @@ namespace NJLIC {
 #if !defined(NDEBUG)
         GLint log_length = 0;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-            if (log_length > 0) {
-                GLchar log_buffer[1024];
-                glGetShaderInfoLog(shader, log_length, NULL, log_buffer);
-                //            std::cout << log_buffer << std::endl;
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", log_buffer);
+        if (log_length > 0) {
+            GLchar log_buffer[1024];
+            glGetShaderInfoLog(shader, log_length, NULL, log_buffer);
+            //            std::cout << log_buffer << std::endl;
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", log_buffer);
         }
 #endif
         return (compileStatus == GL_TRUE);
@@ -454,13 +450,13 @@ namespace NJLIC {
 #if !defined(NDEBUG)
         GLint logLength;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-            if (logLength > 0) {
-                GLchar *log = (GLchar *)malloc(logLength);
-                glGetProgramInfoLog(program, logLength, &logLength, log);
-                //            std::cout << "Program link log:\n" << log;
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "Program link log: %s\n", log);
-                free(log);
+        if (logLength > 0) {
+            GLchar *log = (GLchar *)malloc(logLength);
+            glGetProgramInfoLog(program, logLength, &logLength, log);
+            //            std::cout << "Program link log:\n" << log;
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Program link log: %s\n",
+                         log);
+            free(log);
         }
 #endif
 
@@ -474,19 +470,18 @@ namespace NJLIC {
         glValidateProgram(programPointer);
 
         glGetProgramiv(programPointer, GL_VALIDATE_STATUS, &status);
-            if (status == GL_FALSE) {
-                GLint logLength;
-                glGetProgramiv(programPointer, GL_INFO_LOG_LENGTH, &logLength);
-                    if (logLength > 0) {
-                        GLchar *log = (GLchar *)malloc(logLength);
-                        glGetProgramInfoLog(programPointer, logLength,
-                                            &logLength, log);
+        if (status == GL_FALSE) {
+            GLint logLength;
+            glGetProgramiv(programPointer, GL_INFO_LOG_LENGTH, &logLength);
+            if (logLength > 0) {
+                GLchar *log = (GLchar *)malloc(logLength);
+                glGetProgramInfoLog(programPointer, logLength, &logLength, log);
 
-                        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                                     "Program validate log:\n%s", log);
-                        free(log);
-                }
-                return false;
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                             "Program validate log:\n%s", log);
+                free(log);
+            }
+            return false;
         }
 
         return true;
