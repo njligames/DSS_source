@@ -11,30 +11,30 @@
 #include <list>
 class Publisher;
 
-class Subscriber
-{
-public:
+class Subscriber {
+  public:
     virtual ~Subscriber() {}
-    virtual void update(Publisher* who, void* userdata = 0) = 0;
+    virtual void update(Publisher *who, void *userdata = 0) = 0;
 };
 
-class Publisher
-{
-    Publisher(const Publisher&) = delete;
+class Publisher {
+    Publisher(const Publisher &) = delete;
     const Publisher &operator=(const Publisher &) = delete;
-public:
+
+  public:
     Publisher();
     virtual ~Publisher();
-    
-    void subscribe(Subscriber* s);
-    void unsubscribe(Subscriber* s);
-    
-    void notify(void* what = 0, Subscriber *s = 0);
-    
+
+    void subscribe(Subscriber *s);
+    void unsubscribe(Subscriber *s);
+
+    void notify(void *what = 0, Subscriber *s = 0);
+
     void setNotifyEnabled(bool flag);
     bool getNotifyEnabled() const;
-private:
-    std::list<Subscriber*> mSubscribers;
+
+  private:
+    std::list<Subscriber *> mSubscribers;
     bool mNotifyEnabled;
 };
 
