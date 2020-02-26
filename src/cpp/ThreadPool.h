@@ -22,7 +22,7 @@ class ThreadPool {
         return sThreadPool;
     }
 
-    static void destroy() {
+    static void destroyInstance() {
         if (nullptr != sThreadPool)
             delete sThreadPool;
         sThreadPool = nullptr;

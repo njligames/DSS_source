@@ -9,16 +9,17 @@
 #define Camera_h
 
 namespace NJLIC {
-class Shader;
-class Camera {
-    Camera(const Camera &) = delete;
-    const Camera &operator=(const Camera &) = delete;
-public:
-    Camera();
-    virtual ~Camera();
-    
-    void render(Shader *shader);
-};
+    class Shader;
+    class Camera {
+        Camera(const Camera &) = delete;
+        const Camera &operator=(const Camera &) = delete;
+
+      public:
+        Camera();
+        virtual ~Camera();
+
+        void render(Shader *shader);
+    };
 } // namespace NJLIC
 
 #endif /* Camera_hpp */

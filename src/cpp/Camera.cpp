@@ -9,14 +9,8 @@
 #include "Shader.h"
 
 namespace NJLIC {
-Camera::Camera() {
-    
-}
-Camera::~Camera() {
-    
-}
+    Camera::Camera() {}
+    Camera::~Camera() {}
 
-void Camera::render(Shader *shader) {
-    
-}
-}
+    void Camera::render(Shader *shader) {}
+} // namespace NJLIC

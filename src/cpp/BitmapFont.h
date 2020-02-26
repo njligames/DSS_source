@@ -40,7 +40,7 @@ class BitmapFont {
         return sBitmapFont;
     }
 
-    static void destroy() {
+    static void destroyInstance() {
         if (nullptr != sBitmapFont)
             delete sBitmapFont;
         sBitmapFont = nullptr;

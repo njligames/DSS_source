@@ -21,6 +21,8 @@
 #include "Camera.h"
 #include "Geometry.h"
 
+#include "BackgroundRenderer.h"
+
 static void UpdateFrame(void *param) {
     //  njli::NJLIGameEngine::update(1.0f / ((float)gDisplayMode.refresh_rate));
 
@@ -90,8 +92,9 @@ TestClass::TestClass(SDL_Window *window, SDL_Renderer *renderer)
     : mWindow(window), mRenderer(renderer), mIsDone(true) {}
 
 TestClass::~TestClass() {
-    BitmapFont::destroy();
-    ThreadPool::destroy();
+    NJLIC::BackgroundRenderer::destroyInstance();
+    BitmapFont::destroyInstance();
+    ThreadPool::destroyInstance();
 
     unInit();
 }
@@ -136,22 +139,26 @@ void TestClass::init() {
     mIsDone = false;
     //    mMutex.unlock();
 
-    mShader = new NJLIC::Shader();
+    //    mShader = new NJLIC::Shader();
+    //
+    //    size_t vsSize = 0;
+    //    char *vsFileBuffer = UtilDSS::loadFile("assets/shaders/shader.vsh",
+    //    vsSize); const std::string vertexSource(vsFileBuffer);
+    //
+    //    size_t fsSize = 0;
+    //    char *fsFileBuffer = UtilDSS::loadFile("assets/shaders/shader.fsh",
+    //    fsSize); const std::string fragmentSource(fsFileBuffer);
 
-    size_t vsSize = 0;
-    char *vsFileBuffer = UtilDSS::loadFile("assets/shaders/shader.vsh", vsSize);
-    const std::string vertexSource(vsFileBuffer);
+    //    if (mShader->load(vertexSource, fragmentSource)) {
+    //        GameCard *pGameCard = new GameCard();
+    //        NJLIC::Camera *pCamera = new NJLIC::Camera();
+    //        NJLIC::Geometry *pGeometry = new NJLIC::Geometry();
+    //    }
 
-    size_t fsSize = 0;
-    char *fsFileBuffer = UtilDSS::loadFile("assets/shaders/shader.fsh", fsSize);
-    const std::string fragmentSource(fsFileBuffer);
+    NJLIC::BackgroundRenderer::getInstance()->init();
+    //#define TEST_DL
 
-    if (mShader->load(vertexSource, fragmentSource)) {
-        GameCard *pGameCard = new GameCard();
-        NJLIC::Camera *pCamera = new NJLIC::Camera();
-        NJLIC::Geometry *pGeometry = new NJLIC::Geometry();
-    }
-
+#ifdef TEST_DL
     int numberOfDaysToGoBack((365 * 4) + 1);
     numberOfDaysToGoBack = 1;
     NJLIC::Date formatted_date(6, 10, 2018);
@@ -163,6 +170,7 @@ void TestClass::init() {
         mGameModelDataVector.push_back(
             GameModelData::generateGameModelData(date));
     }
+#endif
 
     //    BitmapFont::getInstance()->load("FranklinGothicMedium");
     //    BitmapFont::getInstance()->load("FranklinGothicMedium");
@@ -221,6 +229,8 @@ void TestClass::render() {
 
     glClearColor(red, green, blue, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    NJLIC::BackgroundRenderer::getInstance()->render(1920, 1080);
 }
 
 void TestClass::input() {
