@@ -38,7 +38,7 @@ class TestClass {
     void reset(int n);
     int increment(int n);
 
-    void init();
+    void init(const unsigned int numCards);
     void unInit();
     void update(float step);
     void render();

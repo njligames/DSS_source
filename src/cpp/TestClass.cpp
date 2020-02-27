@@ -93,7 +93,7 @@ TestClass::TestClass()
       mShader(new NJLIC::Shader()), mGeometry(new NJLIC::MeshGeometry()),
       mCamera(new NJLIC::Camera()), mCameraNode(new NJLIC::Node()),
       mScene(new NJLIC::Scene()) {
-    mCubeNodes.push_back(new NJLIC::Node());
+          
 }
 
 // TestClass::TestClass(SDL_Window *window, SDL_Renderer *renderer)
@@ -164,7 +164,7 @@ bool TestClass::loadfile(SDL_Renderer *renderer) {
     return true;
 }
 
-void TestClass::init() {
+void TestClass::init(const unsigned int numCards) {
     //    mMutex.lock();
     mIsDone = false;
     //    mMutex.unlock();
@@ -220,7 +220,10 @@ void TestClass::init() {
 
             if (objData) {
                 const std::string &filedata(objData);
-                mGeometry->load(mShader, filedata);
+                mGeometry->load(mShader, filedata, numCards);
+                
+                for(auto i = 0; i < numCards; i++)
+                    mCubeNodes.push_back(new NJLIC::Node());
 
                 loaded = true;
             }
@@ -228,17 +231,32 @@ void TestClass::init() {
     }
 
     if (loaded) {
+//        float start_x = -4.0f;
+        float start_x = 0.0f;
+        float x_inc = 1.0f;
+        float x_gutter = 0.5;
+        
+        float x = start_x;
+        int ii = 0;
+        
         for (std::vector<NJLIC::Node *>::iterator i = mCubeNodes.begin();
              i != mCubeNodes.end(); i++) {
             NJLIC::Node *node = *i;
 
-            node->setOrigin(glm::vec3(0, 0, 0));
+            node->setOrigin(glm::vec3(x, -1.5, 0));
 
             mScene->addActiveNode(node);
             mScene->getRootNode()->addChildNode(node);
 
             node->addGeometry(mGeometry);
+            
+            if( ii == 3) {
+                node->setScale(1.5);
+            }
 
+            x += x_inc;
+            x += x_gutter;
+            ii++;
             //            node->setColorBase(glm::vec4(randomFloat(0.0f, 1.0f),
             //                                         randomFloat(0.0f, 1.0f),
             //                                         randomFloat(0.0f, 1.0f), 1.0f));
