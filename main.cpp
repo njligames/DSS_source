@@ -1255,7 +1255,7 @@ main(int argc, char *argv[])
 #endif
 
           TestClass::createInstance();
-          TestClass::getInstance()->init(1);
+          TestClass::getInstance()->init(10);
 //    if (!njli::NJLIGameEngine::create(
 //            DeviceUtil::hardwareDescription().c_str()))
 //      {

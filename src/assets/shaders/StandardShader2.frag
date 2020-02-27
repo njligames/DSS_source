@@ -159,7 +159,7 @@ struct MaterialParameters
 
 //#define EMISSION_TEXTURE 1
 //#define AMBIENT_TEXTURE 1
-//#define DIFFUSE_TEXTURE 1
+#define DIFFUSE_TEXTURE 1
 //#define SPECULAR_TEXTURE 1
 //#define ALPHA_TEXTURE 1
 //#define NORMAL_TEXTURE 1

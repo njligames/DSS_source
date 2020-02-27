@@ -66,4 +66,5 @@ class TestClass {
     NJLIC::Node *mCameraNode;
     NJLIC::Scene *mScene;
     std::vector<NJLIC::Node *> mCubeNodes;
+    float m_Rotation = 0.0;
 };

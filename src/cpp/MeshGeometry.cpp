@@ -174,6 +174,7 @@ namespace NJLIC {
                     // texture idx
                     //                            vertexData[vertexIndex].texture
                     //                            = texture.at(idx);
+                    t.texture = texture.at(idx);
                     break;
                 case 2:
                     assert(idx < normals.size());

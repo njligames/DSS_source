@@ -33,3 +33,20 @@ void *UtilDSS::loadImage(const std::string &filePath, int *width, int *height,
                                      channels_in_file, 4);
     return buffer;
 }
+
+void *UtilDSS::loadDefaultCardImage(int *width, int *height,
+                                    int *channels_in_file, size_t *fileSize) {
+
+    std::string base_path(SDL_GetBasePath());
+    std::string defaultImage("assets/Default.png");
+    base_path += defaultImage;
+
+    void *buffer = (void *)stbi_load(base_path.c_str(), width, height,
+                                     channels_in_file, 0);
+
+    if (nullptr != buffer) {
+        *fileSize = ((*width) * (*height) * (*channels_in_file));
+    }
+
+    return buffer;
+}

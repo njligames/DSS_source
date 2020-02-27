@@ -187,7 +187,7 @@ class UtilDSS {
 
     static void *loadImage(const std::string &filePath, int *width, int *height,
                            int *channels_in_file);
-    
+
     static bool compileShader(GLuint &shader, GLenum type,
                               const std::string &source) {
         GLint status(GL_TRUE);
@@ -198,7 +198,7 @@ class UtilDSS {
                          "Failed to load vertex shader");
             return false;
         }
- 
+
         shader = glCreateShader(type);
         glShaderSource(shader, 1, &_source, NULL);
         glCompileShader(shader);
@@ -267,9 +267,8 @@ class UtilDSS {
 
         return true;
     }
-    
-    static void printGLInfo()
-    {
+
+    static void printGLInfo() {
         // gl begin printGLInfo
         SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %s\n", "GL_VERSION",
                        (const char *)glGetString(GL_VERSION));
@@ -285,8 +284,7 @@ class UtilDSS {
         strcpy(extensions, the_extensions);
         char *extension = strtok(extensions, " ");
         SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "\t%s\n", extension);
-        while (NULL != (extension = strtok(NULL, " ")))
-        {
+        while (NULL != (extension = strtok(NULL, " "))) {
             SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "\t%s\n", extension);
         }
         delete[] extensions;
@@ -301,13 +299,14 @@ class UtilDSS {
         int param;
 
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &param);
-        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %d\n", "The max texture size",
-                       param);
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %d\n",
+                       "The max texture size", param);
 
         glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &param);
         SDL_LogVerbose(
             SDL_LOG_CATEGORY_TEST, "%s = %d\n",
-            "The count texture units of allowed for usage in vertex shader", param);
+            "The count texture units of allowed for usage in vertex shader",
+            param);
 
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &param);
         SDL_LogVerbose(
@@ -318,7 +317,8 @@ class UtilDSS {
         glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &param);
         SDL_LogVerbose(
             SDL_LOG_CATEGORY_TEST, "%s = %d\n",
-            "The count texture units of allowed for usage in both shaders", param);
+            "The count texture units of allowed for usage in both shaders",
+            param);
 
         //    glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &param);
         //    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %d\n", "The maximumum
@@ -342,23 +342,88 @@ class UtilDSS {
         //    GL_MAX_FRAGMENT_UNIFORM_VECTORS
         /*
          Actually there is GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, and
-         GL_MAX_TEXTURE_IMAGE_UNITS and GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS enums.
-         First is for count texture units of allowed for usage in vertex shader,
-         second one is for fragment shader, and third is combined for both shaders
-         combined.
+         GL_MAX_TEXTURE_IMAGE_UNITS and GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
+         enums. First is for count texture units of allowed for usage in vertex
+         shader, second one is for fragment shader, and third is combined for
+         both shaders combined.
          */
 
         // gl end printGLInfo
     }
-    
-    static unsigned int getNextPower2(const unsigned int dim, const unsigned short maxShifts = 12)
-    {
-        for (unsigned int shift = 0; shift < maxShifts; shift++)
-        {
+
+    static unsigned int getNextPower2(const unsigned int dim,
+                                      const unsigned short maxShifts = 12) {
+        for (unsigned int shift = 0; shift < maxShifts; shift++) {
             if ((1 << shift) > dim)
                 return 1 << (shift);
         }
         return 1 << 11;
+    }
+
+    static void *loadDefaultCardImage(int *width, int *height,
+                                      int *channels_in_file, size_t *fileSize);
+
+    static void glErrorCheck() {
+        do {
+            for (int error = glGetError(); error; error = glGetError()) {
+
+                switch (error) {
+                case GL_NO_ERROR:
+                    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                                "GL_NO_ERROR - No error has been recorded. The "
+                                "value of this symbolic constant is guaranteed "
+                                "to be 0.");
+                    break;
+                case GL_INVALID_ENUM:
+                    SDL_LogError(
+                        SDL_LOG_CATEGORY_APPLICATION,
+                        "GL_INVALID_ENUM - An unacceptable value is "
+                        "specified for an enumerated argument. The "
+                        "offending command is ignored and has no other "
+                        "side effect than to set the error flag.");
+                    break;
+                case GL_INVALID_VALUE:
+                    SDL_LogError(
+                        SDL_LOG_CATEGORY_APPLICATION,
+                        "GL_INVALID_VALUE - A numeric argument is out of "
+                        "range. The offending command is ignored and has "
+                        "no other side effect than to set the error "
+                        "flag.");
+                    break;
+                case GL_INVALID_OPERATION:
+                    SDL_LogError(
+                        SDL_LOG_CATEGORY_APPLICATION,
+                        "GL_INVALID_OPERATION - The specified operation "
+                        "is not allowed in the current state. The "
+                        "offending command is ignored and has no other "
+                        "side effect than to set the error flag.");
+                    break;
+                case GL_INVALID_FRAMEBUFFER_OPERATION:
+                    SDL_LogError(
+                        SDL_LOG_CATEGORY_APPLICATION,
+                        "GL_INVALID_FRAMEBUFFER_OPERATION - The command "
+                        "is trying to render to or read from the "
+                        "framebuffer while the currently bound "
+                        "framebuffer is not framebuffer complete (i.e. "
+                        "the return value from glCheckFramebufferStatus "
+                        "is not GL_FRAMEBUFFER_COMPLETE). The offending "
+                        "command is ignored and has no other side effect "
+                        "than to set the error flag.");
+                    break;
+                case GL_OUT_OF_MEMORY:
+                    SDL_LogError(
+                        SDL_LOG_CATEGORY_APPLICATION,
+                        "GL_OUT_OF_MEMORY - There is not enough memory "
+                        "left to execute the command. The state of the GL "
+                        "is undefined, except for the state of the error "
+                        "flags, after this error is recorded.");
+                    break;
+                default:
+                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unknown (%x)",
+                                 error);
+                }
+            }
+        } while (0);
     }
 };
 

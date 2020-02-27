@@ -7,9 +7,9 @@
 //
 
 #include "Shader.h"
+#include "UtilDSS.h"
 #include <assert.h>
 #include <iostream>
-#include "UtilDSS.h"
 
 namespace NJLIC {
     Shader::Shader()
@@ -36,12 +36,14 @@ namespace NJLIC {
         GLuint vertShader, fragShader;
 
         m_Program = glCreateProgram();
-        
-        if (!UtilDSS::compileShader(vertShader, GL_VERTEX_SHADER, vertexSource)) {
+
+        if (!UtilDSS::compileShader(vertShader, GL_VERTEX_SHADER,
+                                    vertexSource)) {
             return false;
         }
 
-        if (!UtilDSS::compileShader(fragShader, GL_FRAGMENT_SHADER, fragmentSource)) {
+        if (!UtilDSS::compileShader(fragShader, GL_FRAGMENT_SHADER,
+                                    fragmentSource)) {
             return false;
         }
 
@@ -79,32 +81,32 @@ namespace NJLIC {
         if (fragShader) {
             glDeleteShader(fragShader);
         }
-        
-//        if (!linkProgram(m_Program)) {
-//            if (vertShader) {
-//                glDeleteShader(vertShader);
-//                vertShader = 0;
-//            }
-//            if (fragShader) {
-//                glDeleteShader(fragShader);
-//                fragShader = 0;
-//            }
-//            if (m_Program) {
-//                glDeleteProgram(m_Program);
-//                m_Program = 0;
-//            }
-//            return false;
-//        }
-//
-//        if (vertShader) {
-//            glDetachShader(m_Program, vertShader);
-//            glDeleteShader(vertShader);
-//        }
-//
-//        if (fragShader) {
-//            glDetachShader(m_Program, fragShader);
-//            glDeleteShader(fragShader);
-//        }
+
+        //        if (!linkProgram(m_Program)) {
+        //            if (vertShader) {
+        //                glDeleteShader(vertShader);
+        //                vertShader = 0;
+        //            }
+        //            if (fragShader) {
+        //                glDeleteShader(fragShader);
+        //                fragShader = 0;
+        //            }
+        //            if (m_Program) {
+        //                glDeleteProgram(m_Program);
+        //                m_Program = 0;
+        //            }
+        //            return false;
+        //        }
+        //
+        //        if (vertShader) {
+        //            glDetachShader(m_Program, vertShader);
+        //            glDeleteShader(vertShader);
+        //        }
+        //
+        //        if (fragShader) {
+        //            glDetachShader(m_Program, fragShader);
+        //            glDeleteShader(fragShader);
+        //        }
 
         return true;
     }

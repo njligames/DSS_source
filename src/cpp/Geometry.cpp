@@ -14,6 +14,7 @@
 #include "Camera.h"
 #include "Node.h"
 #include "Shader.h"
+#include "UtilDSS.h"
 // https://en.wikipedia.org/wiki/Wavefront_.obj_file#Material_template_library
 
 namespace NJLIC {
@@ -125,7 +126,8 @@ namespace NJLIC {
           m_IndexBuffer(0), m_NumberInstances(1), m_Shader(NULL),
           m_OpacityModifyRGB(false), m_VertexBufferChanged(true),
           m_NormalMatrixBufferChanged(true), m_ModelViewBufferChanged(true),
-          m_ShaderChanged(true) {
+          m_ShaderChanged(true), mDiffuseTexture(-1), mFormat(GL_RGBA),
+          mWidth(2), mHeight(2) {
         assert(m_MatrixBuffer);
         assert(m_MatrixBufferFullSize);
 
@@ -364,6 +366,10 @@ namespace NJLIC {
         if (m_VertexArray)
             glDeleteVertexArraysAPPLE(1, &m_VertexArray);
         m_VertexArray = 0;
+
+        if (-1 != mDiffuseTexture)
+            glDeleteTextures(1, &mDiffuseTexture);
+        mDiffuseTexture = -1;
     }
 
     bool Geometry::isLoaded() const { return false; }
@@ -379,6 +385,11 @@ namespace NJLIC {
         Shader *shader = getShader();
         if (shader && camera) {
             assert(shader->use());
+
+            glActiveTexture(GL_TEXTURE0);
+            UtilDSS::glErrorCheck();
+            glBindTexture(GL_TEXTURE_2D, mDiffuseTexture);
+            UtilDSS::glErrorCheck();
 
             camera->render(shader, m_ShaderChanged);
 
@@ -506,6 +517,8 @@ namespace NJLIC {
             shader->setUniformValue("FogMinDistance", 0.1f);
             shader->setUniformValue("FogColor", glm::vec3(0.7f, 0.7f, 0.7f));
             shader->setUniformValue("FogDensity", 0.000000001f);
+
+            shader->setUniformValue("tDiffuseColor", 0);
 
             m_ShaderChanged = false;
 
@@ -635,6 +648,104 @@ namespace NJLIC {
     //
     //
     //    }
+
+    void Geometry::loadDiffuseMatrial(Shader *shader,
+                                      const unsigned char *diffuseFileData,
+                                      int width, int height,
+                                      int channels_in_file) {
+
+        GLint internalformat = GL_RGBA;
+
+        switch (channels_in_file) {
+        case 1: {
+            internalformat = GL_LUMINANCE;
+            mFormat = GL_LUMINANCE;
+        } break;
+
+        case 2: {
+            internalformat = GL_LUMINANCE_ALPHA;
+            mFormat = GL_LUMINANCE_ALPHA;
+        } break;
+        case 3: {
+            internalformat = GL_RGB;
+            mFormat = GL_RGB;
+        } break;
+        case 4: {
+            internalformat = GL_RGBA;
+            mFormat = GL_RGBA;
+        } break;
+        }
+        // Create a new texture from the camera frame data, display that
+        // using the shaders
+        glGenTextures(1, &mDiffuseTexture);
+        UtilDSS::glErrorCheck();
+
+        glBindTexture(GL_TEXTURE_2D, mDiffuseTexture);
+        UtilDSS::glErrorCheck();
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // This is necessary for non-power-of-two textures
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        // Using BGRA extension to pull in video frame data directly
+        // GL_API void GL_APIENTRY glTexImage2D (GLenum target, GLint level,
+        // GLint internalformat, GLsizei width, GLsizei height, GLint
+        // border, GLenum format, GLenum type, const void *pixels);
+        //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width,
+        //                 (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+        //                 buffer);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalformat, GLsizei(width),
+                     GLsizei(height), 0, mFormat, GL_UNSIGNED_BYTE,
+                     diffuseFileData);
+        UtilDSS::glErrorCheck();
+
+        //    shader->getUniformValue("tDiffuseColor", mDiffuseColor);
+        //    GLint videoFrame = glGetUniformLocation(mProgram, "videoFrame");
+        //    mUniforms[UNIFORM_VIDEOFRAME] = videoFrame;
+
+        //    setupVertexBuffer(mVao, mVertexBuffer, mIndexBuffer);
+
+        //    glBindTexture(GL_TEXTURE_2D, mDiffuseTexture);
+        //    UtilDSS::glErrorCheck();
+        //    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLsizei(mWidth),
+        //                    GLsizei(mHeight), mFormat, GL_UNSIGNED_BYTE,
+        //                    buffer);
+        //    UtilDSS::glErrorCheck();
+
+        //        free(buffer);
+    }
+
+    void Geometry::loadDiffuseMatrial(Shader *shader,
+                                      const std::string &diffuseFile) {
+
+        int channels_in_file;
+        unsigned char *buffer = (unsigned char *)UtilDSS::loadImage(
+            diffuseFile, &mWidth, &mHeight, &channels_in_file);
+
+        Geometry::loadDiffuseMatrial(shader, buffer, mWidth, mHeight,
+                                     channels_in_file);
+
+        free(buffer);
+    }
+
+    void Geometry::reloadDiffuseMatrial(Shader *shader,
+                                        const unsigned char *diffuseFileData,
+                                        int width, int height,
+                                        int channels_in_file) {
+
+        if (-1 != mDiffuseTexture && nullptr != diffuseFileData &&
+            width == mWidth && height == mHeight) {
+            glBindTexture(GL_TEXTURE_2D, mDiffuseTexture);
+            UtilDSS::glErrorCheck();
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLsizei(mWidth),
+                            GLsizei(mHeight), mFormat, GL_UNSIGNED_BYTE,
+                            diffuseFileData);
+            UtilDSS::glErrorCheck();
+        }
+    }
 
     const void *Geometry::getModelViewTransformArrayBufferPtr() const {
         assert(m_ModelViewTransformData);

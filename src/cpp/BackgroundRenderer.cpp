@@ -12,69 +12,6 @@
 
 namespace NJLIC {
 
-    static void glErrorCheck() {
-        do {
-            for (int error = glGetError(); error; error = glGetError()) {
-
-                switch (error) {
-                case GL_NO_ERROR:
-                    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
-                                "GL_NO_ERROR - No error has been recorded. The "
-                                "value of this symbolic constant is guaranteed "
-                                "to be 0.");
-                    break;
-                case GL_INVALID_ENUM:
-                    SDL_LogError(
-                        SDL_LOG_CATEGORY_APPLICATION,
-                        "GL_INVALID_ENUM - An unacceptable value is "
-                        "specified for an enumerated argument. The "
-                        "offending command is ignored and has no other "
-                        "side effect than to set the error flag.");
-                    break;
-                case GL_INVALID_VALUE:
-                    SDL_LogError(
-                        SDL_LOG_CATEGORY_APPLICATION,
-                        "GL_INVALID_VALUE - A numeric argument is out of "
-                        "range. The offending command is ignored and has "
-                        "no other side effect than to set the error "
-                        "flag.");
-                    break;
-                case GL_INVALID_OPERATION:
-                    SDL_LogError(
-                        SDL_LOG_CATEGORY_APPLICATION,
-                        "GL_INVALID_OPERATION - The specified operation "
-                        "is not allowed in the current state. The "
-                        "offending command is ignored and has no other "
-                        "side effect than to set the error flag.");
-                    break;
-                case GL_INVALID_FRAMEBUFFER_OPERATION:
-                    SDL_LogError(
-                        SDL_LOG_CATEGORY_APPLICATION,
-                        "GL_INVALID_FRAMEBUFFER_OPERATION - The command "
-                        "is trying to render to or read from the "
-                        "framebuffer while the currently bound "
-                        "framebuffer is not framebuffer complete (i.e. "
-                        "the return value from glCheckFramebufferStatus "
-                        "is not GL_FRAMEBUFFER_COMPLETE). The offending "
-                        "command is ignored and has no other side effect "
-                        "than to set the error flag.");
-                    break;
-                case GL_OUT_OF_MEMORY:
-                    SDL_LogError(
-                        SDL_LOG_CATEGORY_APPLICATION,
-                        "GL_OUT_OF_MEMORY - There is not enough memory "
-                        "left to execute the command. The state of the GL "
-                        "is undefined, except for the state of the error "
-                        "flags, after this error is recorded.");
-                    break;
-                default:
-                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unknown (%x)",
-                                 error);
-                }
-            }
-        } while (0);
-    }
-
     //    static GLuint sWidth(1920);
     //    static GLuint sHeight(1080);
 
@@ -94,65 +31,63 @@ namespace NJLIC {
 
         glGenVertexArraysAPPLE(1, &vao);
 
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glBindVertexArrayAPPLE(vao);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         glGenBuffers(GLsizei(1), &vertexBuffer);
 
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), vertexBuffer);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         size_t v_count = 4; //_vertices.size() / 7;
         size_t v_size = sizeof(GLfloat) * 9;
         const void *vertices = (const void *)_vertices;
         glBufferData(GLenum(GL_ARRAY_BUFFER), v_count * v_size, vertices,
                      GLenum(GL_STATIC_DRAW));
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         glGenBuffers(GLsizei(1), &indexBuffer);
 
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), indexBuffer);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         size_t i_count = 6; //_indices.size();
         size_t i_size = sizeof(GLubyte);
         const void *indices = (const void *)_indices;
         glBufferData(GLenum(GL_ELEMENT_ARRAY_BUFFER), i_count * i_size, indices,
                      GLenum(GL_STATIC_DRAW));
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         GLsizei s1 = GLsizei(sizeof(GLfloat) * 9);
         int p1 = 0;
         glEnableVertexAttribArray(ATTRIB_VERTEX);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glVertexAttribPointer(ATTRIB_VERTEX, 3, GLenum(GL_FLOAT),
                               GLboolean(GL_FALSE), s1, (const GLvoid *)p1);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         GLsizei s2 = GLsizei(sizeof(GLfloat) * 9);
         int p2 = (3 * sizeof(GLfloat));
         glEnableVertexAttribArray(ATTRIB_COLOR);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glVertexAttribPointer(ATTRIB_COLOR, 4, GLenum(GL_FLOAT),
                               GLboolean(GL_FALSE), s2, (const GLvoid *)p2);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         GLsizei s3 = GLsizei(sizeof(GLfloat) * 9);
         int p3 = ((3 + 4) * sizeof(GLfloat));
         glEnableVertexAttribArray(ATTRIB_TEXTUREPOSITON);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glVertexAttribPointer(ATTRIB_TEXTUREPOSITON, 2, GLenum(GL_FLOAT),
                               GLboolean(GL_FALSE), s3, (const GLvoid *)p3);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         glBindVertexArrayAPPLE(0);
         glBindBuffer(GLenum(GL_ARRAY_BUFFER), 0);
         glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), 0);
     }
-
-    
 
     // bool Shader::load(const std::string &vertShaderSource, const std::string
     // &fragShaderSource, GLuint &programPointer);
@@ -163,11 +98,13 @@ namespace NJLIC {
 
         programPointer = glCreateProgram();
 
-        if (!UtilDSS::compileShader(vertexShader, GL_VERTEX_SHADER, vertShaderSource)) {
+        if (!UtilDSS::compileShader(vertexShader, GL_VERTEX_SHADER,
+                                    vertShaderSource)) {
             return false;
         }
 
-        if (!UtilDSS::compileShader(fragShader, GL_FRAGMENT_SHADER, fragShaderSource)) {
+        if (!UtilDSS::compileShader(fragShader, GL_FRAGMENT_SHADER,
+                                    fragShaderSource)) {
             return false;
         }
 
@@ -180,12 +117,12 @@ namespace NJLIC {
         // Bind attribute locations.
         // This needs to be done prior to linking.
         glBindAttribLocation(programPointer, ATTRIB_VERTEX, "a_Position");
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glBindAttribLocation(programPointer, ATTRIB_COLOR, "a_Color");
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glBindAttribLocation(programPointer, ATTRIB_TEXTUREPOSITON,
                              "a_Texture");
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         //    glBindAttribLocation(programPointer, ATTRIB_TEXTUREPOSITON,
         //    "inputTextureCoordinate");
 
@@ -273,16 +210,16 @@ namespace NJLIC {
         if (loadShader(vertexSource, fragmentSource, mProgram)) {
 
             int width, height, channels_in_file;
-            mVideoFrameBuffer = (unsigned char *)UtilDSS::loadImage(
+            unsigned char *buffer = (unsigned char *)UtilDSS::loadImage(
                 "assets/MLBBackground.jpg", &width, &height, &channels_in_file);
 
             // Create a new texture from the camera frame data, display that
             // using the shaders
             glGenTextures(1, &mVideoFrameTexture);
 
-            glErrorCheck();
+            UtilDSS::glErrorCheck();
             glBindTexture(GL_TEXTURE_2D, mVideoFrameTexture);
-            glErrorCheck();
+            UtilDSS::glErrorCheck();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             // This is necessary for non-power-of-two textures
@@ -296,7 +233,7 @@ namespace NJLIC {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width,
                          (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                          nullptr);
-            glErrorCheck();
+            UtilDSS::glErrorCheck();
 
             GLint videoFrame = glGetUniformLocation(mProgram, "videoFrame");
             mUniforms[UNIFORM_VIDEOFRAME] = videoFrame;
@@ -304,11 +241,11 @@ namespace NJLIC {
             setupVertexBuffer(mVao, mVertexBuffer, mIndexBuffer);
 
             glBindTexture(GL_TEXTURE_2D, mVideoFrameTexture);
-            glErrorCheck();
+            UtilDSS::glErrorCheck();
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLsizei(width),
-                            GLsizei(height), GL_RGBA, GL_UNSIGNED_BYTE,
-                            mVideoFrameBuffer);
-            glErrorCheck();
+                            GLsizei(height), GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+            UtilDSS::glErrorCheck();
+            free(buffer);
         }
     }
 
@@ -321,26 +258,26 @@ namespace NJLIC {
         glDeleteBuffers(GLsizei(1), &mIndexBuffer);
     }
     void BackgroundRenderer::render(GLuint width, GLuint height) {
-        
+
         glViewport(0, 0, width * 2, height * 2);
 
         glUseProgram(mProgram);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         glActiveTexture(GL_TEXTURE0);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glBindTexture(GL_TEXTURE_2D, mVideoFrameTexture);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         // Update uniform values
         glUniform1i(mUniforms[UNIFORM_VIDEOFRAME], 0);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
 
         glBindVertexArrayAPPLE(mVao);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glDrawElements(GLenum(GL_TRIANGLES), GLsizei(6),
                        GLenum(GL_UNSIGNED_BYTE), 0);
-        glErrorCheck();
+        UtilDSS::glErrorCheck();
         glBindVertexArrayAPPLE(0);
     }
 

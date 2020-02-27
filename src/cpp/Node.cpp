@@ -298,9 +298,7 @@ namespace NJLIC {
     void Node::setRotation(const glm::quat &rotation) {
         glm::mat4 t(glm::mat3_cast(rotation));
 
-        glm::translate(t, getOrigin());
-
-        setTransform(t);
+        setTransform(glm::translate(t, getOrigin()));
     }
 
     const glm::vec3 &Node::getScale() const { return *mScale; }

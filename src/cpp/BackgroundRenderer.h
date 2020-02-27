@@ -22,7 +22,6 @@ namespace NJLIC {
         GLuint mVertexBuffer;
         GLuint mIndexBuffer;
         GLuint mVideoFrameTexture;
-        unsigned char *mVideoFrameBuffer;
 
       public:
         static BackgroundRenderer *getInstance();

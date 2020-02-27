@@ -92,9 +92,7 @@ TestClass::TestClass()
     : mWindow(nullptr), mRenderer(nullptr), mIsDone(true),
       mShader(new NJLIC::Shader()), mGeometry(new NJLIC::MeshGeometry()),
       mCamera(new NJLIC::Camera()), mCameraNode(new NJLIC::Node()),
-      mScene(new NJLIC::Scene()) {
-          
-}
+      mScene(new NJLIC::Scene()) {}
 
 // TestClass::TestClass(SDL_Window *window, SDL_Renderer *renderer)
 //    : mWindow(window), mRenderer(renderer), mIsDone(true) {}
@@ -184,14 +182,14 @@ void TestClass::init(const unsigned int numCards) {
     //        NJLIC::Camera *pCamera = new NJLIC::Camera();
     //        NJLIC::Geometry *pGeometry = new NJLIC::Geometry();
     //    }
-    
+
     UtilDSS::printGLInfo();
 
     GLclampf red, green, blue;
     red = green = blue = (254.0 / 255.0);
 
     glClearColor(red, green, blue, 1.0f);
-//    glEnable(GL_DEPTH_TEST);
+    //    glEnable(GL_DEPTH_TEST);
     glFrontFace(GL_CW);
     glCullFace(GL_BACK);
 
@@ -221,8 +219,10 @@ void TestClass::init(const unsigned int numCards) {
             if (objData) {
                 const std::string &filedata(objData);
                 mGeometry->load(mShader, filedata, numCards);
-                
-                for(auto i = 0; i < numCards; i++)
+
+                mGeometry->loadDiffuseMatrial(mShader, "assets/Default.png");
+
+                for (auto i = 0; i < numCards; i++)
                     mCubeNodes.push_back(new NJLIC::Node());
 
                 loaded = true;
@@ -231,14 +231,14 @@ void TestClass::init(const unsigned int numCards) {
     }
 
     if (loaded) {
-//        float start_x = -4.0f;
+        //        float start_x = -4.0f;
         float start_x = 0.0f;
         float x_inc = 1.0f;
         float x_gutter = 0.5;
-        
+
         float x = start_x;
         int ii = 0;
-        
+
         for (std::vector<NJLIC::Node *>::iterator i = mCubeNodes.begin();
              i != mCubeNodes.end(); i++) {
             NJLIC::Node *node = *i;
@@ -249,8 +249,8 @@ void TestClass::init(const unsigned int numCards) {
             mScene->getRootNode()->addChildNode(node);
 
             node->addGeometry(mGeometry);
-            
-            if( ii == 3) {
+
+            if (ii == 0) {
                 node->setScale(1.5);
             }
 
@@ -333,7 +333,19 @@ void TestClass::unInit() {
         mGameModelDataVector.pop_back();
     }
 }
-void TestClass::update(float step) { mScene->update(step); }
+void TestClass::update(float step) {
+
+    NJLIC::Node *node = mCubeNodes.at(0);
+
+    glm::quat rot2;
+    rot2 = glm::rotate(rot2, m_Rotation, glm::vec3(0.0, 1.0, 0.0));
+    //        btQuaternion rot3(glm::vec3(0.0, 0.0, 1.0), m_Rotation);
+    //        node->setRotation(rot1 * rot2 * rot3);
+    node->setRotation(rot2);
+    m_Rotation += step;
+
+    mScene->update(step);
+}
 void TestClass::render() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
