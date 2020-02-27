@@ -152,85 +152,7 @@ namespace NJLIC {
         glBindBuffer(GLenum(GL_ELEMENT_ARRAY_BUFFER), 0);
     }
 
-    static bool compileShader(GLuint &shader, GLenum type,
-                              const std::string &source) {
-        GLint status;
-        const GLchar *_source = (GLchar *)source.c_str();
-
-        if (!_source) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Failed to load vertex shader");
-            return false;
-        }
-
-        shader = glCreateShader(type);
-        glShaderSource(shader, 1, &_source, NULL);
-        glCompileShader(shader);
-
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-        if (status == GL_FALSE) {
-            glDeleteShader(shader);
-
-            GLint logLength;
-            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-            if (logLength > 0) {
-                GLchar *log = (GLchar *)malloc(logLength);
-                glGetShaderInfoLog(shader, logLength, &logLength, log);
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "Shader compile log:\n%s", log);
-                free(log);
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    static bool linkProgram(GLuint programPointer) {
-        GLint status(GL_FALSE);
-
-        glLinkProgram(programPointer);
-
-        glGetProgramiv(programPointer, GL_LINK_STATUS, &status);
-        if (status == GL_FALSE) {
-            GLint logLength;
-            glGetProgramiv(programPointer, GL_INFO_LOG_LENGTH, &logLength);
-            if (logLength > 0) {
-                GLchar *log = (GLchar *)malloc(logLength);
-                glGetProgramInfoLog(programPointer, logLength, &logLength, log);
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "Program link log:\n%s", log);
-                free(log);
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    static bool validateProgram(GLuint programPointer) {
-        GLint status(GL_FALSE);
-
-        glValidateProgram(programPointer);
-
-        glGetProgramiv(programPointer, GL_VALIDATE_STATUS, &status);
-        if (status == GL_FALSE) {
-            GLint logLength;
-            glGetProgramiv(programPointer, GL_INFO_LOG_LENGTH, &logLength);
-            if (logLength > 0) {
-                GLchar *log = (GLchar *)malloc(logLength);
-                glGetProgramInfoLog(programPointer, logLength, &logLength, log);
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "Program validate log:\n%s", log);
-                free(log);
-            }
-            return false;
-        }
-
-        return true;
-    }
+    
 
     // bool Shader::load(const std::string &vertShaderSource, const std::string
     // &fragShaderSource, GLuint &programPointer);
@@ -241,11 +163,11 @@ namespace NJLIC {
 
         programPointer = glCreateProgram();
 
-        if (!compileShader(vertexShader, GL_VERTEX_SHADER, vertShaderSource)) {
+        if (!UtilDSS::compileShader(vertexShader, GL_VERTEX_SHADER, vertShaderSource)) {
             return false;
         }
 
-        if (!compileShader(fragShader, GL_FRAGMENT_SHADER, fragShaderSource)) {
+        if (!UtilDSS::compileShader(fragShader, GL_FRAGMENT_SHADER, fragShaderSource)) {
             return false;
         }
 
@@ -268,7 +190,7 @@ namespace NJLIC {
         //    "inputTextureCoordinate");
 
         // Link program.
-        if (!linkProgram(programPointer)) {
+        if (!UtilDSS::linkProgram(programPointer)) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                          "Failed to link program: %d", programPointer);
 
@@ -288,7 +210,7 @@ namespace NJLIC {
             return false;
         }
 
-        if (!validateProgram(programPointer)) {
+        if (!UtilDSS::validateProgram(programPointer)) {
             return false;
         }
 
@@ -399,6 +321,7 @@ namespace NJLIC {
         glDeleteBuffers(GLsizei(1), &mIndexBuffer);
     }
     void BackgroundRenderer::render(GLuint width, GLuint height) {
+        
         glViewport(0, 0, width * 2, height * 2);
 
         glUseProgram(mProgram);

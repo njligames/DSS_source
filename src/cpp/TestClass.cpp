@@ -23,11 +23,13 @@
 
 #include "BackgroundRenderer.h"
 
+#include "MeshGeometry.h"
+
 static void UpdateFrame(void *param) {
     //  njli::NJLIGameEngine::update(1.0f / ((float)gDisplayMode.refresh_rate));
 
-    TestClass::get()->update();
-    TestClass::get()->render();
+    //    TestClass::get()->update(0.06);
+    //    TestClass::get()->render();
 
     //  Graphics *graphics = (Graphics *)param;
     //  graphics->update();
@@ -86,12 +88,40 @@ static SDL_Texture *LoadTexture(SDL_Renderer *renderer, char *file,
 
 TestClass *TestClass::sInstance = nullptr;
 
-TestClass::TestClass() : mWindow(nullptr), mRenderer(nullptr), mIsDone(true) {}
+TestClass::TestClass()
+    : mWindow(nullptr), mRenderer(nullptr), mIsDone(true),
+      mShader(new NJLIC::Shader()), mGeometry(new NJLIC::MeshGeometry()),
+      mCamera(new NJLIC::Camera()), mCameraNode(new NJLIC::Node()),
+      mScene(new NJLIC::Scene()) {
+    mCubeNodes.push_back(new NJLIC::Node());
+}
 
-TestClass::TestClass(SDL_Window *window, SDL_Renderer *renderer)
-    : mWindow(window), mRenderer(renderer), mIsDone(true) {}
+// TestClass::TestClass(SDL_Window *window, SDL_Renderer *renderer)
+//    : mWindow(window), mRenderer(renderer), mIsDone(true) {}
 
 TestClass::~TestClass() {
+
+    while (!mCubeNodes.empty()) {
+        NJLIC::Node *node = mCubeNodes.back();
+        mCubeNodes.pop_back();
+        delete node;
+    }
+
+    delete mScene;
+    mScene = nullptr;
+
+    delete mCameraNode;
+    mCameraNode = nullptr;
+
+    delete mCamera;
+    mCamera = nullptr;
+
+    delete mGeometry;
+    mGeometry = nullptr;
+
+    delete mShader;
+    mShader = nullptr;
+
     NJLIC::BackgroundRenderer::destroyInstance();
     BitmapFont::destroyInstance();
     ThreadPool::destroyInstance();
@@ -99,25 +129,25 @@ TestClass::~TestClass() {
     unInit();
 }
 
-void TestClass::create() {
+void TestClass::createInstance() {
     if (nullptr == sInstance)
         sInstance = new TestClass();
 }
 
-void TestClass::create(SDL_Window *window, SDL_Renderer *renderer) {
-    if (nullptr != window && nullptr != renderer) {
-        if (nullptr == sInstance)
-            sInstance = new TestClass(window, renderer);
-    }
-}
+// void TestClass::create(SDL_Window *window, SDL_Renderer *renderer) {
+//    if (nullptr != window && nullptr != renderer) {
+//        if (nullptr == sInstance)
+//            sInstance = new TestClass(window, renderer);
+//    }
+//}
 
-void TestClass::destroy() {
+void TestClass::destroyInstance() {
     if (nullptr != sInstance)
         delete sInstance;
     sInstance = nullptr;
 }
 
-TestClass *TestClass::get() { return sInstance; }
+TestClass *TestClass::getInstance() { return sInstance; }
 
 bool TestClass::loadfile(SDL_Renderer *renderer) {
     int w, h;
@@ -154,8 +184,71 @@ void TestClass::init() {
     //        NJLIC::Camera *pCamera = new NJLIC::Camera();
     //        NJLIC::Geometry *pGeometry = new NJLIC::Geometry();
     //    }
+    
+    UtilDSS::printGLInfo();
+
+    GLclampf red, green, blue;
+    red = green = blue = (254.0 / 255.0);
+
+    glClearColor(red, green, blue, 1.0f);
+//    glEnable(GL_DEPTH_TEST);
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
 
     NJLIC::BackgroundRenderer::getInstance()->init();
+
+    mCameraNode->addCamera(mCamera);
+    mCameraNode->setOrigin(glm::vec3(0.0f, 0.0f, 0.0f));
+
+    mScene->addActiveNode(mCameraNode);
+    mScene->addActiveCamera(mCamera);
+    mScene->getRootNode()->setOrigin(glm::vec3(0.0f, 0.0f, 10.0f));
+
+    bool loaded = false;
+
+    const char *vertShader =
+        UtilDSS::loadFile("assets/shaders/StandardShader2.vert");
+    const char *fragShader =
+        UtilDSS::loadFile("assets/shaders/StandardShader2.frag");
+
+    if (nullptr != vertShader && nullptr != fragShader) {
+        const std::string &vertexSource(vertShader);
+        const std::string &fragmentSource(fragShader);
+
+        if (mShader->load(vertexSource, fragmentSource)) {
+            const char *objData = UtilDSS::loadFile("assets/models/sprite.obj");
+
+            if (objData) {
+                const std::string &filedata(objData);
+                mGeometry->load(mShader, filedata);
+
+                loaded = true;
+            }
+        }
+    }
+
+    if (loaded) {
+        for (std::vector<NJLIC::Node *>::iterator i = mCubeNodes.begin();
+             i != mCubeNodes.end(); i++) {
+            NJLIC::Node *node = *i;
+
+            node->setOrigin(glm::vec3(0, 0, 0));
+
+            mScene->addActiveNode(node);
+            mScene->getRootNode()->addChildNode(node);
+
+            node->addGeometry(mGeometry);
+
+            //            node->setColorBase(glm::vec4(randomFloat(0.0f, 1.0f),
+            //                                         randomFloat(0.0f, 1.0f),
+            //                                         randomFloat(0.0f, 1.0f), 1.0f));
+
+            //            node->setColorBase(glm::vec4(1.0f,
+            //                                         1.0f,
+            //                                         1.0f, 1.0f));
+        }
+    }
+
     //#define TEST_DL
 
 #ifdef TEST_DL
@@ -222,15 +315,17 @@ void TestClass::unInit() {
         mGameModelDataVector.pop_back();
     }
 }
-void TestClass::update() {}
+void TestClass::update(float step) { mScene->update(step); }
 void TestClass::render() {
-    GLclampf red, green, blue;
-    red = green = blue = (254.0 / 255.0);
 
-    glClearColor(red, green, blue, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    glDisable(GL_DEPTH_TEST);
     NJLIC::BackgroundRenderer::getInstance()->render(1920, 1080);
+
+    glEnable(GL_DEPTH_TEST);
+    glViewport(0, 0, 1920 * 2, 1920 * 2);
+    mScene->render();
 }
 
 void TestClass::input() {
@@ -325,7 +420,7 @@ void TestClass::input() {
 #else
                 SDL_GL_GetDrawableSize(mWindow, &w, &h);
 #endif
-                TestClass::get()->resize(w, h);
+                TestClass::getInstance()->resize(w, h);
 
                 //                  NJLI_HandleResize(w, h,
                 //                  gDisplayMode.format,

@@ -5,7 +5,13 @@ class SDL_Window;
 #include <vector>
 
 #include "PubSub.h"
+
+#include "Camera.h"
+#include "Geometry.h"
+#include "Node.h"
+#include "Scene.h"
 #include "Shader.h"
+
 #include "curl.h"
 
 class GameModelData;
@@ -15,17 +21,16 @@ class GameModelData;
 class TestClass {
     static TestClass *sInstance;
     TestClass();
-    TestClass(SDL_Window *window, SDL_Renderer *renderer);
     virtual ~TestClass();
 
     TestClass(const TestClass &rhs) = delete;
     TestClass &operator=(const TestClass &rhs) = delete;
 
   public:
-    static void create();
-    static void create(SDL_Window *window, SDL_Renderer *renderer);
-    static void destroy();
-    static TestClass *get();
+    static void createInstance();
+    //    static void create(SDL_Window *window, SDL_Renderer *renderer);
+    static void destroyInstance();
+    static TestClass *getInstance();
 
   public:
     bool loadfile(SDL_Renderer *renderer);
@@ -35,7 +40,7 @@ class TestClass {
 
     void init();
     void unInit();
-    void update();
+    void update(float step);
     void render();
     void input();
 
@@ -54,5 +59,11 @@ class TestClass {
     bool mIsDone;
 
     std::vector<GameModelData *> mGameModelDataVector;
+
     NJLIC::Shader *mShader;
+    NJLIC::Geometry *mGeometry;
+    NJLIC::Camera *mCamera;
+    NJLIC::Node *mCameraNode;
+    NJLIC::Scene *mScene;
+    std::vector<NJLIC::Node *> mCubeNodes;
 };

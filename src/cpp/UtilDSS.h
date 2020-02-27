@@ -8,6 +8,9 @@
 #ifndef UtilDSS_h
 #define UtilDSS_h
 
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+
 #include "SDL.h"
 #include <algorithm>
 #include <cctype>
@@ -169,6 +172,11 @@ class UtilDSS {
         return _buffer;
     }
 
+    static char *loadFile(const std::string &filePath) {
+        size_t throwaway;
+        return loadFile(filePath, throwaway);
+    }
+
     static unsigned int getClosestValidGLDim(const unsigned int dim) {
         for (unsigned int shift = 0; shift < 12; shift++) {
             if ((1 << shift) > dim)
@@ -179,6 +187,179 @@ class UtilDSS {
 
     static void *loadImage(const std::string &filePath, int *width, int *height,
                            int *channels_in_file);
+    
+    static bool compileShader(GLuint &shader, GLenum type,
+                              const std::string &source) {
+        GLint status(GL_TRUE);
+        const GLchar *_source = (GLchar *)source.c_str();
+
+        if (!_source) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "Failed to load vertex shader");
+            return false;
+        }
+ 
+        shader = glCreateShader(type);
+        glShaderSource(shader, 1, &_source, NULL);
+        glCompileShader(shader);
+
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+        if (status == GL_FALSE) {
+            glDeleteShader(shader);
+
+            GLint logLength;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+            if (logLength > 0) {
+                GLchar *log = (GLchar *)malloc(logLength);
+                glGetShaderInfoLog(shader, logLength, &logLength, log);
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                             "Shader compile log:\n%s", log);
+                free(log);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    static bool linkProgram(GLuint programPointer) {
+        GLint status(GL_FALSE);
+
+        glLinkProgram(programPointer);
+
+        glGetProgramiv(programPointer, GL_LINK_STATUS, &status);
+        if (status == GL_FALSE) {
+            GLint logLength;
+            glGetProgramiv(programPointer, GL_INFO_LOG_LENGTH, &logLength);
+            if (logLength > 0) {
+                GLchar *log = (GLchar *)malloc(logLength);
+                glGetProgramInfoLog(programPointer, logLength, &logLength, log);
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                             "Program link log:\n%s", log);
+                free(log);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    static bool validateProgram(GLuint programPointer) {
+        GLint status(GL_FALSE);
+
+        glValidateProgram(programPointer);
+
+        glGetProgramiv(programPointer, GL_VALIDATE_STATUS, &status);
+        if (status == GL_FALSE) {
+            GLint logLength;
+            glGetProgramiv(programPointer, GL_INFO_LOG_LENGTH, &logLength);
+            if (logLength > 0) {
+                GLchar *log = (GLchar *)malloc(logLength);
+                glGetProgramInfoLog(programPointer, logLength, &logLength, log);
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                             "Program validate log:\n%s", log);
+                free(log);
+            }
+            return false;
+        }
+
+        return true;
+    }
+    
+    static void printGLInfo()
+    {
+        // gl begin printGLInfo
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %s\n", "GL_VERSION",
+                       (const char *)glGetString(GL_VERSION));
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %s\n", "GL_VENDOR",
+                       (const char *)glGetString(GL_VENDOR));
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %s\n", "GL_RENDERER",
+                       (const char *)glGetString(GL_RENDERER));
+
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s\n", "GL_EXTENSIONS");
+        const char *the_extensions = (const char *)glGetString(GL_EXTENSIONS);
+        char *extensions = new char[strlen(the_extensions) + 1];
+        SDL_assert(extensions);
+        strcpy(extensions, the_extensions);
+        char *extension = strtok(extensions, " ");
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "\t%s\n", extension);
+        while (NULL != (extension = strtok(NULL, " ")))
+        {
+            SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "\t%s\n", extension);
+        }
+        delete[] extensions;
+        extensions = NULL;
+
+        //    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %s", "GL_EXTENSIONS",
+        //    (const char *) glGetString(GL_EXTENSIONS));
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %s\n",
+                       "GL_SHADING_LANGUAGE_VERSION",
+                       (const char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+        int param;
+
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &param);
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %d\n", "The max texture size",
+                       param);
+
+        glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &param);
+        SDL_LogVerbose(
+            SDL_LOG_CATEGORY_TEST, "%s = %d\n",
+            "The count texture units of allowed for usage in vertex shader", param);
+
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &param);
+        SDL_LogVerbose(
+            SDL_LOG_CATEGORY_TEST, "%s = %d\n",
+            "The count texture units of allowed for usage in fragmet shader",
+            param);
+
+        glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &param);
+        SDL_LogVerbose(
+            SDL_LOG_CATEGORY_TEST, "%s = %d\n",
+            "The count texture units of allowed for usage in both shaders", param);
+
+        //    glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &param);
+        //    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %d\n", "The maximumum
+        //    amount of uniform vectors in the vertex shader", param);
+        //
+        //    glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &param);
+        //    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %d\n", "The maximumum
+        //    amount of uniform vectors in the fragment shader", param);
+        //
+        //    glGetIntegerv(GL_MAX_VARYING_VECTORS, &param);
+        //    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %d\n", "The maximumum
+        //    amount of varying vectors", param);
+
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &param);
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s = %d\n",
+                       "The maximumum amount of vertex attributes", param);
+
+        //
+
+        //    GL_MAX_VERTEX_UNIFORM_VECTORS
+        //    GL_MAX_FRAGMENT_UNIFORM_VECTORS
+        /*
+         Actually there is GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, and
+         GL_MAX_TEXTURE_IMAGE_UNITS and GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS enums.
+         First is for count texture units of allowed for usage in vertex shader,
+         second one is for fragment shader, and third is combined for both shaders
+         combined.
+         */
+
+        // gl end printGLInfo
+    }
+    
+    static unsigned int getNextPower2(const unsigned int dim, const unsigned short maxShifts = 12)
+    {
+        for (unsigned int shift = 0; shift < maxShifts; shift++)
+        {
+            if ((1 << shift) > dim)
+                return 1 << (shift);
+        }
+        return 1 << 11;
+    }
 };
 
 #endif /* Util_h */

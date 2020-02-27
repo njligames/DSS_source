@@ -227,7 +227,7 @@ public:
 
   void update()
   {
-      TestClass::get()->render();
+      TestClass::getInstance()->render();
 //    njli::NJLIGameEngine::render();
 
     SDL_GL_SwapWindow(_window);
@@ -425,7 +425,7 @@ static void handleInput()
 #else
                   SDL_GL_GetDrawableSize(gWindow, &w, &h);
 #endif
-                    TestClass::get()->resize(w,h);
+                    TestClass::getInstance()->resize(w,h);
                     
 //                  NJLI_HandleResize(w, h, gDisplayMode.format,
 //                                    gDisplayMode.refresh_rate);
@@ -865,14 +865,14 @@ static void handleInput()
   }
 
 static void Update() {
-    while(!gDone) {
-        TestClass::get()->update();
-        
-//        std::thread::id this_id = std::this_thread::get_id();
-//        g_display_mutex.lock();
-//        std::cout << "thread " << this_id << " sleeping...\n";
-//        g_display_mutex.unlock();
-    }
+//    while(!gDone) {
+//        TestClass::get()->update(0.06);
+//
+////        std::thread::id this_id = std::this_thread::get_id();
+////        g_display_mutex.lock();
+////        std::cout << "thread " << this_id << " sleeping...\n";
+////        g_display_mutex.unlock();
+//    }
 }
 
 #if !(defined(__IPHONEOS__) && __IPHONEOS__)
@@ -899,7 +899,7 @@ static void Update() {
       
     handleInput();
 
-      TestClass::get()->update();
+      TestClass::getInstance()->update(0.06);
       
     RenderFrame(gGraphics.get());
 
@@ -1168,7 +1168,7 @@ main(int argc, char *argv[])
       
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 //#if defined(__MACOSX__)
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 //#endif
       
 //#elif defined(__GL_3__)
@@ -1254,8 +1254,8 @@ main(int argc, char *argv[])
     }
 #endif
 
-          TestClass::create();
-          TestClass::get()->init();
+          TestClass::createInstance();
+          TestClass::getInstance()->init();
 //    if (!njli::NJLIGameEngine::create(
 //            DeviceUtil::hardwareDescription().c_str()))
 //      {
@@ -1315,7 +1315,7 @@ main(int argc, char *argv[])
 //    NJLI_HandleResize(gDisplayMode.w, gDisplayMode.h, gDisplayMode.format,
 //                      gDisplayMode.refresh_rate);
           
-          TestClass::get()->resize(gDisplayMode.w, gDisplayMode.h);
+          TestClass::getInstance()->resize(gDisplayMode.w, gDisplayMode.h);
           
     //#endif
 
@@ -1359,7 +1359,7 @@ main(int argc, char *argv[])
 //          delete gUpdateThread;
 
 //    NJLI_HandleSurfaceDestroyed();
-          TestClass::destroy();
+          TestClass::destroyInstance();
 
 #endif
 
