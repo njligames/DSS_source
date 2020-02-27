@@ -14,6 +14,26 @@
 
 extern int gDone;
 
+static void curlErrorCheck(CURLcode code, const char *stmt, const char *fname,
+                           int line) {
+    if (CURLE_OK != code) {
+
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Curl error %08x, (%s) at %s:%i - for %s", code,
+                     curl_easy_strerror(code), fname, line, stmt);
+    }
+}
+#ifndef CURL_CHECK
+#if !(defined(NDEBUG))
+#define CURL_CHECK(stmt)                                                       \
+    do {                                                                       \
+        curlErrorCheck(stmt, #stmt, __FILE__, __LINE__);                       \
+    } while (0);
+#else
+#define CURL_CHECK(stmt) stmt
+#endif
+#endif
+
 struct FileData {
     char *_current_ptr;
     char *_buffer;
@@ -49,13 +69,25 @@ static size_t callbackfunction(char *ptr, size_t size, size_t nmemb,
 }
 
 static void download_json(GameModelData *gmd) {
+
+    CURLcode _CURLcode(CURLE_OK);
+
     int megabyteBuffer = 10;
     FileData *fd = new FileData(megabyteBuffer);
 
-    curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, gmd->getUrl().c_str());
-    curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
-    curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
-    curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
+    char *buff = new char[1024];
+
+    CURL_CHECK(
+        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, gmd->getUrl().c_str()));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1L));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_ERRORBUFFER, buff));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
+                                callbackfunction));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
+#if !(defined(NDEBUG))
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
+#endif
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT, 5L));
 
     CURLcode rc = curl_easy_perform(fd->_curlCtx);
     if (rc) {
@@ -86,6 +118,8 @@ static void download_json(GameModelData *gmd) {
 #endif
 
     gmd->setJson(fd->_buffer);
+
+    delete[] buff;
 
     delete fd;
 }

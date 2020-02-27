@@ -21,8 +21,39 @@ namespace NJLIC {
         ~MeshGeometry();
 
         virtual void load(Shader *shader, const std::string &filecontent = "",
-                          unsigned int numInstances = 1,
-                          MeshType type = MeshType_Obj);
+                          unsigned int numInstances = 1);
+
+        glm::vec3 getVertexPosition(const GLsizei instanceIdx,
+                                    const GLsizei verticeIdx) const;
+        glm::vec4 getVertexColor(const GLsizei instanceIdx,
+                                 const GLsizei verticeIdx) const;
+        glm::vec2 getVertexTexture(const GLsizei instanceIdx,
+                                   const GLsizei verticeIdx) const;
+        glm::vec3 getVertexNormal(const GLsizei instanceIdx,
+                                  const GLsizei verticeIdx) const;
+        glm::vec3 getVertexTangent(const GLsizei instanceIdx,
+                                   const GLsizei verticeIdx) const;
+        glm::vec3 getVertexBitangent(const GLsizei instanceIdx,
+                                     const GLsizei verticeIdx) const;
+
+        void setVertexPosition(const glm::vec3 &v, const GLsizei instanceIdx,
+                               const GLsizei verticeIdx);
+        void setVertexColor(const glm::vec4 &v, const GLsizei instanceIdx,
+                            const GLsizei verticeIdx);
+        void setVertexTexture(const glm::vec2 &v, const GLsizei instanceIdx,
+                              const GLsizei verticeIdx);
+        void setVertexNormal(const glm::vec3 &v, const GLsizei instanceIdx,
+                             const GLsizei verticeIdx);
+        void setVertexTangent(const glm::vec3 &v, const GLsizei instanceIdx,
+                              const GLsizei verticeIdx);
+        void setVertexBitangent(const glm::vec3 &v, const GLsizei instanceIdx,
+                                const GLsizei verticeIdx);
+
+        virtual TexturedColoredVertex getVertex(const GLsizei instanceIdx,
+                                                const GLsizei verticeIdx) const;
+        virtual void setVertex(const TexturedColoredVertex &tcv,
+                               const GLsizei instanceIdx,
+                               const GLsizei verticeIdx);
 
       protected:
         virtual void loadData();
@@ -50,6 +81,8 @@ namespace NJLIC {
         std::string m_Filedata;
         GLsizei m_NumberOfVertices;
         GLsizei m_NumberOfIndices;
+
+        TexturedColoredVertex *m_triangleBuffer;
     };
 } // namespace NJLIC
 

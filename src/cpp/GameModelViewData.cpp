@@ -16,6 +16,26 @@
 
 extern int gDone;
 
+static void curlErrorCheck(CURLcode code, const char *stmt, const char *fname,
+                           int line) {
+    if (CURLE_OK != code) {
+
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Curl error %08x, (%s) at %s:%i - for %s", code,
+                     curl_easy_strerror(code), fname, line, stmt);
+    }
+}
+#ifndef CURL_CHECK
+#if !(defined(NDEBUG))
+#define CURL_CHECK(stmt)                                                       \
+    do {                                                                       \
+        curlErrorCheck(stmt, #stmt, __FILE__, __LINE__);              \
+    } while (0);
+#else
+#define CURL_CHECK(stmt) stmt
+#endif
+#endif
+
 const int MAX_IMAGE_WIDTH = 4096;
 const int MAX_IMAGE_HEIGHT = 4096;
 const int MAX_IMAGE_COMPONENTS = 4;
@@ -64,10 +84,17 @@ static FileData *download_jpeg(const char *url) {
     FileData *fd =
         new FileData(MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT, MAX_IMAGE_COMPONENTS);
 
-    curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, url);
-    curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
-    curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
-    curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
+    char *buff = new char[1024];
+
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, url));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1L));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_ERRORBUFFER, buff));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
+#if !(defined(NDEBUG))
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
+#endif
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT, 5L));
 
     CURLcode rc = curl_easy_perform(fd->_curlCtx);
     if (rc) {
@@ -102,6 +129,8 @@ static FileData *download_jpeg(const char *url) {
                      "!!! Failed to create file on the disk\n");
     }
 #endif
+
+    delete[] buff;
 
     return fd;
 }
@@ -497,6 +526,9 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
     std::vector<FileData *> fileDataVector;
     FileData *fd = nullptr;
 
+    //    char *buff1 = new char[1024];
+    //    char *buff2 = new char[1024];
+
     for (std::vector<MLBJson::Game>::const_iterator iter = games.begin();
          iter != games.end(); ++iter) {
 
@@ -507,10 +539,22 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
                           MAX_IMAGE_COMPONENTS);
         fd->_url = gvd->getDetailImageUrl();
         fd->_gvd_ptr = gvd;
-        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
-        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
-        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
-        curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
+
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str()));
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1L));
+        //        CURL_CHECK(curl_easy_setopt( fd->_curlCtx, CURLOPT_ERRORBUFFER, buff1 ));
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction));
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
+#if !(defined(NDEBUG))
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
+#endif
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT, 5L));
+
+        //        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
+        //        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
+        //        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
+        //        callbackfunction); curl_easy_setopt(fd->_curlCtx,
+        //        CURLOPT_FOLLOWLOCATION, 1);
         curl_multi_add_handle(multi_handle, fd->_curlCtx);
         fileDataVector.push_back(fd);
 
@@ -518,10 +562,22 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
                           MAX_IMAGE_COMPONENTS);
         fd->_url = gvd->getListItemImageUrl();
         fd->_gvd_ptr = gvd;
-        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
-        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
-        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction);
-        curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1);
+
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str()));
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1L));
+        //        CURL_CHECK(curl_easy_setopt( fd->_curlCtx, CURLOPT_ERRORBUFFER, buff2 ));
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction));
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
+#if !(defined(NDEBUG))
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
+#endif
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT, 5L));
+
+        //        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
+        //        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
+        //        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
+        //        callbackfunction); curl_easy_setopt(fd->_curlCtx,
+        //        CURLOPT_FOLLOWLOCATION, 1);
         curl_multi_add_handle(multi_handle, fd->_curlCtx);
         fileDataVector.push_back(fd);
     }

@@ -865,14 +865,28 @@ static void handleInput()
   }
 
 static void Update() {
-//    while(!gDone) {
-//        TestClass::get()->update(0.06);
-//
-////        std::thread::id this_id = std::this_thread::get_id();
-////        g_display_mutex.lock();
-////        std::cout << "thread " << this_id << " sleeping...\n";
-////        g_display_mutex.unlock();
-//    }
+    const double FPS = 60.;
+    const double FPms = FPS / 1000.;
+    
+    std::chrono::steady_clock::time_point lastFrameTime = std::chrono::steady_clock::now();
+    
+    double totalFPS = 0.0;
+    while(!gDone) {
+        
+        double step = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - lastFrameTime).count() / 1000.0;
+        
+        totalFPS += step;
+        
+        if(totalFPS >= FPms) {
+            totalFPS = totalFPS - FPms;
+            step = FPms;
+        }
+        
+        TestClass::getInstance()->update(step);
+        lastFrameTime = std::chrono::steady_clock::now();
+        
+        
+    }
 }
 
 #if !(defined(__IPHONEOS__) && __IPHONEOS__)
@@ -899,7 +913,7 @@ static void Update() {
       
     handleInput();
 
-      TestClass::getInstance()->update(0.06);
+      TestClass::getInstance()->update(0.0);
       
     RenderFrame(gGraphics.get());
 
@@ -1335,7 +1349,7 @@ main(int argc, char *argv[])
     emscripten_set_main_loop(mainloop, 0, 0);
 #else
 
-//          gUpdateThread = new std::thread(Update);
+          gUpdateThread = new std::thread(Update);
           
           while (!gDone)
           {
@@ -1348,10 +1362,10 @@ main(int argc, char *argv[])
 #if defined(__IPHONEOS__) && __IPHONEOS__
               handleInput();
 #else
-              mainloop();
+//              mainloop();
               
-//              handleInput();
-//              RenderFrame(gGraphics.get());
+              handleInput();
+              RenderFrame(gGraphics.get());
 #endif
           }
           

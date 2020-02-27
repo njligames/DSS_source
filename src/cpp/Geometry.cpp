@@ -155,7 +155,7 @@ namespace NJLIC {
     }
 
     void Geometry::load(Shader *shader, const std::string &filecontent,
-                        unsigned int numInstances, MeshType type) {
+                        unsigned int numInstances) {
         assert(shader);
 
         setShader(shader);

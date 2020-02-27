@@ -28,7 +28,7 @@
 static void UpdateFrame(void *param) {
     //  njli::NJLIGameEngine::update(1.0f / ((float)gDisplayMode.refresh_rate));
 
-    //    TestClass::get()->update(0.06);
+    //        TestClass::getInstance()->update(0.06);
     //    TestClass::get()->render();
 
     //  Graphics *graphics = (Graphics *)param;
@@ -167,6 +167,22 @@ void TestClass::init(const unsigned int numCards) {
     mIsDone = false;
     //    mMutex.unlock();
 
+#define TEST_DL
+
+#ifdef TEST_DL
+    int numberOfDaysToGoBack((365 * 4) + 1);
+    numberOfDaysToGoBack = 1;
+    NJLIC::Date formatted_date(6, 10, 2018);
+
+    NJLIC::Date date(formatted_date);
+    for (int i = 0; i < numberOfDaysToGoBack; ++i, date--) {
+
+        printf("%s\n", std::string(date).c_str());
+        mGameModelDataVector.push_back(
+            GameModelData::generateGameModelData(date));
+    }
+#endif
+
     //    mShader = new NJLIC::Shader();
     //
     //    size_t vsSize = 0;
@@ -267,22 +283,6 @@ void TestClass::init(const unsigned int numCards) {
         }
     }
 
-    //#define TEST_DL
-
-#ifdef TEST_DL
-    int numberOfDaysToGoBack((365 * 4) + 1);
-    numberOfDaysToGoBack = 1;
-    NJLIC::Date formatted_date(6, 10, 2018);
-
-    NJLIC::Date date(formatted_date);
-    for (int i = 0; i < numberOfDaysToGoBack; ++i, date--) {
-
-        printf("%s\n", std::string(date).c_str());
-        mGameModelDataVector.push_back(
-            GameModelData::generateGameModelData(date));
-    }
-#endif
-
     //    BitmapFont::getInstance()->load("FranklinGothicMedium");
     //    BitmapFont::getInstance()->load("FranklinGothicMedium");
 
@@ -334,6 +334,8 @@ void TestClass::unInit() {
     }
 }
 void TestClass::update(float step) {
+
+    //    printf("%f\n", step);
 
     NJLIC::Node *node = mCubeNodes.at(0);
 

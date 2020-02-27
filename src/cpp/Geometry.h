@@ -176,8 +176,6 @@ namespace NJLIC {
         friend class Scene;
 
       public:
-        enum MeshType { MeshType_Obj };
-
         /* members */
         Geometry();
         Geometry(const Geometry &rhs);
@@ -185,8 +183,7 @@ namespace NJLIC {
         virtual ~Geometry();
 
         virtual void load(Shader *shader, const std::string &filecontent = "",
-                          unsigned int numInstances = 1,
-                          MeshType type = MeshType_Obj);
+                          unsigned int numInstances = 1);
         void unLoad();
         bool isLoaded() const;
 
@@ -282,6 +279,8 @@ namespace NJLIC {
         GLuint mDiffuseTexture;
 
         GLenum mFormat;
+
+      protected:
         int mWidth;
         int mHeight;
     };
