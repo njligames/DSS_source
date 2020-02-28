@@ -29,7 +29,7 @@ static void curlErrorCheck(CURLcode code, const char *stmt, const char *fname,
 #if !(defined(NDEBUG))
 #define CURL_CHECK(stmt)                                                       \
     do {                                                                       \
-        curlErrorCheck(stmt, #stmt, __FILE__, __LINE__);              \
+        curlErrorCheck(stmt, #stmt, __FILE__, __LINE__);                       \
     } while (0);
 #else
 #define CURL_CHECK(stmt) stmt
@@ -89,7 +89,8 @@ static FileData *download_jpeg(const char *url) {
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, url));
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1L));
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_ERRORBUFFER, buff));
-    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction));
+    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
+                                callbackfunction));
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
 #if !(defined(NDEBUG))
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
@@ -540,10 +541,13 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
         fd->_url = gvd->getDetailImageUrl();
         fd->_gvd_ptr = gvd;
 
-        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str()));
+        CURL_CHECK(
+            curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str()));
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1L));
-        //        CURL_CHECK(curl_easy_setopt( fd->_curlCtx, CURLOPT_ERRORBUFFER, buff1 ));
-        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction));
+        //        CURL_CHECK(curl_easy_setopt( fd->_curlCtx,
+        //        CURLOPT_ERRORBUFFER, buff1 ));
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
+                                    callbackfunction));
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
 #if !(defined(NDEBUG))
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
@@ -563,10 +567,13 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
         fd->_url = gvd->getListItemImageUrl();
         fd->_gvd_ptr = gvd;
 
-        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str()));
+        CURL_CHECK(
+            curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str()));
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_FOLLOWLOCATION, 1L));
-        //        CURL_CHECK(curl_easy_setopt( fd->_curlCtx, CURLOPT_ERRORBUFFER, buff2 ));
-        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION, callbackfunction));
+        //        CURL_CHECK(curl_easy_setopt( fd->_curlCtx,
+        //        CURLOPT_ERRORBUFFER, buff2 ));
+        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
+                                    callbackfunction));
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
 #if !(defined(NDEBUG))
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));

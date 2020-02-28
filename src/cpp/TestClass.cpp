@@ -24,6 +24,7 @@
 #include "BackgroundRenderer.h"
 
 #include "MeshGeometry.h"
+#include "SpriteGeometry.h"
 
 static void UpdateFrame(void *param) {
     //  njli::NJLIGameEngine::update(1.0f / ((float)gDisplayMode.refresh_rate));
@@ -91,8 +92,8 @@ TestClass *TestClass::sInstance = nullptr;
 TestClass::TestClass()
     : mWindow(nullptr), mRenderer(nullptr), mIsDone(true),
       mShader(new NJLIC::Shader()), mGeometry(new NJLIC::MeshGeometry()),
-      mCamera(new NJLIC::Camera()), mCameraNode(new NJLIC::Node()),
-      mScene(new NJLIC::Scene()) {}
+      mFontGeometry(new NJLIC::SpriteGeometry()), mCamera(new NJLIC::Camera()),
+      mCameraNode(new NJLIC::Node()), mScene(new NJLIC::Scene()) {}
 
 // TestClass::TestClass(SDL_Window *window, SDL_Renderer *renderer)
 //    : mWindow(window), mRenderer(renderer), mIsDone(true) {}
@@ -119,6 +120,9 @@ TestClass::~TestClass() {
 
     delete mShader;
     mShader = nullptr;
+
+    delete mFontGeometry;
+    mFontGeometry = nullptr;
 
     NJLIC::BackgroundRenderer::destroyInstance();
     BitmapFont::destroyInstance();
@@ -167,7 +171,7 @@ void TestClass::init(const unsigned int numCards) {
     mIsDone = false;
     //    mMutex.unlock();
 
-#define TEST_DL
+    //#define TEST_DL
 
 #ifdef TEST_DL
     int numberOfDaysToGoBack((365 * 4) + 1);
@@ -200,6 +204,9 @@ void TestClass::init(const unsigned int numCards) {
     //    }
 
     UtilDSS::printGLInfo();
+
+    BitmapFont::getInstance()->setCurrentFontName("FranklinGothicMedium");
+    //    BitmapFont::getInstance()->printf("%s - %d", "jimbo", 100);
 
     GLclampf red, green, blue;
     red = green = blue = (254.0 / 255.0);
@@ -235,11 +242,23 @@ void TestClass::init(const unsigned int numCards) {
             if (objData) {
                 const std::string &filedata(objData);
                 mGeometry->load(mShader, filedata, numCards);
-
                 mGeometry->loadDiffuseMatrial(mShader, "assets/Default.png");
 
-                for (auto i = 0; i < numCards; i++)
-                    mCubeNodes.push_back(new NJLIC::Node());
+                mFontGeometry->load(mShader, filedata, numCards);
+                mFontGeometry->loadDiffuseMatrial(
+                    mShader, "assets/fonts/FranklinGothicMedium.png");
+
+                NJLIC::Node *node = nullptr;
+                for (auto i = 0; i < numCards; i++) {
+                    if (i == 0) {
+                        node =
+                            BitmapFont::getInstance()->renderLetter((int)'a');
+                    } else {
+                        node = new NJLIC::Node();
+                        node->addGeometry(mGeometry);
+                    }
+                    mCubeNodes.push_back(node);
+                }
 
                 loaded = true;
             }
@@ -264,10 +283,11 @@ void TestClass::init(const unsigned int numCards) {
             mScene->addActiveNode(node);
             mScene->getRootNode()->addChildNode(node);
 
-            node->addGeometry(mGeometry);
-
             if (ii == 0) {
-                node->setScale(1.5);
+                //                node->setScale(5.);
+                //                node->addGeometry(mFontGeometry);
+            } else {
+                //                node->addGeometry(mGeometry);
             }
 
             x += x_inc;
@@ -285,9 +305,6 @@ void TestClass::init(const unsigned int numCards) {
 
     //    BitmapFont::getInstance()->load("FranklinGothicMedium");
     //    BitmapFont::getInstance()->load("FranklinGothicMedium");
-
-    BitmapFont::getInstance()->setCurrentFontName("FranklinGothicMedium");
-    BitmapFont::getInstance()->printf("%s - %d", "jimbo", 100);
 
     //    for (std::vector<MLBJson::DateElement>::iterator dateElement_iterator
     //    = data.getMutableDates().begin();
@@ -343,7 +360,7 @@ void TestClass::update(float step) {
     rot2 = glm::rotate(rot2, m_Rotation, glm::vec3(0.0, 1.0, 0.0));
     //        btQuaternion rot3(glm::vec3(0.0, 0.0, 1.0), m_Rotation);
     //        node->setRotation(rot1 * rot2 * rot3);
-    node->setRotation(rot2);
+        node->setRotation(rot2);
     m_Rotation += step;
 
     mScene->update(step);
@@ -355,6 +372,8 @@ void TestClass::render() {
     glDisable(GL_DEPTH_TEST);
     NJLIC::BackgroundRenderer::getInstance()->render(1920, 1080);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, 1920 * 2, 1920 * 2);
     mScene->render();

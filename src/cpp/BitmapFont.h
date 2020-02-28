@@ -11,9 +11,35 @@
 #include <map>
 #include <string>
 
+#include "Node.h"
 #include "glm/glm.hpp"
 
+#include "Shader.h"
+#include "SpriteGeometry.h"
+
 struct BitmapFontData;
+
+struct LetterFrameInfo {
+    LetterFrameInfo(std::map<std::string, int64_t> map)
+        : height(map["height"]), id(map["id"]),
+          sourceHeight(map["sourceHeight"]), sourceWidth(map["sourceWidth"]),
+          sourceX(map["sourceX"]), sourceY(map["sourceY"]), width(map["width"]),
+          x(map["x"]), xadvance(map["xadvance"]), xoffset(map["xoffset"]),
+          y(map["y"]), yoffset(map["yoffset"]) {}
+
+    int64_t height;
+    int64_t id;
+    int64_t sourceHeight;
+    int64_t sourceWidth;
+    int64_t sourceX;
+    int64_t sourceY;
+    int64_t width;
+    int64_t x;
+    int64_t xadvance;
+    int64_t xoffset;
+    int64_t y;
+    int64_t yoffset;
+};
 
 class BitmapFont {
 
@@ -29,6 +55,9 @@ class BitmapFont {
     glm::vec2 mCurrentBounds;
     std::string mCurrentFontName;
     std::string mCurrentPrintf;
+
+    NJLIC::SpriteGeometry *mGeometry;
+    NJLIC::Shader *mShader;
 
     bool load(const std::string &fontName);
     bool unLoad(const std::string &fontName);
@@ -52,7 +81,14 @@ class BitmapFont {
     void setCurrentBounds(const glm::vec2 &bounds);
     void setCurrentFontName(const std::string &fontName);
 
-    void printf(const char *fmt, ...);
+    NJLIC::Node *printf(const char *fmt, ...);
+
+  protected:
+    using Frame = std::map<std::string, int64_t>;
+    using FrameVector = std::vector<Frame>;
+
+  public:
+    NJLIC::Node *renderLetter(const int c);
 };
 
 #endif /* BitmapFont_hpp */

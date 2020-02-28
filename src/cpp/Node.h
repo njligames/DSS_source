@@ -27,6 +27,7 @@ namespace NJLIC {
     class Node {
         friend class Geometry;
         friend class Scene;
+        friend class SpriteGeometry;
 
       public:
         /* members */

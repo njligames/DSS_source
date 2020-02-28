@@ -654,6 +654,8 @@ namespace NJLIC {
                                       int width, int height,
                                       int channels_in_file) {
 
+        assert(nullptr != diffuseFileData);
+
         GLint internalformat = GL_RGBA;
 
         switch (channels_in_file) {
@@ -718,17 +720,22 @@ namespace NJLIC {
         //        free(buffer);
     }
 
-    void Geometry::loadDiffuseMatrial(Shader *shader,
+    bool Geometry::loadDiffuseMatrial(Shader *shader,
                                       const std::string &diffuseFile) {
 
         int channels_in_file;
         unsigned char *buffer = (unsigned char *)UtilDSS::loadImage(
             diffuseFile, &mWidth, &mHeight, &channels_in_file);
 
-        Geometry::loadDiffuseMatrial(shader, buffer, mWidth, mHeight,
-                                     channels_in_file);
+        if (nullptr != buffer) {
 
-        free(buffer);
+            Geometry::loadDiffuseMatrial(shader, buffer, mWidth, mHeight,
+                                         channels_in_file);
+
+            free(buffer);
+            return true;
+        }
+        return false;
     }
 
     void Geometry::reloadDiffuseMatrial(Shader *shader,

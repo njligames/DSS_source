@@ -913,7 +913,7 @@ static void Update() {
       
     handleInput();
 
-      TestClass::getInstance()->update(0.0);
+      TestClass::getInstance()->update(0.06);
       
     RenderFrame(gGraphics.get());
 
@@ -1269,7 +1269,7 @@ main(int argc, char *argv[])
 #endif
 
           TestClass::createInstance();
-          TestClass::getInstance()->init(10);
+          TestClass::getInstance()->init(1);
 //    if (!njli::NJLIGameEngine::create(
 //            DeviceUtil::hardwareDescription().c_str()))
 //      {
@@ -1349,7 +1349,7 @@ main(int argc, char *argv[])
     emscripten_set_main_loop(mainloop, 0, 0);
 #else
 
-          gUpdateThread = new std::thread(Update);
+//          gUpdateThread = new std::thread(Update);
           
           while (!gDone)
           {
@@ -1362,10 +1362,10 @@ main(int argc, char *argv[])
 #if defined(__IPHONEOS__) && __IPHONEOS__
               handleInput();
 #else
-//              mainloop();
+              mainloop();
               
-              handleInput();
-              RenderFrame(gGraphics.get());
+//              handleInput();
+//              RenderFrame(gGraphics.get());
 #endif
           }
           

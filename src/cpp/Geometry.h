@@ -197,7 +197,7 @@ namespace NJLIC {
                                 const unsigned char *diffuseFileData, int width,
                                 int height, int channels_in_file);
 
-        void loadDiffuseMatrial(Shader *shader, const std::string &diffuseFile);
+        bool loadDiffuseMatrial(Shader *shader, const std::string &diffuseFile);
         void reloadDiffuseMatrial(Shader *shader,
                                   const unsigned char *diffuseFileData,
                                   int width, int height, int channels_in_file);

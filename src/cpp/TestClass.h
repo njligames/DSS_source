@@ -62,6 +62,7 @@ class TestClass {
 
     NJLIC::Shader *mShader;
     NJLIC::Geometry *mGeometry;
+    NJLIC::Geometry *mFontGeometry;
     NJLIC::Camera *mCamera;
     NJLIC::Node *mCameraNode;
     NJLIC::Scene *mScene;

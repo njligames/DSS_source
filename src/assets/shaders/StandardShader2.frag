@@ -583,10 +583,6 @@ void main()
         baseColor = computeLinearFogColor(baseColor);
     }
     
-    gl_FragColor = baseColor;
-//    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-    
-//    gl_FragColor = vec4(Normal_modelspace, 1.0);
-    
-//    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0) + vec4(rimColor, 1.0);
+//    gl_FragColor = baseColor;
+    gl_FragColor = material.diffuse;
 }

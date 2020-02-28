@@ -24,6 +24,18 @@ namespace NJLIC {
 
         virtual void load(Shader *shader, unsigned int numInstances = 1);
 
+        void setSpriteAtlasFrame(Node *node, const float &xoffset,
+                                 const float &yoffset, const float &xdim,
+                                 const float &ydim);
+
+        void setDimensions(Node *node, const glm::vec2 &dimensions,
+                           const glm::vec2 &spritePivotPoint = glm::vec2(0.5f,
+                                                                         0.5f));
+
+        void setTextureOffsets(Node *node, const glm::vec2 &textureCoordOffset,
+                               const glm::vec2 &textureCoordDimensions);
+
+      protected:
         void setSpriteAtlasFrame(const GLsizei instanceIdx,
                                  const float &xoffset, const float &yoffset,
                                  const float &xdim, const float &ydim);
@@ -37,7 +49,6 @@ namespace NJLIC {
                                const glm::vec2 &textureCoordOffset,
                                const glm::vec2 &textureCoordDimensions);
 
-      protected:
         virtual void load(Shader *shader, const std::string &filecontent,
                           unsigned int numInstances = 1) override {
             MeshGeometry::load(shader, filecontent, numInstances);

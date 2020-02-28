@@ -120,6 +120,35 @@ f 2/1/1 4/4/1 3/2/1
         MeshGeometry::load(shader, f, numInstances);
     }
 
+    void SpriteGeometry::setSpriteAtlasFrame(Node *node, const float &xoffset,
+                                             const float &yoffset,
+                                             const float &xdim,
+                                             const float &ydim) {
+        unsigned long instanceIdx = getGeometryIndex(node);
+        if (instanceIdx < numberOfInstances()) {
+            setSpriteAtlasFrame(instanceIdx, xoffset, yoffset, xdim, ydim);
+        }
+    }
+
+    void SpriteGeometry::setDimensions(Node *node, const glm::vec2 &dimensions,
+                                       const glm::vec2 &spritePivotPoint) {
+        unsigned long instanceIdx = getGeometryIndex(node);
+        if (instanceIdx < numberOfInstances()) {
+            setDimensions(instanceIdx, dimensions, spritePivotPoint);
+        }
+    }
+
+    void
+    SpriteGeometry::setTextureOffsets(Node *node,
+                                      const glm::vec2 &textureCoordOffset,
+                                      const glm::vec2 &textureCoordDimensions) {
+        unsigned long instanceIdx = getGeometryIndex(node);
+        if (instanceIdx < numberOfInstances()) {
+            setTextureOffsets(instanceIdx, textureCoordOffset,
+                              textureCoordDimensions);
+        }
+    }
+
     void SpriteGeometry::setSpriteAtlasFrame(const GLsizei instanceIdx,
                                              const float &xoffset,
                                              const float &yoffset,
@@ -176,13 +205,15 @@ f 2/1/1 4/4/1 3/2/1
 
              */
 
-            float left_half_width = (dimensions.x * spritePivotPoint.x);
+            float left_half_width =
+                (dimensions.x * spritePivotPoint.x) / mWidth;
             float right_half_width =
-                (dimensions.x * (1.0f - spritePivotPoint.x));
+                (dimensions.x * (1.0f - spritePivotPoint.x)) / mWidth;
 
-            float bottom_half_height = (dimensions.y * spritePivotPoint.y);
+            float bottom_half_height =
+                (dimensions.y * spritePivotPoint.y) / mHeight;
             float top_half_height =
-                (dimensions.y * (1.0f - spritePivotPoint.y));
+                (dimensions.y * (1.0f - spritePivotPoint.y)) / mHeight;
 
             glm::vec2 bottomLeft(BL_VERTEX.x * left_half_width,
                                  BL_VERTEX.y * bottom_half_height);
