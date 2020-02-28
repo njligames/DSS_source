@@ -164,9 +164,10 @@ BitmapFont::BitmapFont()
     : mCurrentBounds(glm::vec2(std::numeric_limits<float>::max(),
                                std::numeric_limits<float>::max())),
       mCurrentFontName(""), mCurrentPrintf(""),
-      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader()) {}
+      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader()), mMainNode(new NJLIC::Node()) {}
 
 BitmapFont::~BitmapFont() {
+    delete mMainNode;
     delete mShader;
     delete mGeometry;
     for (Map::iterator iter = mFontMap.begin(); iter != mFontMap.end();
@@ -297,9 +298,9 @@ void BitmapFont::setCurrentFontName(const std::string &fontName) {
     load(mCurrentFontName);
 }
 
-NJLIC::Node *BitmapFont::printf(const char *fmt, ...) {
+NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
 
-    NJLIC::Node *rootNode = new NJLIC::Node();
+//    NJLIC::Node *rootNode = new NJLIC::Node();
 
     char buffer[2048];
     va_list args;
@@ -309,10 +310,38 @@ NJLIC::Node *BitmapFont::printf(const char *fmt, ...) {
     va_end(args);
 
     mCurrentPrintf = std::string(buffer);
+    
+    mMainNode->setName(mCurrentPrintf);
+    
+    float xStart, yStart;
+    xStart = yStart = 0.0;
+    size_t letterIndex(0);
+    
+    float xCurrent(xStart);
+    float yCurrent(yStart);
+    
+    NJLIC::Node *node;
+    bool recycleNode(false);
+    float xMax, yMax;
+    float lastXAdvance(0);
+    
+    for(int i = 0; i < mMainNode->numberOfChildrenNodes(); i++) {
+        
+    }
 
     SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "BitmapFont::printf: %s\n",
                    mCurrentPrintf.c_str());
 
+    float currentX(0.0);
+    float currentY(0.0);
+    
+    BitmapFontData *bmfd = mFontMap.find(mCurrentFontName)->second;
+    FrameVector frames = bmfd->_jsonData.getFrames();
+    float lineHeight(bmfd->_jsonData.getInfo().getLineHeight());
+    
+    using NodeVector = std::vector<NJLIC::Node*>;
+    NodeVector nodeVector;
+    
     for (std::string::iterator iter = mCurrentPrintf.begin();
          iter != mCurrentPrintf.end(); iter++) {
 
@@ -320,7 +349,24 @@ NJLIC::Node *BitmapFont::printf(const char *fmt, ...) {
 
         if (ascii >= 32 and ascii <= 126) {
             // renderable letter.
-            renderLetter(ascii);
+            
+            size_t idx(ascii - 32);
+            
+            if (idx < frames.size()) {
+                LetterFrameInfo charData = LetterFrameInfo(frames.at(ascii - 32));
+                
+                
+                NJLIC::Node *node = renderLetter(ascii, charData);
+                node->setOrigin(glm::vec2(currentX, currentY));
+                
+                mMainNode->addChildNode(node);
+                scene->addActiveNode(node);
+                
+                nodeVector.push_back(node);
+                
+                currentX += 0.075;
+            }
+            
         } else {
             if (ascii == 10) {
                 // line feed
@@ -328,6 +374,17 @@ NJLIC::Node *BitmapFont::printf(const char *fmt, ...) {
                 // tab
             }
         }
+    }
+    
+    float xoffset(currentX / 2.0);
+    
+    for(NodeVector::iterator i = nodeVector.begin();
+        i != nodeVector.end();
+        i++) {
+        NJLIC::Node *node = *i;
+        glm::vec3 o(node->getOrigin());
+        o.x -= xoffset;
+        node->setOrigin(o);
     }
 
     //    BitmapFontData *bmfd = mFontMap.find(mCurrentFontName)->second;
@@ -392,67 +449,25 @@ NJLIC::Node *BitmapFont::printf(const char *fmt, ...) {
     //    std::printf("END\n");
     //    auto kernings = bmfd->_jsonData.getKernings();
 
-    return rootNode;
+    return mMainNode;
 }
 
-NJLIC::Node *BitmapFont::renderLetter(const int ascii) {
+NJLIC::Node *BitmapFont::renderLetter(int ascii, const LetterFrameInfo &charData) {
     NJLIC::Node *node = nullptr;
 
-    //    int mCurrentX;
-    //    int mCurrentY;
-    //    int mMaxx;
-
     if (ascii >= 32 and ascii <= 126) {
+        
         node = new NJLIC::Node();
+        
+        char buff[1024];
+        sprintf(buff, "%c", (char)ascii);
 
-        BitmapFontData *bmfd = mFontMap.find(mCurrentFontName)->second;
-        FrameVector frames = bmfd->_jsonData.getFrames();
-        size_t idx(ascii - 32);
-
-        if (idx < frames.size()) {
-            LetterFrameInfo charData = LetterFrameInfo(frames.at(ascii - 32));
-            std::printf("%lld\n", charData.id);
-
-            const int64_t base(bmfd->_jsonData.getInfo().getBase());
-            const std::string fontFace(bmfd->_jsonData.getInfo().getFontface());
-            const int64_t lineHeight(bmfd->_jsonData.getInfo().getLineHeight());
-
-            //
-            //            node:setName(charValue)
-            //            node:setGeometry(geometry)
-            //
-            //            geometry:setSpriteAtlasFrame(node,
-            //                charData.x,
-            //                charData.y,
-            //                charData.width,
-            //                charData.height)
-            //
-            //            geometry:setDimensions(node,
-            //                bullet.btVector2( charData.width*2,
-            //                charData.height*2), bullet.btVector2(
-            //                letter.xPivot, letter.yPivot ))
-
-            char buff[1024];
-            sprintf(buff, "%c", (char)ascii);
-
-            node->setName(buff);
-            node->addGeometry(mGeometry);
-            mGeometry->setSpriteAtlasFrame(node, charData.x, charData.y,
-                                           charData.width, charData.height);
-            mGeometry->setDimensions(
-                node, glm::vec2(charData.width, charData.height));
-            //
-            //
-
-            //            float xpos = mCurrentX + charData.xoffset;
-            //            float ypos = (lineHeight - charData.yoffset) -
-            //            (lineHeight - base) - mCurrentY;
-            //
-            //            float xadvance = charData.xadvance;
-            //
-            //            mCurrentX += xadvance;
-            //            mMaxx = std::max(mMaxx, mCurrentX);
-        }
+        node->setName(buff);
+        node->addGeometry(mGeometry);
+        mGeometry->setSpriteAtlasFrame(node, charData.x, charData.y,
+                                       charData.width, charData.height);
+        mGeometry->setDimensions(
+            node, glm::vec2(charData.width, charData.height));
     }
     return node;
 }

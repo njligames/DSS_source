@@ -251,8 +251,7 @@ void TestClass::init(const unsigned int numCards) {
                 NJLIC::Node *node = nullptr;
                 for (auto i = 0; i < numCards; i++) {
                     if (i == 0) {
-                        node =
-                            BitmapFont::getInstance()->renderLetter((int)'a');
+                        node = BitmapFont::getInstance()->printf(mScene, "%s", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
                     } else {
                         node = new NJLIC::Node();
                         node->addGeometry(mGeometry);

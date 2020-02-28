@@ -17,6 +17,8 @@
 #include "Shader.h"
 #include "SpriteGeometry.h"
 
+#include "Scene.h"
+
 struct BitmapFontData;
 
 struct LetterFrameInfo {
@@ -27,18 +29,18 @@ struct LetterFrameInfo {
           x(map["x"]), xadvance(map["xadvance"]), xoffset(map["xoffset"]),
           y(map["y"]), yoffset(map["yoffset"]) {}
 
-    int64_t height;
-    int64_t id;
-    int64_t sourceHeight;
-    int64_t sourceWidth;
-    int64_t sourceX;
-    int64_t sourceY;
-    int64_t width;
-    int64_t x;
-    int64_t xadvance;
-    int64_t xoffset;
-    int64_t y;
-    int64_t yoffset;
+    float height;
+    float id;
+    float sourceHeight;
+    float sourceWidth;
+    float sourceX;
+    float sourceY;
+    float width;
+    float x;
+    float xadvance;
+    float xoffset;
+    float y;
+    float yoffset;
 };
 
 class BitmapFont {
@@ -61,7 +63,11 @@ class BitmapFont {
 
     bool load(const std::string &fontName);
     bool unLoad(const std::string &fontName);
-
+    
+    NJLIC::Node *mMainNode;
+    int mSpacesInTab = 2;
+    int mMaxWidth = 1024;
+    enum { ALIGN_LEFT, ALIGN_MIDDLE, ALIGN_RIGHT, NUM_ALIGNS };
   public:
     static BitmapFont *getInstance() {
         if (nullptr == sBitmapFont)
@@ -81,14 +87,14 @@ class BitmapFont {
     void setCurrentBounds(const glm::vec2 &bounds);
     void setCurrentFontName(const std::string &fontName);
 
-    NJLIC::Node *printf(const char *fmt, ...);
+    NJLIC::Node *printf(NJLIC::Scene *scene, const char *fmt, ...);
 
   protected:
     using Frame = std::map<std::string, int64_t>;
     using FrameVector = std::vector<Frame>;
 
   public:
-    NJLIC::Node *renderLetter(const int c);
+    NJLIC::Node *renderLetter(int ascii, const LetterFrameInfo &charData);
 };
 
 #endif /* BitmapFont_hpp */
