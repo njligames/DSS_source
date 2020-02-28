@@ -205,15 +205,24 @@ f 2/1/1 4/4/1 3/2/1
 
              */
 
+            float w(mWidth), h(mHeight);
+            float ratiox = 1.0;
+            float ratioy = 1.0;
+            if (w > h) {
+                ratiox = w / h;
+            } else if (w < h) {
+                ratioy = h / w;
+            }
+
             float left_half_width =
-                (dimensions.x * spritePivotPoint.x) / mWidth;
+                ((dimensions.x * spritePivotPoint.x) / w) * ratiox;
             float right_half_width =
-                (dimensions.x * (1.0f - spritePivotPoint.x)) / mWidth;
+                ((dimensions.x * (1.0f - spritePivotPoint.x)) / w) * ratiox;
 
             float bottom_half_height =
-                (dimensions.y * spritePivotPoint.y) / mHeight;
+                ((dimensions.y * spritePivotPoint.y) / h) * ratioy;
             float top_half_height =
-                (dimensions.y * (1.0f - spritePivotPoint.y)) / mHeight;
+                ((dimensions.y * (1.0f - spritePivotPoint.y)) / h) * ratioy;
 
             glm::vec2 bottomLeft(BL_VERTEX.x * left_half_width,
                                  BL_VERTEX.y * bottom_half_height);

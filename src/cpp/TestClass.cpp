@@ -91,9 +91,9 @@ TestClass *TestClass::sInstance = nullptr;
 
 TestClass::TestClass()
     : mWindow(nullptr), mRenderer(nullptr), mIsDone(true),
-      mShader(new NJLIC::Shader()), mGeometry(new NJLIC::MeshGeometry()),
-      mFontGeometry(new NJLIC::SpriteGeometry()), mCamera(new NJLIC::Camera()),
-      mCameraNode(new NJLIC::Node()), mScene(new NJLIC::Scene()) {}
+      mShader(new NJLIC::Shader()), //mGeometry(new NJLIC::SpriteGeometry()),
+      mCamera(new NJLIC::Camera()), mCameraNode(new NJLIC::Node()),
+      mScene(new NJLIC::Scene()) {}
 
 // TestClass::TestClass(SDL_Window *window, SDL_Renderer *renderer)
 //    : mWindow(window), mRenderer(renderer), mIsDone(true) {}
@@ -115,14 +115,11 @@ TestClass::~TestClass() {
     delete mCamera;
     mCamera = nullptr;
 
-    delete mGeometry;
-    mGeometry = nullptr;
+//    delete mGeometry;
+//    mGeometry = nullptr;
 
     delete mShader;
     mShader = nullptr;
-
-    delete mFontGeometry;
-    mFontGeometry = nullptr;
 
     NJLIC::BackgroundRenderer::destroyInstance();
     BitmapFont::destroyInstance();
@@ -171,15 +168,16 @@ void TestClass::init(const unsigned int numCards) {
     mIsDone = false;
     //    mMutex.unlock();
 
-//#define TEST_DL
+#define TEST_DL
 
 #ifdef TEST_DL
     int numberOfDaysToGoBack((365 * 4) + 1);
     numberOfDaysToGoBack = 1;
     NJLIC::Date formatted_date(6, 10, 2018);
 
-    mGameModelDataVector.push_back(
-        GameModelData::generateGameModelData(formatted_date));
+    GameModelData *gmd = GameModelData::generateGameModelData(formatted_date);
+
+    mGameModelDataVector.push_back(gmd);
 
 //    NJLIC::Date date(formatted_date);
 //    for (int i = 0; i < numberOfDaysToGoBack; ++i, date--) {
@@ -205,6 +203,9 @@ void TestClass::init(const unsigned int numCards) {
     //        NJLIC::Camera *pCamera = new NJLIC::Camera();
     //        NJLIC::Geometry *pGeometry = new NJLIC::Geometry();
     //    }
+
+//    mstep = 0;
+//    control = 0;
 
     UtilDSS::printGLInfo();
 
@@ -244,70 +245,81 @@ void TestClass::init(const unsigned int numCards) {
 
             if (objData) {
                 const std::string &filedata(objData);
-                mGeometry->load(mShader, filedata, numCards);
-                mGeometry->loadDiffuseMatrial(mShader, "assets/Default.png");
+                //                mGeometry->load(mShader, filedata, numCards);
+//                mGeometry->load(mShader, numCards);
+//                mGeometry->loadDiffuseMatrial(mShader, "assets/loading.jpg");
 
-                mFontGeometry->load(mShader, filedata, numCards);
-                mFontGeometry->loadDiffuseMatrial(
-                    mShader, "assets/fonts/FranklinGothicMedium.png");
+//                mBufferData0 = (unsigned char *)UtilDSS::loadImage(
+//                    "assets/test1.jpg", &mwidth0, &mheight0,
+//                    &mchannels_in_file0);
+//                mBufferData1 = (unsigned char *)UtilDSS::loadImage(
+//                    "assets/test1b.jpg", &mwidth1, &mheight1,
+//                    &mchannels_in_file1);
 
-                NJLIC::Node *node = nullptr;
-                for (auto i = 0; i < numCards; i++) {
-                    if (i == 0) {
-                        node = BitmapFont::getInstance()->printf(
-                            mScene, "%s", "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz");
-                        
-//                        node = BitmapFont::getInstance()->printf(
-//                        mScene, "%s", "rj");
-                    } else {
-                        node = new NJLIC::Node();
-                        node->addGeometry(mGeometry);
-                    }
-                    mCubeNodes.push_back(node);
-                }
+                //                NJLIC::Node *node = nullptr;
+                //                for (auto i = 0; i < numCards; i++) {
+                ////                    if (i == 0) {
+                ////                        node =
+                ///BitmapFont::getInstance()->printf( / mScene, "%s",
+                ///"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz");
+                ////
+                //////                        node =
+                ///BitmapFont::getInstance()->printf(
+                //////                        mScene, "%s", "rj");
+                ////                    } else {
+                //                        node = new NJLIC::Node();
+                //                        node->addGeometry(mGeometry);
+                //
+                //
+                ////                    }
+                //                    mGeometry->setDimensions(node,
+                //                    glm::vec2(mGeometry->getDiffuseImageWidth(),
+                //                    mGeometry->getDiffuseImageHeight()));
+                //                    mCubeNodes.push_back(node);
+                //                }
 
                 loaded = true;
             }
         }
     }
 
-    if (loaded) {
-        //        float start_x = -4.0f;
-        float start_x = 0.0f;
-        float x_inc = 1.0f;
-        float x_gutter = 0.5;
-
-        float x = start_x;
-        int ii = 0;
-
-        for (std::vector<NJLIC::Node *>::iterator i = mCubeNodes.begin();
-             i != mCubeNodes.end(); i++) {
-            NJLIC::Node *node = *i;
-
-            node->setOrigin(glm::vec3(x, -1.5, 0));
-
-            mScene->addActiveNode(node);
-            mScene->getRootNode()->addChildNode(node);
-
-            if (ii == 0) {
-                //                node->setScale(5.);
-                //                node->addGeometry(mFontGeometry);
-            } else {
-                //                node->addGeometry(mGeometry);
-            }
-
-            x += x_inc;
-            x += x_gutter;
-            ii++;
-            //            node->setColorBase(glm::vec4(randomFloat(0.0f, 1.0f),
-            //                                         randomFloat(0.0f, 1.0f),
-            //                                         randomFloat(0.0f, 1.0f), 1.0f));
-
-            //            node->setColorBase(glm::vec4(1.0f,
-            //                                         1.0f,
-            //                                         1.0f, 1.0f));
-        }
-    }
+    //    if (loaded) {
+    //        //        float start_x = -4.0f;
+    //        float start_x = 0.0f;
+    //        float x_inc = 1.0f;
+    //        float x_gutter = 0.5;
+    //
+    //        float x = start_x;
+    //        int ii = 0;
+    //
+    //        for (std::vector<NJLIC::Node *>::iterator i = mCubeNodes.begin();
+    //             i != mCubeNodes.end(); i++) {
+    //            NJLIC::Node *node = *i;
+    //
+    //            node->setOrigin(glm::vec3(x, -1.5, 0));
+    //
+    //            mScene->addActiveNode(node);
+    //            mScene->getRootNode()->addChildNode(node);
+    //
+    //            if (ii == 0) {
+    //                //                node->setScale(5.);
+    //                //                node->addGeometry(mFontGeometry);
+    //            } else {
+    //                //                node->addGeometry(mGeometry);
+    //            }
+    //
+    //            x += x_inc;
+    //            x += x_gutter;
+    //            ii++;
+    //            // node->setColorBase(glm::vec4(randomFloat(0.0f, 1.0f),
+    //            // randomFloat(0.0f, 1.0f),
+    //            // randomFloat(0.0f, 1.0f), 1.0f));
+    //
+    //            //            node->setColorBase(glm::vec4(1.0f,
+    //            //                                         1.0f,
+    //            //                                         1.0f, 1.0f));
+    //        }
+    //    }
 
     //    BitmapFont::getInstance()->load("FranklinGothicMedium");
     //    BitmapFont::getInstance()->load("FranklinGothicMedium");
@@ -357,17 +369,107 @@ void TestClass::unInit() {
     }
 }
 void TestClass::update(float step) {
+//    mstep += step;
 
+    
+    const float tileWidth = 0.888888895f;
+    
+    float start_x = -3.0f;
+    float x_inc = tileWidth;
+    float x_gutter_selected = tileWidth / 2.f;
+    float x_gutter = tileWidth / 10.f;
+
+    float x = start_x;
+    
+    for(int i = 0; i < mGameModelViewVector.size();i++) {
+        GameModelViewData *gmvd = mGameModelViewVector.at(i);
+
+
+        NJLIC::Node *imageNode = gmvd->getImageNode();
+
+//        glm::vec3 pos(imageNode->getOrigin());
+        
+        if(mpSelectedNode == imageNode) {
+
+//            imageNode->setScale(1.5f);
+
+        } else {
+            
+        }
+    }
+    
+    
+
+    for (int i = 0; i < mGameModelDataVector.size(); i++) {
+        GameModelData *gmd = mGameModelDataVector.at(i);
+        if (nullptr != gmd && mGameModelViewVector.size() == 0 &&
+            gmd->hasGames()) {
+            gmd->getGameModelViewVector(mGameModelViewVector);
+
+            for (int j = 0; j < mGameModelViewVector.size(); j++) {
+                GameModelViewData *gmvd = mGameModelViewVector.at(j);
+
+                gmvd->load(mShader);
+
+                NJLIC::Node *imageNode = gmvd->getImageNode();
+
+                mScene->addActiveNode(imageNode);
+                mScene->getRootNode()->addChildNode(imageNode);
+                
+                imageNode->setOrigin(glm::vec3(x, -1.5, 0));
+
+                if(0==j) {
+                    imageNode->setScale(1.5f);
+                    mpSelectedNode = imageNode;
+                    
+                    x += x_inc;
+                    x += x_gutter_selected;
+                } else {
+                    x += x_inc;
+                    x += x_gutter_selected;
+                    
+                }
+                
+                
+                    
+                
+//                if(0==j)
+//                    imageNode->setScale(1.5f);
+                
+                
+            }
+        }
+    }
     //    printf("%f\n", step);
 
-    NJLIC::Node *node = mCubeNodes.at(0);
+    //    NJLIC::Node *node = mCubeNodes.at(0);
+    //
+    //    glm::quat rot2;
+    //    rot2 = glm::rotate(rot2, m_Rotation, glm::vec3(0.0, 1.0, 0.0));
+    //    //        btQuaternion rot3(glm::vec3(0.0, 0.0, 1.0), m_Rotation);
+    //    //        node->setRotation(rot1 * rot2 * rot3);
+    ////    node->setRotation(rot2);
+    //    m_Rotation += step;
 
-    glm::quat rot2;
-    rot2 = glm::rotate(rot2, m_Rotation, glm::vec3(0.0, 1.0, 0.0));
-    //        btQuaternion rot3(glm::vec3(0.0, 0.0, 1.0), m_Rotation);
-    //        node->setRotation(rot1 * rot2 * rot3);
-//    node->setRotation(rot2);
-    m_Rotation += step;
+    //    if(mstep > 1.) {
+    //
+    //        for(int i = 0; i < mCubeNodes.size(); i++) {
+    //            NJLIC::Node * node = mCubeNodes[i];
+    //
+    //            if(control % 2 == 0) {
+    //                mGeometry->reloadDiffuseMatrial(mShader, mBufferData0,
+    //                mwidth0, mheight0, mchannels_in_file0);
+    //            }
+    //            else {
+    //                mGeometry->reloadDiffuseMatrial(mShader, mBufferData1,
+    //                mwidth1, mheight1, mchannels_in_file1);
+    //            }
+    //
+    //
+    //        }
+    //        control++;
+    //        mstep = 0.0f;
+    //    }
 
     mScene->update(step);
 }
@@ -382,6 +484,11 @@ void TestClass::render() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, 1920 * 2, 1920 * 2);
+    
+    for(int i = 0; i < mGameModelViewVector.size(); i++) {
+        GameModelViewData *gmvd = mGameModelViewVector.at(i);
+        gmvd->render();
+    }
     mScene->render();
 }
 
@@ -862,6 +969,85 @@ void TestClass::resize(int w, int h) {}
 
 bool TestClass::isDone() const { return mIsDone; }
 
+void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
+                        bool withControl, bool withShift, bool withAlt,
+             bool withGui) {
+//    NJLIC::Node *mpSelectedNode = nullptr;
+//    int mSelectedIndex = 0;
+    
+    
+}
+void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
+                      bool withControl, bool withShift, bool withAlt,
+           bool withGui) {
+    
+    bool updated = false;
+    
+    if(keycodeName == "Right") {
+        if(mSelectedIndex < mGameModelViewVector.size() - 1) {
+            
+            mpSelectedNode->setScale(1.f);
+            
+            mSelectedIndex++;
+            
+            mpSelectedNode = mGameModelViewVector.at(mSelectedIndex)->getImageNode();
+            mpSelectedNode->setScale(1.5f);
+            
+//            updated = true;
+        }
+    } else if(keycodeName == "Left") {
+        if(mSelectedIndex > 0) {
+            mpSelectedNode->setScale(1.f);
+            
+            mSelectedIndex--;
+            
+            mpSelectedNode = mGameModelViewVector.at(mSelectedIndex)->getImageNode();
+            mpSelectedNode->setScale(1.5f);
+            
+//            updated = true;
+        }
+    }
+    
+    if(updated) {
+        const float tileWidth = 0.888888895f;
+            
+            float start_x = -3.0f;
+            float x_inc = tileWidth;
+            float x_gutter_selected = tileWidth / 2.f;
+            float x_gutter = tileWidth / 10.f;
+
+            float x = start_x;
+            
+            for(int i = 0; i < mGameModelViewVector.size();i++) {
+                GameModelViewData *gmvd = mGameModelViewVector.at(i);
+
+                NJLIC::Node *imageNode = gmvd->getImageNode();
+                
+                imageNode->setOrigin(glm::vec3(x, -1.5, 0));
+
+                if(mpSelectedNode == imageNode) {
+                    x += x_inc;
+                    x += x_gutter_selected;
+                } else {
+                    if(i + 1 < mGameModelViewVector.size()) {
+                        GameModelViewData *gmvd_next = mGameModelViewVector.at(i);
+                        
+                        if(gmvd_next->getImageNode() == mpSelectedNode) {
+                            x += x_inc;
+                            x += x_gutter_selected;
+                        }
+                    } else {
+                        x += x_inc;
+                        x += x_gutter;
+                    }
+                    
+                    
+                }
+            }
+    }
+    
+    
+}
 std::string TestClass::loadStringData(char *path) {
     void *buffer = nullptr;
     long fileSize;

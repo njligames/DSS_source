@@ -145,6 +145,12 @@ GameModelData::~GameModelData() {
     }
 }
 
+void GameModelData::getGameModelViewVector(
+    std::vector<GameModelViewData *> &v) {
+    v = mGameModelViewDataVector;
+}
+bool GameModelData::hasGames() const { return mHasGames; }
+
 GameModelData *GameModelData::generateGameModelData(const NJLIC::Date &date) {
     static char buff[4096];
 
@@ -193,6 +199,7 @@ void GameModelData::update(Publisher *who, void *userdata) {
             GameModelViewData::loadGames(_dateElement.getMutableGames(),
                                          mGameModelViewDataVector);
 
+            mHasGames = true;
             for (std::vector<GameModelViewData *>::iterator iter =
                      mGameModelViewDataVector.begin();
                  iter != mGameModelViewDataVector.end(); ++iter) {

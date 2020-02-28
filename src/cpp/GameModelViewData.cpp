@@ -219,13 +219,18 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
                                .getPhoto()
                                .getTitle()
                                .c_str()),
-      mListItemImageData(nullptr), mListItemImageUrl("") {
+      mListItemImageData(nullptr), mListItemImageUrl(""),
+      mImageNode(new NJLIC::Node()),
+      mImageGeometry(new NJLIC::SpriteGeometry()), mpImageShader(nullptr)
+
+{
 
     MLBJson::MlbMedia _media =
         game.getContent().getEditorial().getRecap().getMlb().getMedia();
 
     MLBJson::Cut largest_cut;
     int64_t largestSize = 0;
+
     for (std::vector<MLBJson::Cut>::const_iterator cut_iterator =
              _media.getImage().getCuts().begin();
          cut_iterator != _media.getImage().getCuts().end(); ++cut_iterator) {
@@ -244,6 +249,10 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
     MLBJson::Photo _photo =
         game.getContent().getEditorial().getRecap().getMlb().getPhoto();
 
+    const int FIND_WIDTH(1920), FIND_HEIGHT(1080);
+    MLBJson::Cut find_cut;
+    bool found_cut = false;
+
     largestSize = 0;
     for (std::map<std::string, MLBJson::Cut>::const_iterator cuts_iterator =
              _photo.getCuts().begin();
@@ -254,20 +263,43 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
 
         int64_t w = value.getWidth();
         int64_t h = value.getHeight();
+        if (!found_cut && FIND_WIDTH == w && FIND_HEIGHT == h &&
+            UtilDSS::validUrl(value.getSrc())) {
+            find_cut = value;
+            found_cut = true;
+        }
         if ((w * h) > largestSize && UtilDSS::validUrl(value.getSrc())) {
             largestSize = w * h;
             largest_cut = value;
         }
     }
 
-    mListItemImageUrl = largest_cut.getSrc().c_str();
+    if (found_cut) {
+        mListItemImageUrl = find_cut.getSrc().c_str();
+    } else {
+        mListItemImageUrl = largest_cut.getSrc().c_str();
+    }
 }
 
 GameModelViewData::~GameModelViewData() {
 
+    
     if (nullptr != mDetailImageData)
         free(mDetailImageData);
     mDetailImageData = nullptr;
+}
+
+void GameModelViewData::load(NJLIC::Shader *imageShader) {
+    assert(imageShader);
+
+    mpImageShader = imageShader;
+
+    mImageGeometry->load(mpImageShader);
+    mImageGeometry->loadDiffuseMatrial(mpImageShader, "assets/loading.jpg");
+    mImageNode->addGeometry(mImageGeometry);
+    mImageGeometry->setDimensions(
+        mImageNode, glm::vec2(mImageGeometry->getDiffuseImageWidth(),
+                              mImageGeometry->getDiffuseImageHeight()));
 }
 
 const std::string &GameModelViewData::getHomeName() const { return mHomeName; }
@@ -393,17 +425,26 @@ void GameModelViewData::setImageData(const std::string &url, FileData *fd) {
             stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr,
                            100);
 #endif
+            
+
+            
+            if (url == mListItemImageUrl) {
+                if (nullptr != mListItemImageData)
+                    free(mListItemImageData);
+                mListItemImageData = ptr;
+                mReceivedListItemData=true;
+            } else if (url == mDetailImageUrl) {
+                if (nullptr != mDetailImageData)
+                    free(mDetailImageData);
+                mDetailImageData = ptr;
+            }
+            
         }
 
-        if (url == mListItemImageUrl) {
-            if (nullptr != mListItemImageData)
-                free(mListItemImageData);
-            mListItemImageData = ptr;
-        } else if (url == mDetailImageUrl) {
-            if (nullptr != mDetailImageData)
-                free(mDetailImageData);
-            mDetailImageData = ptr;
-        }
+        
+        
+        
+        
 
         notify(fd);
     }
@@ -513,7 +554,7 @@ static void multi_image_download(CURLM *multi_handle,
         FileData *fd = fileDataVector.back();
         fd->_gvd_ptr->setImageData(fd->_url, fd);
         fileDataVector.pop_back();
-        delete fd;
+                delete fd;
     }
 
     curl_multi_cleanup(multi_handle);
@@ -534,6 +575,9 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
     for (std::vector<MLBJson::Game>::const_iterator iter = games.begin();
          iter != games.end(); ++iter) {
 
+        if (gvdVector.size() > 8) {
+            continue;
+        }
         GameModelViewData *gvd = new GameModelViewData(*iter);
         gvdVector.push_back(gvd);
 
@@ -598,12 +642,46 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
                                        handleList, fileDataVector);
 }
 
+void GameModelViewData::render() {
+    if(nullptr != mListItemImageData) {
+        if(mReceivedListItemData) {
+            mImageGeometry->reloadDiffuseMatrial(
+            mpImageShader, (unsigned char *)mListItemImageData,
+            mImageGeometry->getDiffuseImageWidth(),
+            mImageGeometry->getDiffuseImageHeight(),
+            mImageGeometry->gertDiffuseImageChannels());
+            
+            mReceivedListItemData=false;
+        }
+    }
+}
+
 void GameModelViewData::update(Publisher *who, void *userdata) {
+    //    std::unique_lock<std::mutex> lock(mMutex);
+
     GameModelViewData *completed_me = dynamic_cast<GameModelViewData *>(who);
     FileData *fd = static_cast<FileData *>(userdata);
 
-    if (nullptr != completed_me && nullptr != fd) {
+    if (nullptr != mpImageShader && nullptr != completed_me && nullptr != fd) {
+//        completed_me->setImageData(fd);
+
         SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
                        "This image is now loaded. (%s)\n", fd->_url.c_str());
     }
 }
+
+//void GameModelViewData::setImageData(FileData *fd) {
+////    std::unique_lock<std::mutex> lock(mMutex);
+//
+//    if(mBuffer)
+//        free(mBuffer);
+//
+//    mBuffer = (char *)malloc(fd->_size);
+//    memcpy(mBuffer, fd->_buffer, fd->_size);
+//
+//
+//
+//    mReloaded = false;
+//
+//}
+

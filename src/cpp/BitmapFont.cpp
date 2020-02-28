@@ -318,7 +318,6 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
     xStart = yStart = 0.0;
     size_t letterIndex(0);
 
-
     NJLIC::Node *node;
     bool recycleNode(false);
     float xMax, yMax;
@@ -338,33 +337,33 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
     float lineHeight(bmfd->_jsonData.getInfo().getLineHeight());
     float base(bmfd->_jsonData.getInfo().getBase());
     float scale(1.0);
-    
+
     bmfd->_jsonData.getKernings();
 
     using NodeVector = std::vector<NJLIC::Node *>;
     NodeVector nodeVector;
 
-    for(int i = 0; i < mCurrentPrintf.size(); i++) {
-//    for (std::string::iterator iter = mCurrentPrintf.begin();
-//         iter != mCurrentPrintf.end(); iter++) {
+    for (int i = 0; i < mCurrentPrintf.size(); i++) {
+        //    for (std::string::iterator iter = mCurrentPrintf.begin();
+        //         iter != mCurrentPrintf.end(); iter++) {
 
-//        "114,106": 27,
-        
-//        int ascii = (int)*iter;
+        //        "114,106": 27,
+
+        //        int ascii = (int)*iter;
         int ascii = (int)mCurrentPrintf.at(i);
         int previousAscii = 0;
-        if(i - 1 >= 0) {
+        if (i - 1 >= 0) {
             previousAscii = (int)mCurrentPrintf.at(i - 1);
         }
-        
+
         float kerning = 0.0;
         using KerningMap = std::map<std::string, int64_t>;
         char buff[1024];
-        sprintf(buff, "%d,%d", previousAscii,ascii);
+        sprintf(buff, "%d,%d", previousAscii, ascii);
         const std::string &key(buff);
         auto _kerning = bmfd->_jsonData.getKernings().find(key);
-        
-        if(_kerning != bmfd->_jsonData.getKernings().end()) {
+
+        if (_kerning != bmfd->_jsonData.getKernings().end()) {
             kerning = float(_kerning->second);
         } else {
             kerning = 0.0;
@@ -378,7 +377,7 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
             if (idx < frames.size()) {
                 LetterFrameInfo charData =
                     LetterFrameInfo(frames.at(ascii - 32));
-                
+
                 scale = charData.scale;
 
                 NJLIC::Node *node = renderLetter(ascii, charData);
@@ -397,10 +396,10 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
         } else {
             if (ascii == 10) {
                 // line feed
-                
+
                 currentX = 0;
                 currentY -= (base * scale);
-                
+
             } else if (ascii == 9) {
                 // tab
             }

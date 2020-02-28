@@ -193,14 +193,20 @@ namespace NJLIC {
 
         void render(Camera *camera);
 
-        void loadDiffuseMatrial(Shader *shader,
-                                const unsigned char *diffuseFileData, int width,
-                                int height, int channels_in_file);
+        virtual void loadDiffuseMatrial(Shader *shader,
+                                        const unsigned char *diffuseFileData,
+                                        int width, int height,
+                                        int channels_in_file);
 
-        bool loadDiffuseMatrial(Shader *shader, const std::string &diffuseFile);
+        virtual bool loadDiffuseMatrial(Shader *shader,
+                                        const std::string &diffuseFile);
         void reloadDiffuseMatrial(Shader *shader,
                                   const unsigned char *diffuseFileData,
                                   int width, int height, int channels_in_file);
+
+        int getDiffuseImageWidth() const { return mWidth; }
+        int getDiffuseImageHeight() const { return mHeight; }
+        int gertDiffuseImageChannels() const { return mChannels; }
 
       protected:
         const void *getModelViewTransformArrayBufferPtr() const;
@@ -283,6 +289,7 @@ namespace NJLIC {
       protected:
         int mWidth;
         int mHeight;
+        int mChannels;
     };
 } // namespace NJLIC
 

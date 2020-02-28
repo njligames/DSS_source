@@ -303,7 +303,7 @@ namespace NJLIC {
 
     const glm::vec3 &Node::getScale() const { return *mScale; }
 
-    void Node::setScale(const glm::vec3 &scale) { *mScale = scale; }
+    void Node::setScale(const glm::vec3 &scale) { *mScale = scale;m_TransformDirty = true; }
 
     void Node::setScale(const float scale) {
         glm::vec3 _scale(scale, scale, scale);

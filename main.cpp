@@ -463,6 +463,11 @@ static void handleInput()
 //              NJLI_HandleKeyUp(SDL_GetScancodeName(event.key.keysym.scancode),
 //                               withCapsLock, withControl, withShift, withAlt,
 //                               withGui);
+                g_update_mutex.lock();
+                TestClass::getInstance()->keyUp(SDL_GetScancodeName(event.key.keysym.scancode),
+                withCapsLock, withControl, withShift, withAlt,
+                withGui);
+                g_update_mutex.unlock();
             }
             break;
           case SDL_KEYDOWN:
@@ -477,6 +482,11 @@ static void handleInput()
               bool withAlt = !!(event.key.keysym.mod & KMOD_ALT);
               bool withGui = !!(event.key.keysym.mod & KMOD_GUI);
 
+                g_update_mutex.lock();
+                TestClass::getInstance()->keyDown(SDL_GetScancodeName(event.key.keysym.scancode),
+                                                 withCapsLock, withControl, withShift, withAlt,
+                                                 withGui);
+                g_update_mutex.unlock();
 //              NJLI_HandleKeyDown(SDL_GetScancodeName(event.key.keysym.scancode),
 //                                 withCapsLock, withControl, withShift, withAlt,
 //                                 withGui);
@@ -1269,7 +1279,7 @@ main(int argc, char *argv[])
 #endif
 
           TestClass::createInstance();
-          TestClass::getInstance()->init(1);
+          TestClass::getInstance()->init(10);
 //    if (!njli::NJLIGameEngine::create(
 //            DeviceUtil::hardwareDescription().c_str()))
 //      {

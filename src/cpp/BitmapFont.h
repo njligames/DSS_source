@@ -36,14 +36,12 @@ struct LetterFrameInfo {
     float yoffset;
     float scale;
 
-  
     LetterFrameInfo(std::map<std::string, int64_t> map)
         : height(map["height"]), id(map["id"]),
           sourceHeight(map["sourceHeight"]), sourceWidth(map["sourceWidth"]),
           sourceX(map["sourceX"]), sourceY(map["sourceY"]), width(map["width"]),
           x(map["x"]), xadvance(map["xadvance"]), xoffset(map["xoffset"]),
           y(map["y"]), yoffset(map["yoffset"]), scale(.00019) {}
-
 };
 
 class BitmapFont {

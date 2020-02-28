@@ -127,7 +127,7 @@ namespace NJLIC {
           m_OpacityModifyRGB(false), m_VertexBufferChanged(true),
           m_NormalMatrixBufferChanged(true), m_ModelViewBufferChanged(true),
           m_ShaderChanged(true), mDiffuseTexture(-1), mFormat(GL_RGBA),
-          mWidth(2), mHeight(2) {
+          mWidth(2), mHeight(2), mChannels(1) {
         assert(m_MatrixBuffer);
         assert(m_MatrixBufferFullSize);
 
@@ -657,26 +657,27 @@ namespace NJLIC {
         assert(nullptr != diffuseFileData);
 
         GLint internalformat = GL_RGBA;
+        mFormat = GL_RGBA;
 
-        switch (channels_in_file) {
-        case 1: {
-            internalformat = GL_LUMINANCE;
-            mFormat = GL_LUMINANCE;
-        } break;
-
-        case 2: {
-            internalformat = GL_LUMINANCE_ALPHA;
-            mFormat = GL_LUMINANCE_ALPHA;
-        } break;
-        case 3: {
-            internalformat = GL_RGB;
-            mFormat = GL_RGB;
-        } break;
-        case 4: {
-            internalformat = GL_RGBA;
-            mFormat = GL_RGBA;
-        } break;
-        }
+//                switch (channels_in_file) {
+//                case 1: {
+//                    internalformat = GL_LUMINANCE;
+//                    mFormat = GL_LUMINANCE;
+//                } break;
+//
+//                case 2: {
+//                    internalformat = GL_LUMINANCE_ALPHA;
+//                    mFormat = GL_LUMINANCE_ALPHA;
+//                } break;
+//                case 3: {
+//                    internalformat = GL_RGB;
+//                    mFormat = GL_RGB;
+//                } break;
+//                case 4: {
+//                    internalformat = GL_RGBA;
+//                    mFormat = GL_RGBA;
+//                } break;
+//                }
         // Create a new texture from the camera frame data, display that
         // using the shaders
         glGenTextures(1, &mDiffuseTexture);
@@ -723,14 +724,13 @@ namespace NJLIC {
     bool Geometry::loadDiffuseMatrial(Shader *shader,
                                       const std::string &diffuseFile) {
 
-        int channels_in_file;
         unsigned char *buffer = (unsigned char *)UtilDSS::loadImage(
-            diffuseFile, &mWidth, &mHeight, &channels_in_file);
+            diffuseFile, &mWidth, &mHeight, &mChannels);
 
         if (nullptr != buffer) {
 
             Geometry::loadDiffuseMatrial(shader, buffer, mWidth, mHeight,
-                                         channels_in_file);
+                                         mChannels);
 
             free(buffer);
             return true;
@@ -748,7 +748,7 @@ namespace NJLIC {
             glBindTexture(GL_TEXTURE_2D, mDiffuseTexture);
             UtilDSS::glErrorCheck();
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLsizei(mWidth),
-                            GLsizei(mHeight), mFormat, GL_UNSIGNED_BYTE,
+                            GLsizei(mHeight), GL_RGB, GL_UNSIGNED_BYTE,
                             diffuseFileData);
             UtilDSS::glErrorCheck();
         }

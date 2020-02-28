@@ -33,9 +33,13 @@ class GameModelData : public Publisher, public Subscriber {
                       "schedule?hydrate=game(content(editorial(recap)"
                       ")),decisions&date=2018-06-10&sportId=1");
 
+    bool mHasGames = false;
+
   public:
     ~GameModelData();
 
+    void getGameModelViewVector(std::vector<GameModelViewData *> &v);
+    bool hasGames() const;
     /// Crate an instance to this class and kick off a background routine to
     /// download the json data, asynchrounsly. Once the json data is downloaded,
     /// new instances of the GameModelViewData objects will be created for each

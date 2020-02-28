@@ -14,6 +14,10 @@
 #include <mutex>  // std::mutex
 #include <thread> // std::thread
 
+#include "Node.h"
+#include "Shader.h"
+#include "SpriteGeometry.h"
+
 struct FileData;
 
 class GameModelViewData : public Publisher, public Subscriber {
@@ -29,6 +33,7 @@ class GameModelViewData : public Publisher, public Subscriber {
 
     std::string mListItemDescription;
     void *mListItemImageData;
+    bool mReceivedListItemData = false;
     std::string mListItemImageUrl;
     std::thread *mListItemImageThread;
 
@@ -38,9 +43,18 @@ class GameModelViewData : public Publisher, public Subscriber {
 
     std::mutex mMutex;
 
+    NJLIC::Node *mImageNode;
+    NJLIC::SpriteGeometry *mImageGeometry;
+
+    NJLIC::Shader *mpImageShader;
+
+
   public:
     GameModelViewData(const MLBJson::Game &game);
     ~GameModelViewData();
+
+    void load(NJLIC::Shader *imageShader);
+    NJLIC::Node *getImageNode() const { return mImageNode; }
 
     const std::string &getHomeName() const;
     const std::string &getAwayName() const;
@@ -69,10 +83,13 @@ class GameModelViewData : public Publisher, public Subscriber {
 
     virtual void update(Publisher *who, void *userdata = 0);
 
+    virtual void render();
+
   protected:
     bool download_jpeg(const char *url,
                        size_t (*fun_ptr)(void *ptr, size_t size, size_t nmemb,
                                          void *userdata));
+    
 };
 
 #endif /* GameViewData_h */
