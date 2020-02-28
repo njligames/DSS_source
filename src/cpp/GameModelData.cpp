@@ -84,10 +84,11 @@ static void download_json(GameModelData *gmd) {
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
                                 callbackfunction));
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
-#if !(defined(NDEBUG))
-    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
-#endif
-    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT, 5L));
+    //#if !(defined(NDEBUG))
+    //    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
+    //#endif
+    //    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT,
+    //    5L));
 
     CURLcode rc = curl_easy_perform(fd->_curlCtx);
     if (rc) {

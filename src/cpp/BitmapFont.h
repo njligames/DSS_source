@@ -22,13 +22,6 @@
 struct BitmapFontData;
 
 struct LetterFrameInfo {
-    LetterFrameInfo(std::map<std::string, int64_t> map)
-        : height(map["height"]), id(map["id"]),
-          sourceHeight(map["sourceHeight"]), sourceWidth(map["sourceWidth"]),
-          sourceX(map["sourceX"]), sourceY(map["sourceY"]), width(map["width"]),
-          x(map["x"]), xadvance(map["xadvance"]), xoffset(map["xoffset"]),
-          y(map["y"]), yoffset(map["yoffset"]) {}
-
     float height;
     float id;
     float sourceHeight;
@@ -41,6 +34,16 @@ struct LetterFrameInfo {
     float xoffset;
     float y;
     float yoffset;
+    float scale;
+
+  
+    LetterFrameInfo(std::map<std::string, int64_t> map)
+        : height(map["height"]), id(map["id"]),
+          sourceHeight(map["sourceHeight"]), sourceWidth(map["sourceWidth"]),
+          sourceX(map["sourceX"]), sourceY(map["sourceY"]), width(map["width"]),
+          x(map["x"]), xadvance(map["xadvance"]), xoffset(map["xoffset"]),
+          y(map["y"]), yoffset(map["yoffset"]), scale(.00019) {}
+
 };
 
 class BitmapFont {
@@ -63,11 +66,12 @@ class BitmapFont {
 
     bool load(const std::string &fontName);
     bool unLoad(const std::string &fontName);
-    
+
     NJLIC::Node *mMainNode;
     int mSpacesInTab = 2;
     int mMaxWidth = 1024;
     enum { ALIGN_LEFT, ALIGN_MIDDLE, ALIGN_RIGHT, NUM_ALIGNS };
+
   public:
     static BitmapFont *getInstance() {
         if (nullptr == sBitmapFont)

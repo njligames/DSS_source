@@ -92,10 +92,11 @@ static FileData *download_jpeg(const char *url) {
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
                                 callbackfunction));
     CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
-#if !(defined(NDEBUG))
-    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
-#endif
-    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT, 5L));
+    //#if !(defined(NDEBUG))
+    //    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
+    //#endif
+    //    CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT,
+    //    5L));
 
     CURLcode rc = curl_easy_perform(fd->_curlCtx);
     if (rc) {
@@ -549,10 +550,12 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
                                     callbackfunction));
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
-#if !(defined(NDEBUG))
-        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
-#endif
-        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT, 5L));
+        //#if !(defined(NDEBUG))
+        //        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS,
+        //        0L));
+        //#endif
+        //        CURL_CHECK(curl_easy_setopt(fd->_curlCtx,
+        //        CURLOPT_CONNECTTIMEOUT, 5L));
 
         //        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
         //        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);
@@ -575,10 +578,12 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEFUNCTION,
                                     callbackfunction));
         CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd));
-#if !(defined(NDEBUG))
-        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS, 0L));
-#endif
-        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_CONNECTTIMEOUT, 5L));
+        //#if !(defined(NDEBUG))
+        //        CURL_CHECK(curl_easy_setopt(fd->_curlCtx, CURLOPT_NOPROGRESS,
+        //        0L));
+        //#endif
+        //        CURL_CHECK(curl_easy_setopt(fd->_curlCtx,
+        //        CURLOPT_CONNECTTIMEOUT, 5L));
 
         //        curl_easy_setopt(fd->_curlCtx, CURLOPT_URL, fd->_url.c_str());
         //        curl_easy_setopt(fd->_curlCtx, CURLOPT_WRITEDATA, fd);

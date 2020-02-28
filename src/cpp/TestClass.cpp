@@ -171,20 +171,23 @@ void TestClass::init(const unsigned int numCards) {
     mIsDone = false;
     //    mMutex.unlock();
 
-    //#define TEST_DL
+//#define TEST_DL
 
 #ifdef TEST_DL
     int numberOfDaysToGoBack((365 * 4) + 1);
     numberOfDaysToGoBack = 1;
     NJLIC::Date formatted_date(6, 10, 2018);
 
-    NJLIC::Date date(formatted_date);
-    for (int i = 0; i < numberOfDaysToGoBack; ++i, date--) {
+    mGameModelDataVector.push_back(
+        GameModelData::generateGameModelData(formatted_date));
 
-        printf("%s\n", std::string(date).c_str());
-        mGameModelDataVector.push_back(
-            GameModelData::generateGameModelData(date));
-    }
+//    NJLIC::Date date(formatted_date);
+//    for (int i = 0; i < numberOfDaysToGoBack; ++i, date--) {
+//
+//        printf("%s\n", std::string(date).c_str());
+//        mGameModelDataVector.push_back(
+//            GameModelData::generateGameModelData(date));
+//    }
 #endif
 
     //    mShader = new NJLIC::Shader();
@@ -251,7 +254,11 @@ void TestClass::init(const unsigned int numCards) {
                 NJLIC::Node *node = nullptr;
                 for (auto i = 0; i < numCards; i++) {
                     if (i == 0) {
-                        node = BitmapFont::getInstance()->printf(mScene, "%s", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+                        node = BitmapFont::getInstance()->printf(
+                            mScene, "%s", "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz");
+                        
+//                        node = BitmapFont::getInstance()->printf(
+//                        mScene, "%s", "rj");
                     } else {
                         node = new NJLIC::Node();
                         node->addGeometry(mGeometry);
@@ -359,7 +366,7 @@ void TestClass::update(float step) {
     rot2 = glm::rotate(rot2, m_Rotation, glm::vec3(0.0, 1.0, 0.0));
     //        btQuaternion rot3(glm::vec3(0.0, 0.0, 1.0), m_Rotation);
     //        node->setRotation(rot1 * rot2 * rot3);
-        node->setRotation(rot2);
+//    node->setRotation(rot2);
     m_Rotation += step;
 
     mScene->update(step);

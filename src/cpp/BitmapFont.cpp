@@ -164,7 +164,8 @@ BitmapFont::BitmapFont()
     : mCurrentBounds(glm::vec2(std::numeric_limits<float>::max(),
                                std::numeric_limits<float>::max())),
       mCurrentFontName(""), mCurrentPrintf(""),
-      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader()), mMainNode(new NJLIC::Node()) {}
+      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader()),
+      mMainNode(new NJLIC::Node()) {}
 
 BitmapFont::~BitmapFont() {
     delete mMainNode;
@@ -300,7 +301,7 @@ void BitmapFont::setCurrentFontName(const std::string &fontName) {
 
 NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
 
-//    NJLIC::Node *rootNode = new NJLIC::Node();
+    //    NJLIC::Node *rootNode = new NJLIC::Node();
 
     char buffer[2048];
     va_list args;
@@ -310,23 +311,20 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
     va_end(args);
 
     mCurrentPrintf = std::string(buffer);
-    
+
     mMainNode->setName(mCurrentPrintf);
-    
+
     float xStart, yStart;
     xStart = yStart = 0.0;
     size_t letterIndex(0);
-    
-    float xCurrent(xStart);
-    float yCurrent(yStart);
-    
+
+
     NJLIC::Node *node;
     bool recycleNode(false);
     float xMax, yMax;
     float lastXAdvance(0);
-    
-    for(int i = 0; i < mMainNode->numberOfChildrenNodes(); i++) {
-        
+
+    for (int i = 0; i < mMainNode->numberOfChildrenNodes(); i++) {
     }
 
     SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "BitmapFont::printf: %s\n",
@@ -334,53 +332,85 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
 
     float currentX(0.0);
     float currentY(0.0);
-    
+
     BitmapFontData *bmfd = mFontMap.find(mCurrentFontName)->second;
     FrameVector frames = bmfd->_jsonData.getFrames();
     float lineHeight(bmfd->_jsonData.getInfo().getLineHeight());
+    float base(bmfd->_jsonData.getInfo().getBase());
+    float scale(1.0);
     
-    using NodeVector = std::vector<NJLIC::Node*>;
-    NodeVector nodeVector;
-    
-    for (std::string::iterator iter = mCurrentPrintf.begin();
-         iter != mCurrentPrintf.end(); iter++) {
+    bmfd->_jsonData.getKernings();
 
-        int ascii = (int)*iter;
+    using NodeVector = std::vector<NJLIC::Node *>;
+    NodeVector nodeVector;
+
+    for(int i = 0; i < mCurrentPrintf.size(); i++) {
+//    for (std::string::iterator iter = mCurrentPrintf.begin();
+//         iter != mCurrentPrintf.end(); iter++) {
+
+//        "114,106": 27,
+        
+//        int ascii = (int)*iter;
+        int ascii = (int)mCurrentPrintf.at(i);
+        int previousAscii = 0;
+        if(i - 1 >= 0) {
+            previousAscii = (int)mCurrentPrintf.at(i - 1);
+        }
+        
+        float kerning = 0.0;
+        using KerningMap = std::map<std::string, int64_t>;
+        char buff[1024];
+        sprintf(buff, "%d,%d", previousAscii,ascii);
+        const std::string &key(buff);
+        auto _kerning = bmfd->_jsonData.getKernings().find(key);
+        
+        if(_kerning != bmfd->_jsonData.getKernings().end()) {
+            kerning = float(_kerning->second);
+        } else {
+            kerning = 0.0;
+        }
 
         if (ascii >= 32 and ascii <= 126) {
             // renderable letter.
-            
+
             size_t idx(ascii - 32);
-            
+
             if (idx < frames.size()) {
-                LetterFrameInfo charData = LetterFrameInfo(frames.at(ascii - 32));
+                LetterFrameInfo charData =
+                    LetterFrameInfo(frames.at(ascii - 32));
                 
-                
+                scale = charData.scale;
+
                 NJLIC::Node *node = renderLetter(ascii, charData);
                 node->setOrigin(glm::vec2(currentX, currentY));
-                
+
                 mMainNode->addChildNode(node);
                 scene->addActiveNode(node);
-                
+
                 nodeVector.push_back(node);
-                
-                currentX += 0.075;
+
+                currentX += (charData.xoffset * scale);
+                currentX += (charData.xadvance * scale);
+                currentX += (kerning * scale);
             }
-            
+
         } else {
             if (ascii == 10) {
                 // line feed
+                
+                currentX = 0;
+                currentY -= (base * scale);
+                
             } else if (ascii == 9) {
                 // tab
             }
         }
     }
-    
+
     float xoffset(currentX / 2.0);
-    
-    for(NodeVector::iterator i = nodeVector.begin();
-        i != nodeVector.end();
-        i++) {
+
+    for (NodeVector::iterator i = nodeVector.begin(); i != nodeVector.end();
+         i++) {
         NJLIC::Node *node = *i;
         glm::vec3 o(node->getOrigin());
         o.x -= xoffset;
@@ -452,13 +482,14 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
     return mMainNode;
 }
 
-NJLIC::Node *BitmapFont::renderLetter(int ascii, const LetterFrameInfo &charData) {
+NJLIC::Node *BitmapFont::renderLetter(int ascii,
+                                      const LetterFrameInfo &charData) {
     NJLIC::Node *node = nullptr;
 
     if (ascii >= 32 and ascii <= 126) {
-        
+
         node = new NJLIC::Node();
-        
+
         char buff[1024];
         sprintf(buff, "%c", (char)ascii);
 
@@ -466,8 +497,8 @@ NJLIC::Node *BitmapFont::renderLetter(int ascii, const LetterFrameInfo &charData
         node->addGeometry(mGeometry);
         mGeometry->setSpriteAtlasFrame(node, charData.x, charData.y,
                                        charData.width, charData.height);
-        mGeometry->setDimensions(
-            node, glm::vec2(charData.width, charData.height));
+        mGeometry->setDimensions(node,
+                                 glm::vec2(charData.width, charData.height));
     }
     return node;
 }
