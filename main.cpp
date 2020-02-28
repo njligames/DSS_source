@@ -1359,7 +1359,7 @@ main(int argc, char *argv[])
     emscripten_set_main_loop(mainloop, 0, 0);
 #else
 
-//          gUpdateThread = new std::thread(Update);
+          gUpdateThread = new std::thread(Update);
           
           while (!gDone)
           {
@@ -1372,15 +1372,15 @@ main(int argc, char *argv[])
 #if defined(__IPHONEOS__) && __IPHONEOS__
               handleInput();
 #else
-              mainloop();
+//              mainloop();
               
-//              handleInput();
-//              RenderFrame(gGraphics.get());
+              handleInput();
+              RenderFrame(gGraphics.get());
 #endif
           }
           
-//          gUpdateThread->join();
-//          delete gUpdateThread;
+          gUpdateThread->join();
+          delete gUpdateThread;
 
 //    NJLI_HandleSurfaceDestroyed();
           TestClass::destroyInstance();

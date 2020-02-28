@@ -91,7 +91,7 @@ TestClass *TestClass::sInstance = nullptr;
 
 TestClass::TestClass()
     : mWindow(nullptr), mRenderer(nullptr), mIsDone(true),
-      mShader(new NJLIC::Shader()), //mGeometry(new NJLIC::SpriteGeometry()),
+      mShader(new NJLIC::Shader()), // mGeometry(new NJLIC::SpriteGeometry()),
       mCamera(new NJLIC::Camera()), mCameraNode(new NJLIC::Node()),
       mScene(new NJLIC::Scene()) {}
 
@@ -115,8 +115,8 @@ TestClass::~TestClass() {
     delete mCamera;
     mCamera = nullptr;
 
-//    delete mGeometry;
-//    mGeometry = nullptr;
+    //    delete mGeometry;
+    //    mGeometry = nullptr;
 
     delete mShader;
     mShader = nullptr;
@@ -204,8 +204,8 @@ void TestClass::init(const unsigned int numCards) {
     //        NJLIC::Geometry *pGeometry = new NJLIC::Geometry();
     //    }
 
-//    mstep = 0;
-//    control = 0;
+    //    mstep = 0;
+    //    control = 0;
 
     UtilDSS::printGLInfo();
 
@@ -246,25 +246,28 @@ void TestClass::init(const unsigned int numCards) {
             if (objData) {
                 const std::string &filedata(objData);
                 //                mGeometry->load(mShader, filedata, numCards);
-//                mGeometry->load(mShader, numCards);
-//                mGeometry->loadDiffuseMatrial(mShader, "assets/loading.jpg");
+                //                mGeometry->load(mShader, numCards);
+                //                mGeometry->loadDiffuseMatrial(mShader,
+                //                "assets/loading.jpg");
 
-//                mBufferData0 = (unsigned char *)UtilDSS::loadImage(
-//                    "assets/test1.jpg", &mwidth0, &mheight0,
-//                    &mchannels_in_file0);
-//                mBufferData1 = (unsigned char *)UtilDSS::loadImage(
-//                    "assets/test1b.jpg", &mwidth1, &mheight1,
-//                    &mchannels_in_file1);
+                //                mBufferData0 = (unsigned char
+                //                *)UtilDSS::loadImage(
+                //                    "assets/test1.jpg", &mwidth0, &mheight0,
+                //                    &mchannels_in_file0);
+                //                mBufferData1 = (unsigned char
+                //                *)UtilDSS::loadImage(
+                //                    "assets/test1b.jpg", &mwidth1, &mheight1,
+                //                    &mchannels_in_file1);
 
                 //                NJLIC::Node *node = nullptr;
                 //                for (auto i = 0; i < numCards; i++) {
                 ////                    if (i == 0) {
                 ////                        node =
-                ///BitmapFont::getInstance()->printf( / mScene, "%s",
+                /// BitmapFont::getInstance()->printf( / mScene, "%s",
                 ///"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz");
                 ////
                 //////                        node =
-                ///BitmapFont::getInstance()->printf(
+                /// BitmapFont::getInstance()->printf(
                 //////                        mScene, "%s", "rj");
                 ////                    } else {
                 //                        node = new NJLIC::Node();
@@ -369,77 +372,23 @@ void TestClass::unInit() {
     }
 }
 void TestClass::update(float step) {
-//    mstep += step;
+    //    mstep += step;
 
-    
-    const float tileWidth = 0.888888895f;
-    
-    float start_x = -3.0f;
-    float x_inc = tileWidth;
-    float x_gutter_selected = tileWidth / 2.f;
-    float x_gutter = tileWidth / 10.f;
-
-    float x = start_x;
-    
-    for(int i = 0; i < mGameModelViewVector.size();i++) {
+    for (int i = 0; i < mGameModelViewVector.size(); i++) {
         GameModelViewData *gmvd = mGameModelViewVector.at(i);
-
 
         NJLIC::Node *imageNode = gmvd->getImageNode();
 
-//        glm::vec3 pos(imageNode->getOrigin());
-        
-        if(mpSelectedNode == imageNode) {
+        //        glm::vec3 pos(imageNode->getOrigin());
 
-//            imageNode->setScale(1.5f);
+        if (mpSelectedNode == imageNode) {
+
+            //            imageNode->setScale(1.5f);
 
         } else {
-            
         }
     }
-    
-    
 
-    for (int i = 0; i < mGameModelDataVector.size(); i++) {
-        GameModelData *gmd = mGameModelDataVector.at(i);
-        if (nullptr != gmd && mGameModelViewVector.size() == 0 &&
-            gmd->hasGames()) {
-            gmd->getGameModelViewVector(mGameModelViewVector);
-
-            for (int j = 0; j < mGameModelViewVector.size(); j++) {
-                GameModelViewData *gmvd = mGameModelViewVector.at(j);
-
-                gmvd->load(mShader);
-
-                NJLIC::Node *imageNode = gmvd->getImageNode();
-
-                mScene->addActiveNode(imageNode);
-                mScene->getRootNode()->addChildNode(imageNode);
-                
-                imageNode->setOrigin(glm::vec3(x, -1.5, 0));
-
-                if(0==j) {
-                    imageNode->setScale(1.5f);
-                    mpSelectedNode = imageNode;
-                    
-                    x += x_inc;
-                    x += x_gutter_selected;
-                } else {
-                    x += x_inc;
-                    x += x_gutter_selected;
-                    
-                }
-                
-                
-                    
-                
-//                if(0==j)
-//                    imageNode->setScale(1.5f);
-                
-                
-            }
-        }
-    }
     //    printf("%f\n", step);
 
     //    NJLIC::Node *node = mCubeNodes.at(0);
@@ -484,12 +433,58 @@ void TestClass::render() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, 1920 * 2, 1920 * 2);
-    
-    for(int i = 0; i < mGameModelViewVector.size(); i++) {
+
+    for (int i = 0; i < mGameModelViewVector.size(); i++) {
         GameModelViewData *gmvd = mGameModelViewVector.at(i);
         gmvd->render();
     }
     mScene->render();
+
+    // This has to go on the render function because update is called
+    // asynchronously.
+
+    const float tileWidth = 0.888888895f;
+
+    float start_x = -3.0f;
+    float x_inc = tileWidth;
+    float x_gutter_selected = tileWidth / 2.f;
+    float x_gutter = tileWidth / 10.f;
+
+    float x = start_x;
+    for (int i = 0; i < mGameModelDataVector.size(); i++) {
+        GameModelData *gmd = mGameModelDataVector.at(i);
+        if (nullptr != gmd && mGameModelViewVector.size() == 0 &&
+            gmd->hasGames()) {
+            gmd->getGameModelViewVector(mGameModelViewVector);
+
+            for (int j = 0; j < mGameModelViewVector.size(); j++) {
+                GameModelViewData *gmvd = mGameModelViewVector.at(j);
+
+                gmvd->load(mShader);
+
+                NJLIC::Node *imageNode = gmvd->getImageNode();
+
+                mScene->addActiveNode(imageNode);
+                mScene->getRootNode()->addChildNode(imageNode);
+
+                imageNode->setOrigin(glm::vec3(x, -1.5, 0));
+
+                if (0 == j) {
+                    imageNode->setScale(1.5f);
+                    mpSelectedNode = imageNode;
+
+                    x += x_inc;
+                    x += x_gutter_selected;
+                } else {
+                    x += x_inc;
+                    x += x_gutter_selected;
+                }
+
+                //                if(0==j)
+                //                    imageNode->setScale(1.5f);
+            }
+        }
+    }
 }
 
 void TestClass::input() {
@@ -971,82 +966,80 @@ bool TestClass::isDone() const { return mIsDone; }
 
 void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
                         bool withControl, bool withShift, bool withAlt,
-             bool withGui) {
-//    NJLIC::Node *mpSelectedNode = nullptr;
-//    int mSelectedIndex = 0;
-    
-    
+                        bool withGui) {
+    //    NJLIC::Node *mpSelectedNode = nullptr;
+    //    int mSelectedIndex = 0;
 }
 void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
                       bool withControl, bool withShift, bool withAlt,
-           bool withGui) {
-    
+                      bool withGui) {
+
     bool updated = false;
-    
-    if(keycodeName == "Right") {
-        if(mSelectedIndex < mGameModelViewVector.size() - 1) {
-            
+
+    if (keycodeName == "Right") {
+        if (mSelectedIndex < mGameModelViewVector.size() - 1) {
+
             mpSelectedNode->setScale(1.f);
-            
+
             mSelectedIndex++;
-            
-            mpSelectedNode = mGameModelViewVector.at(mSelectedIndex)->getImageNode();
+
+            mpSelectedNode =
+                mGameModelViewVector.at(mSelectedIndex)->getImageNode();
             mpSelectedNode->setScale(1.5f);
-            
-//            updated = true;
+
+            //            updated = true;
         }
-    } else if(keycodeName == "Left") {
-        if(mSelectedIndex > 0) {
+    } else if (keycodeName == "Left") {
+        if (mSelectedIndex > 0) {
             mpSelectedNode->setScale(1.f);
-            
+
             mSelectedIndex--;
-            
-            mpSelectedNode = mGameModelViewVector.at(mSelectedIndex)->getImageNode();
+
+            mpSelectedNode =
+                mGameModelViewVector.at(mSelectedIndex)->getImageNode();
             mpSelectedNode->setScale(1.5f);
-            
-//            updated = true;
+
+            //            updated = true;
         }
+    } else if (keycodeName == "Return") {
+        SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "pressed enter\n");
     }
-    
-    if(updated) {
+
+    if (updated) {
         const float tileWidth = 0.888888895f;
-            
-            float start_x = -3.0f;
-            float x_inc = tileWidth;
-            float x_gutter_selected = tileWidth / 2.f;
-            float x_gutter = tileWidth / 10.f;
 
-            float x = start_x;
-            
-            for(int i = 0; i < mGameModelViewVector.size();i++) {
-                GameModelViewData *gmvd = mGameModelViewVector.at(i);
+        float start_x = -3.0f;
+        float x_inc = tileWidth;
+        float x_gutter_selected = tileWidth / 2.f;
+        float x_gutter = tileWidth / 10.f;
 
-                NJLIC::Node *imageNode = gmvd->getImageNode();
-                
-                imageNode->setOrigin(glm::vec3(x, -1.5, 0));
+        float x = start_x;
 
-                if(mpSelectedNode == imageNode) {
-                    x += x_inc;
-                    x += x_gutter_selected;
-                } else {
-                    if(i + 1 < mGameModelViewVector.size()) {
-                        GameModelViewData *gmvd_next = mGameModelViewVector.at(i);
-                        
-                        if(gmvd_next->getImageNode() == mpSelectedNode) {
-                            x += x_inc;
-                            x += x_gutter_selected;
-                        }
-                    } else {
+        for (int i = 0; i < mGameModelViewVector.size(); i++) {
+            GameModelViewData *gmvd = mGameModelViewVector.at(i);
+
+            NJLIC::Node *imageNode = gmvd->getImageNode();
+
+            imageNode->setOrigin(glm::vec3(x, -1.5, 0));
+
+            if (mpSelectedNode == imageNode) {
+                x += x_inc;
+                x += x_gutter_selected;
+            } else {
+                if (i + 1 < mGameModelViewVector.size()) {
+                    GameModelViewData *gmvd_next = mGameModelViewVector.at(i);
+
+                    if (gmvd_next->getImageNode() == mpSelectedNode) {
                         x += x_inc;
-                        x += x_gutter;
+                        x += x_gutter_selected;
                     }
-                    
-                    
+                } else {
+                    x += x_inc;
+                    x += x_gutter;
                 }
             }
+        }
     }
-    
-    
 }
 std::string TestClass::loadStringData(char *path) {
     void *buffer = nullptr;

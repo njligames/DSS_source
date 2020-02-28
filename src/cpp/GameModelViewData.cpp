@@ -283,7 +283,6 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
 
 GameModelViewData::~GameModelViewData() {
 
-    
     if (nullptr != mDetailImageData)
         free(mDetailImageData);
     mDetailImageData = nullptr;
@@ -425,26 +424,18 @@ void GameModelViewData::setImageData(const std::string &url, FileData *fd) {
             stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr,
                            100);
 #endif
-            
 
-            
             if (url == mListItemImageUrl) {
                 if (nullptr != mListItemImageData)
                     free(mListItemImageData);
                 mListItemImageData = ptr;
-                mReceivedListItemData=true;
+                mReceivedListItemData = true;
             } else if (url == mDetailImageUrl) {
                 if (nullptr != mDetailImageData)
                     free(mDetailImageData);
                 mDetailImageData = ptr;
             }
-            
         }
-
-        
-        
-        
-        
 
         notify(fd);
     }
@@ -554,7 +545,7 @@ static void multi_image_download(CURLM *multi_handle,
         FileData *fd = fileDataVector.back();
         fd->_gvd_ptr->setImageData(fd->_url, fd);
         fileDataVector.pop_back();
-                delete fd;
+        delete fd;
     }
 
     curl_multi_cleanup(multi_handle);
@@ -643,15 +634,15 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
 }
 
 void GameModelViewData::render() {
-    if(nullptr != mListItemImageData) {
-        if(mReceivedListItemData) {
+    if (nullptr != mListItemImageData) {
+        if (mReceivedListItemData) {
             mImageGeometry->reloadDiffuseMatrial(
-            mpImageShader, (unsigned char *)mListItemImageData,
-            mImageGeometry->getDiffuseImageWidth(),
-            mImageGeometry->getDiffuseImageHeight(),
-            mImageGeometry->gertDiffuseImageChannels());
-            
-            mReceivedListItemData=false;
+                mpImageShader, (unsigned char *)mListItemImageData,
+                mImageGeometry->getDiffuseImageWidth(),
+                mImageGeometry->getDiffuseImageHeight(),
+                mImageGeometry->gertDiffuseImageChannels());
+
+            mReceivedListItemData = false;
         }
     }
 }
@@ -663,14 +654,14 @@ void GameModelViewData::update(Publisher *who, void *userdata) {
     FileData *fd = static_cast<FileData *>(userdata);
 
     if (nullptr != mpImageShader && nullptr != completed_me && nullptr != fd) {
-//        completed_me->setImageData(fd);
+        //        completed_me->setImageData(fd);
 
         SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
                        "This image is now loaded. (%s)\n", fd->_url.c_str());
     }
 }
 
-//void GameModelViewData::setImageData(FileData *fd) {
+// void GameModelViewData::setImageData(FileData *fd) {
 ////    std::unique_lock<std::mutex> lock(mMutex);
 //
 //    if(mBuffer)
@@ -684,4 +675,3 @@ void GameModelViewData::update(Publisher *who, void *userdata) {
 //    mReloaded = false;
 //
 //}
-

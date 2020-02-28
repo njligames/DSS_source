@@ -659,25 +659,25 @@ namespace NJLIC {
         GLint internalformat = GL_RGBA;
         mFormat = GL_RGBA;
 
-//                switch (channels_in_file) {
-//                case 1: {
-//                    internalformat = GL_LUMINANCE;
-//                    mFormat = GL_LUMINANCE;
-//                } break;
-//
-//                case 2: {
-//                    internalformat = GL_LUMINANCE_ALPHA;
-//                    mFormat = GL_LUMINANCE_ALPHA;
-//                } break;
-//                case 3: {
-//                    internalformat = GL_RGB;
-//                    mFormat = GL_RGB;
-//                } break;
-//                case 4: {
-//                    internalformat = GL_RGBA;
-//                    mFormat = GL_RGBA;
-//                } break;
-//                }
+        //                switch (channels_in_file) {
+        //                case 1: {
+        //                    internalformat = GL_LUMINANCE;
+        //                    mFormat = GL_LUMINANCE;
+        //                } break;
+        //
+        //                case 2: {
+        //                    internalformat = GL_LUMINANCE_ALPHA;
+        //                    mFormat = GL_LUMINANCE_ALPHA;
+        //                } break;
+        //                case 3: {
+        //                    internalformat = GL_RGB;
+        //                    mFormat = GL_RGB;
+        //                } break;
+        //                case 4: {
+        //                    internalformat = GL_RGBA;
+        //                    mFormat = GL_RGBA;
+        //                } break;
+        //                }
         // Create a new texture from the camera frame data, display that
         // using the shaders
         glGenTextures(1, &mDiffuseTexture);

@@ -48,13 +48,11 @@ class TestClass {
     void resize(int w, int h);
 
     bool isDone() const;
-    
+
     void keyDown(const std::string &keycodeName, bool withCapsLock,
-                            bool withControl, bool withShift, bool withAlt,
-                            bool withGui);
+                 bool withControl, bool withShift, bool withAlt, bool withGui);
     void keyUp(const std::string &keycodeName, bool withCapsLock,
-                          bool withControl, bool withShift, bool withAlt,
-                          bool withGui);
+               bool withControl, bool withShift, bool withAlt, bool withGui);
 
   protected:
     static std::string loadStringData(char *path);
@@ -69,20 +67,20 @@ class TestClass {
     std::vector<GameModelData *> mGameModelDataVector;
 
     NJLIC::Shader *mShader;
-//    NJLIC::SpriteGeometry *mGeometry;
+    //    NJLIC::SpriteGeometry *mGeometry;
     NJLIC::Camera *mCamera;
     NJLIC::Node *mCameraNode;
     NJLIC::Scene *mScene;
     std::vector<NJLIC::Node *> mCubeNodes;
     float m_Rotation = 0.0;
 
-//    unsigned char *mBufferData0;
-//    int mwidth0, mheight0, mchannels_in_file0;
-//
-//    unsigned char *mBufferData1;
-//    int mwidth1, mheight1, mchannels_in_file1;
-//    float mstep;
-//    int control;
+    //    unsigned char *mBufferData0;
+    //    int mwidth0, mheight0, mchannels_in_file0;
+    //
+    //    unsigned char *mBufferData1;
+    //    int mwidth1, mheight1, mchannels_in_file1;
+    //    float mstep;
+    //    int control;
 
     std::vector<GameModelViewData *> mGameModelViewVector;
     NJLIC::Node *mpSelectedNode = nullptr;

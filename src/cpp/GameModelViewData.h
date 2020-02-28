@@ -48,7 +48,6 @@ class GameModelViewData : public Publisher, public Subscriber {
 
     NJLIC::Shader *mpImageShader;
 
-
   public:
     GameModelViewData(const MLBJson::Game &game);
     ~GameModelViewData();
@@ -89,7 +88,6 @@ class GameModelViewData : public Publisher, public Subscriber {
     bool download_jpeg(const char *url,
                        size_t (*fun_ptr)(void *ptr, size_t size, size_t nmemb,
                                          void *userdata));
-    
 };
 
 #endif /* GameViewData_h */
