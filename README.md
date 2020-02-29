@@ -1,5 +1,9 @@
 # About
 
+Screenshot
+
+![Alt text](/screenshot.jpg?raw=true "Screenshot")
+
 This project was created from my SDL2 Template repository, using pieces from my personal Game Engine.
 It would not take much to make this project work for:
 * iOS
