@@ -33,7 +33,6 @@ From the root directory, run: `./macOS` and then open: `open .build_macOS/SDLSke
 
 # Running the Project
 
-Please run the **Debug** Scheme.
 Run the SDLSkeleton target.
 
 The project was run with these settings:
