@@ -1,14 +1,12 @@
 # Repository
-`git@github.com:njligames/DSS_source.git`
+Please note that the project has submodules.
+`git clone --recursive git@github.com:njligames/DSS_source.git`
 
 # Creating Project
-From the root directory
-`./macOS`
-Open:
-`open .build_macOS/SDLSkeleton.xcodeproj/`
+From the root directory, run: `./macOS` and then open: `open .build_macOS/SDLSkeleton.xcodeproj/`
 
 # Running the Project
-Please run the Debug Scheme.
+Please run the **Debug** Scheme.
 The project was run with these settings:
 ```
 GL_VERSION = 2.1 ATI-3.2.24
