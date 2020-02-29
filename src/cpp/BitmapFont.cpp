@@ -164,11 +164,12 @@ BitmapFont::BitmapFont()
     : mCurrentBounds(glm::vec2(std::numeric_limits<float>::max(),
                                std::numeric_limits<float>::max())),
       mCurrentFontName(""), mCurrentPrintf(""),
-      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader()),
-      mMainNode(new NJLIC::Node()) {}
+      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader())//,
+//      mMainNode(new NJLIC::Node())
+{}
 
 BitmapFont::~BitmapFont() {
-    delete mMainNode;
+//    delete mMainNode;
     delete mShader;
     delete mGeometry;
     for (Map::iterator iter = mFontMap.begin(); iter != mFontMap.end();
@@ -312,7 +313,8 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
 
     mCurrentPrintf = std::string(buffer);
 
-    mMainNode->setName(mCurrentPrintf);
+    NJLIC::Node *mainNode = new NJLIC::Node();
+    mainNode->setName(mCurrentPrintf);
 
     float xStart, yStart;
     xStart = yStart = 0.0;
@@ -323,8 +325,6 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
     float xMax, yMax;
     float lastXAdvance(0);
 
-    for (int i = 0; i < mMainNode->numberOfChildrenNodes(); i++) {
-    }
 
     SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "BitmapFont::printf: %s\n",
                    mCurrentPrintf.c_str());
@@ -383,7 +383,7 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
                 NJLIC::Node *node = renderLetter(ascii, charData);
                 node->setOrigin(glm::vec2(currentX, currentY));
 
-                mMainNode->addChildNode(node);
+                mainNode->addChildNode(node);
                 scene->addActiveNode(node);
 
                 nodeVector.push_back(node);
@@ -478,7 +478,7 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
     //    std::printf("END\n");
     //    auto kernings = bmfd->_jsonData.getKernings();
 
-    return mMainNode;
+    return mainNode;
 }
 
 NJLIC::Node *BitmapFont::renderLetter(int ascii,

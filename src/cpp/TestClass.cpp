@@ -250,10 +250,10 @@ void TestClass::init(const unsigned int numCards) {
                 //                mGeometry->loadDiffuseMatrial(mShader,
                 //                "assets/loading.jpg");
 
-                //                mBufferData0 = (unsigned char
-                //                *)UtilDSS::loadImage(
-                //                    "assets/test1.jpg", &mwidth0, &mheight0,
-                //                    &mchannels_in_file0);
+//                                mBufferData0 = (unsigned char
+//                                *)UtilDSS::loadImage(
+//                                    "assets/test1.jpg", &mwidth0, &mheight0,
+//                                    &mchannels_in_file0);
                 //                mBufferData1 = (unsigned char
                 //                *)UtilDSS::loadImage(
                 //                    "assets/test1b.jpg", &mwidth1, &mheight1,
@@ -377,16 +377,16 @@ void TestClass::update(float step) {
     for (int i = 0; i < mGameModelViewVector.size(); i++) {
         GameModelViewData *gmvd = mGameModelViewVector.at(i);
 
-        NJLIC::Node *imageNode = gmvd->getImageNode();
-
-        //        glm::vec3 pos(imageNode->getOrigin());
-
-        if (mpSelectedNode == imageNode) {
-
-            //            imageNode->setScale(1.5f);
-
-        } else {
-        }
+        //        NJLIC::Node *imageNode = gmvd->getImageNode();
+        //
+        //        //        glm::vec3 pos(imageNode->getOrigin());
+        //
+        //        if (mpSelectedNode == imageNode) {
+        //
+        //            //            imageNode->setScale(1.5f);
+        //
+        //        } else {
+        //        }
     }
 
     //    printf("%f\n", step);
@@ -460,18 +460,17 @@ void TestClass::render() {
             for (int j = 0; j < mGameModelViewVector.size(); j++) {
                 GameModelViewData *gmvd = mGameModelViewVector.at(j);
 
-                gmvd->load(mShader);
+                gmvd->load(mScene, mShader);
 
-                NJLIC::Node *imageNode = gmvd->getImageNode();
-
-                mScene->addActiveNode(imageNode);
-                mScene->getRootNode()->addChildNode(imageNode);
+                NJLIC::Node *imageNode = gmvd->getNode();
 
                 imageNode->setOrigin(glm::vec3(x, -1.5, 0));
 
                 if (0 == j) {
-                    imageNode->setScale(1.5f);
-                    mpSelectedNode = imageNode;
+                    gmvd->setSelected(true);
+                    mpSelectedNode = gmvd;
+//                    imageNode->setScale(1.5f);
+//                    mpSelectedNode = imageNode;
 
                     x += x_inc;
                     x += x_gutter_selected;
@@ -979,25 +978,25 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
     if (keycodeName == "Right") {
         if (mSelectedIndex < mGameModelViewVector.size() - 1) {
 
-            mpSelectedNode->setScale(1.f);
+            mpSelectedNode->setSelected(false);
 
             mSelectedIndex++;
 
             mpSelectedNode =
-                mGameModelViewVector.at(mSelectedIndex)->getImageNode();
-            mpSelectedNode->setScale(1.5f);
+                mGameModelViewVector.at(mSelectedIndex);
+            mpSelectedNode->setSelected(true);
 
             //            updated = true;
         }
     } else if (keycodeName == "Left") {
         if (mSelectedIndex > 0) {
-            mpSelectedNode->setScale(1.f);
+            mpSelectedNode->setSelected(false);
 
             mSelectedIndex--;
 
             mpSelectedNode =
-                mGameModelViewVector.at(mSelectedIndex)->getImageNode();
-            mpSelectedNode->setScale(1.5f);
+                mGameModelViewVector.at(mSelectedIndex);
+            mpSelectedNode->setSelected(true);
 
             //            updated = true;
         }
@@ -1018,18 +1017,19 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
         for (int i = 0; i < mGameModelViewVector.size(); i++) {
             GameModelViewData *gmvd = mGameModelViewVector.at(i);
 
-            NJLIC::Node *imageNode = gmvd->getImageNode();
+//            NJLIC::Node *imageNode = gmvd->getImageNode();
+            NJLIC::Node *imageNode = gmvd->getNode();
 
             imageNode->setOrigin(glm::vec3(x, -1.5, 0));
 
-            if (mpSelectedNode == imageNode) {
+            if (mpSelectedNode == gmvd) {
                 x += x_inc;
                 x += x_gutter_selected;
             } else {
                 if (i + 1 < mGameModelViewVector.size()) {
                     GameModelViewData *gmvd_next = mGameModelViewVector.at(i);
 
-                    if (gmvd_next->getImageNode() == mpSelectedNode) {
+                    if (gmvd_next == mpSelectedNode) {
                         x += x_inc;
                         x += x_gutter_selected;
                     }

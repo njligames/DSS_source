@@ -65,7 +65,7 @@ class BitmapFont {
     bool load(const std::string &fontName);
     bool unLoad(const std::string &fontName);
 
-    NJLIC::Node *mMainNode;
+//    NJLIC::Node *mMainNode;
     int mSpacesInTab = 2;
     int mMaxWidth = 1024;
     enum { ALIGN_LEFT, ALIGN_MIDDLE, ALIGN_RIGHT, NUM_ALIGNS };

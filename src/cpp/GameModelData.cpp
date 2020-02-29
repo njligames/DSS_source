@@ -11,6 +11,7 @@
 #include "UtilDSS.h"
 #include "curl/curl.h"
 #include <string>
+#include "BackgroundRenderer.h"
 
 extern int gDone;
 
@@ -185,6 +186,8 @@ void GameModelData::update(Publisher *who, void *userdata) {
     GameModelData *completed_me = dynamic_cast<GameModelData *>(who);
 
     if (nullptr != completed_me) {
+        
+        NJLIC::BackgroundRenderer::getInstance()->enableLoadedJson();
 
         for (std::vector<MLBJson::DateElement>::iterator dateElement_iterator =
                  completed_me->mDssData.getMutableDates().begin();

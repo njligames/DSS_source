@@ -211,7 +211,13 @@ namespace NJLIC {
 
             int width, height, channels_in_file;
             unsigned char *buffer = (unsigned char *)UtilDSS::loadImage(
-                "assets/MLBBackground.jpg", &width, &height, &channels_in_file);
+                "assets/loading.jpg", &width, &height, &channels_in_file);
+            
+            
+            mBufferData = (unsigned char
+            *)UtilDSS::loadImage(
+                "assets/MLBBackground.jpg", &mwidth, &mheight,
+                &mchannels_in_file);
 
             // Create a new texture from the camera frame data, display that
             // using the shaders
@@ -279,6 +285,15 @@ namespace NJLIC {
                        GLenum(GL_UNSIGNED_BYTE), 0);
         UtilDSS::glErrorCheck();
         glBindVertexArrayAPPLE(0);
+        
+        if(nullptr != mBufferData && mShouldReload) {
+            glBindTexture(GL_TEXTURE_2D, mVideoFrameTexture);
+            UtilDSS::glErrorCheck();
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLsizei(mwidth),
+                            GLsizei(mheight), GL_RGBA, GL_UNSIGNED_BYTE, mBufferData);
+            UtilDSS::glErrorCheck();
+            mShouldReload = false;
+        }
     }
 
 } // namespace NJLIC

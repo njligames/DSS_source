@@ -74,8 +74,8 @@ class TestClass {
     std::vector<NJLIC::Node *> mCubeNodes;
     float m_Rotation = 0.0;
 
-    //    unsigned char *mBufferData0;
-    //    int mwidth0, mheight0, mchannels_in_file0;
+//        unsigned char *mBufferData0;
+//        int mwidth0, mheight0, mchannels_in_file0;
     //
     //    unsigned char *mBufferData1;
     //    int mwidth1, mheight1, mchannels_in_file1;
@@ -83,6 +83,6 @@ class TestClass {
     //    int control;
 
     std::vector<GameModelViewData *> mGameModelViewVector;
-    NJLIC::Node *mpSelectedNode = nullptr;
+    GameModelViewData *mpSelectedNode = nullptr;
     int mSelectedIndex = 0;
 };

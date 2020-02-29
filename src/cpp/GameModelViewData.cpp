@@ -14,6 +14,8 @@
 #include "UtilDSS.h"
 #include "curl/curl.h"
 
+#include "BitmapFont.h"
+
 extern int gDone;
 
 static void curlErrorCheck(CURLcode code, const char *stmt, const char *fname,
@@ -221,7 +223,8 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
                                .c_str()),
       mListItemImageData(nullptr), mListItemImageUrl(""),
       mImageNode(new NJLIC::Node()),
-      mImageGeometry(new NJLIC::SpriteGeometry()), mpImageShader(nullptr)
+      mImageGeometry(new NJLIC::SpriteGeometry()), mpImageShader(nullptr),
+      mTitleNode(nullptr), mDescriptionNode(nullptr),mMainNode(new NJLIC::Node)
 
 {
 
@@ -249,6 +252,8 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
     MLBJson::Photo _photo =
         game.getContent().getEditorial().getRecap().getMlb().getPhoto();
 
+    // I would like these image sizes to be loaded, as this is the size i chose
+    // for the default image.
     const int FIND_WIDTH(1920), FIND_HEIGHT(1080);
     MLBJson::Cut find_cut;
     bool found_cut = false;
@@ -283,14 +288,28 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
 
 GameModelViewData::~GameModelViewData() {
 
+    delete mMainNode;
+    delete mImageNode;
+    delete mImageGeometry;
+    
+    if(nullptr != mTitleNode)
+        delete mTitleNode;
+    
+    if(nullptr != mDescriptionNode)
+        delete mDescriptionNode;
+    
     if (nullptr != mDetailImageData)
         free(mDetailImageData);
+    
     mDetailImageData = nullptr;
 }
 
-void GameModelViewData::load(NJLIC::Shader *imageShader) {
+void GameModelViewData::load(NJLIC::Scene *scene, NJLIC::Shader *imageShader) {
+    assert(scene);
     assert(imageShader);
 
+    const float tileWidth = 0.888888895f / 2.5;
+    
     mpImageShader = imageShader;
 
     mImageGeometry->load(mpImageShader);
@@ -299,6 +318,23 @@ void GameModelViewData::load(NJLIC::Shader *imageShader) {
     mImageGeometry->setDimensions(
         mImageNode, glm::vec2(mImageGeometry->getDiffuseImageWidth(),
                               mImageGeometry->getDiffuseImageHeight()));
+    scene->addActiveNode(mImageNode);
+    mMainNode->addChildNode(mImageNode);
+
+    mTitleNode = BitmapFont::getInstance()->printf(scene, "%s",
+                                                   getListItemTitle().c_str());
+    scene->addActiveNode(mTitleNode);
+    mTitleNode->setOrigin(glm::vec3(0.0, tileWidth, std::numeric_limits<float>::max()));
+    mMainNode->addChildNode(mTitleNode);
+
+    mDescriptionNode = BitmapFont::getInstance()->printf(
+        scene, "%s", getListItemDescription().c_str());
+    scene->addActiveNode(mDescriptionNode);
+    mDescriptionNode->setOrigin(glm::vec3(0.0, -tileWidth, std::numeric_limits<float>::max()));
+    mMainNode->addChildNode(mDescriptionNode);
+    
+    scene->getRootNode()->addChildNode(mMainNode);
+    
 }
 
 const std::string &GameModelViewData::getHomeName() const { return mHomeName; }
@@ -644,6 +680,32 @@ void GameModelViewData::render() {
 
             mReceivedListItemData = false;
         }
+    }
+}
+
+void GameModelViewData::setSelected(bool selected) {
+    if(selected) {
+        mMainNode->setScale(1.5f);
+        
+        glm::vec3 ot = mTitleNode->getOrigin();
+        ot.z = 0;
+        mTitleNode->setOrigin(ot);
+        
+        glm::vec3 od = mDescriptionNode->getOrigin();
+        od.z = 0;
+        mDescriptionNode->setOrigin(od);
+        
+    }
+    else {
+        mMainNode->setScale(1.f);
+        
+        glm::vec3 ot = mTitleNode->getOrigin();
+        ot.z = std::numeric_limits<float>::max();
+        mTitleNode->setOrigin(ot);
+        
+        glm::vec3 od = mDescriptionNode->getOrigin();
+        od.z = std::numeric_limits<float>::max();
+        mDescriptionNode->setOrigin(od);
     }
 }
 

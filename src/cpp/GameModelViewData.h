@@ -15,6 +15,7 @@
 #include <thread> // std::thread
 
 #include "Node.h"
+#include "Scene.h"
 #include "Shader.h"
 #include "SpriteGeometry.h"
 
@@ -48,12 +49,20 @@ class GameModelViewData : public Publisher, public Subscriber {
 
     NJLIC::Shader *mpImageShader;
 
+    NJLIC::Node *mTitleNode;
+    NJLIC::Node *mDescriptionNode;
+    
+    NJLIC::Node *mMainNode;
+
   public:
     GameModelViewData(const MLBJson::Game &game);
     ~GameModelViewData();
 
-    void load(NJLIC::Shader *imageShader);
-    NJLIC::Node *getImageNode() const { return mImageNode; }
+    void load(NJLIC::Scene *scene, NJLIC::Shader *imageShader);
+//    NJLIC::Node *getImageNode() const { return mImageNode; }
+//    NJLIC::Node *getTitleNode() const { return mTitleNode; }
+    
+    NJLIC::Node *getNode() const { return mMainNode; }
 
     const std::string &getHomeName() const;
     const std::string &getAwayName() const;
@@ -84,6 +93,7 @@ class GameModelViewData : public Publisher, public Subscriber {
 
     virtual void render();
 
+    void setSelected(bool selected);
   protected:
     bool download_jpeg(const char *url,
                        size_t (*fun_ptr)(void *ptr, size_t size, size_t nmemb,
