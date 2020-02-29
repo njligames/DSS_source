@@ -250,10 +250,11 @@ void TestClass::init(const unsigned int numCards) {
                 //                mGeometry->loadDiffuseMatrial(mShader,
                 //                "assets/loading.jpg");
 
-//                                mBufferData0 = (unsigned char
-//                                *)UtilDSS::loadImage(
-//                                    "assets/test1.jpg", &mwidth0, &mheight0,
-//                                    &mchannels_in_file0);
+                //                                mBufferData0 = (unsigned char
+                //                                *)UtilDSS::loadImage(
+                //                                    "assets/test1.jpg",
+                //                                    &mwidth0, &mheight0,
+                //                                    &mchannels_in_file0);
                 //                mBufferData1 = (unsigned char
                 //                *)UtilDSS::loadImage(
                 //                    "assets/test1b.jpg", &mwidth1, &mheight1,
@@ -462,15 +463,20 @@ void TestClass::render() {
 
                 gmvd->load(mScene, mShader);
 
-                NJLIC::Node *imageNode = gmvd->getNode();
+                ListItemNode *imageNode = gmvd->getNode();
+
+                imageNode->setPreviousPosition(
+                    glm::vec3(x - (x_inc + x_gutter_selected), -1.5, 0));
+                imageNode->setNextPosition(
+                    glm::vec3(x + (x_inc + x_gutter_selected), -1.5, 0));
 
                 imageNode->setOrigin(glm::vec3(x, -1.5, 0));
 
                 if (0 == j) {
                     gmvd->setSelected(true);
                     mpSelectedNode = gmvd;
-//                    imageNode->setScale(1.5f);
-//                    mpSelectedNode = imageNode;
+                    //                    imageNode->setScale(1.5f);
+                    //                    mpSelectedNode = imageNode;
 
                     x += x_inc;
                     x += x_gutter_selected;
@@ -982,8 +988,7 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
 
             mSelectedIndex++;
 
-            mpSelectedNode =
-                mGameModelViewVector.at(mSelectedIndex);
+            mpSelectedNode = mGameModelViewVector.at(mSelectedIndex);
             mpSelectedNode->setSelected(true);
 
             //            updated = true;
@@ -994,8 +999,7 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
 
             mSelectedIndex--;
 
-            mpSelectedNode =
-                mGameModelViewVector.at(mSelectedIndex);
+            mpSelectedNode = mGameModelViewVector.at(mSelectedIndex);
             mpSelectedNode->setSelected(true);
 
             //            updated = true;
@@ -1017,7 +1021,7 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
         for (int i = 0; i < mGameModelViewVector.size(); i++) {
             GameModelViewData *gmvd = mGameModelViewVector.at(i);
 
-//            NJLIC::Node *imageNode = gmvd->getImageNode();
+            //            NJLIC::Node *imageNode = gmvd->getImageNode();
             NJLIC::Node *imageNode = gmvd->getNode();
 
             imageNode->setOrigin(glm::vec3(x, -1.5, 0));

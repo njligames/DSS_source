@@ -164,12 +164,12 @@ BitmapFont::BitmapFont()
     : mCurrentBounds(glm::vec2(std::numeric_limits<float>::max(),
                                std::numeric_limits<float>::max())),
       mCurrentFontName(""), mCurrentPrintf(""),
-      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader())//,
+      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader()) //,
 //      mMainNode(new NJLIC::Node())
 {}
 
 BitmapFont::~BitmapFont() {
-//    delete mMainNode;
+    //    delete mMainNode;
     delete mShader;
     delete mGeometry;
     for (Map::iterator iter = mFontMap.begin(); iter != mFontMap.end();
@@ -251,6 +251,7 @@ bool BitmapFont::load(const std::string &fontName) {
                 //                std::string(buff);
 
                 mGeometry->load(mShader, 1024);
+
                 if (!mGeometry->loadDiffuseMatrial(mShader,
                                                    std::string(buff))) {
                     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
@@ -325,7 +326,6 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
     float xMax, yMax;
     float lastXAdvance(0);
 
-
     SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "BitmapFont::printf: %s\n",
                    mCurrentPrintf.c_str());
 
@@ -358,6 +358,7 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
 
         float kerning = 0.0;
         using KerningMap = std::map<std::string, int64_t>;
+        
         char buff[1024];
         sprintf(buff, "%d,%d", previousAscii, ascii);
         const std::string &key(buff);
@@ -368,7 +369,7 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
         } else {
             kerning = 0.0;
         }
-
+        
         if (ascii >= 32 and ascii <= 126) {
             // renderable letter.
 
@@ -497,7 +498,8 @@ NJLIC::Node *BitmapFont::renderLetter(int ascii,
         mGeometry->setSpriteAtlasFrame(node, charData.x, charData.y,
                                        charData.width, charData.height);
         mGeometry->setDimensions(node,
-                                 glm::vec2(charData.width, charData.height));
+                                 glm::vec2(charData.width, charData.height),
+                                 glm::vec2(0.0, 1.0));
     }
     return node;
 }

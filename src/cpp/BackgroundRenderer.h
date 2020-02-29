@@ -22,9 +22,9 @@ namespace NJLIC {
         GLuint mVertexBuffer;
         GLuint mIndexBuffer;
         GLuint mVideoFrameTexture;
-        
+
         unsigned char *mBufferData;
-            int mwidth, mheight, mchannels_in_file;
+        int mwidth, mheight, mchannels_in_file;
         bool mLoadedJson = false;
         bool mShouldReload = false;
 
@@ -35,10 +35,10 @@ namespace NJLIC {
         void init();
         void unInit();
         void render(GLuint width, GLuint height);
-        
+
         void enableLoadedJson(bool enable = true) {
             mLoadedJson = enable;
-            if(enable) {
+            if (enable) {
                 mShouldReload = true;
             }
         }

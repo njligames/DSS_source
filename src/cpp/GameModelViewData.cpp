@@ -224,7 +224,8 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
       mListItemImageData(nullptr), mListItemImageUrl(""),
       mImageNode(new NJLIC::Node()),
       mImageGeometry(new NJLIC::SpriteGeometry()), mpImageShader(nullptr),
-      mTitleNode(nullptr), mDescriptionNode(nullptr),mMainNode(new NJLIC::Node)
+      mTitleNode(nullptr), mDescriptionNode(nullptr),
+      mMainNode(new ListItemNode)
 
 {
 
@@ -291,16 +292,16 @@ GameModelViewData::~GameModelViewData() {
     delete mMainNode;
     delete mImageNode;
     delete mImageGeometry;
-    
-    if(nullptr != mTitleNode)
+
+    if (nullptr != mTitleNode)
         delete mTitleNode;
-    
-    if(nullptr != mDescriptionNode)
+
+    if (nullptr != mDescriptionNode)
         delete mDescriptionNode;
-    
+
     if (nullptr != mDetailImageData)
         free(mDetailImageData);
-    
+
     mDetailImageData = nullptr;
 }
 
@@ -309,7 +310,7 @@ void GameModelViewData::load(NJLIC::Scene *scene, NJLIC::Shader *imageShader) {
     assert(imageShader);
 
     const float tileWidth = 0.888888895f / 2.5;
-    
+
     mpImageShader = imageShader;
 
     mImageGeometry->load(mpImageShader);
@@ -324,17 +325,18 @@ void GameModelViewData::load(NJLIC::Scene *scene, NJLIC::Shader *imageShader) {
     mTitleNode = BitmapFont::getInstance()->printf(scene, "%s",
                                                    getListItemTitle().c_str());
     scene->addActiveNode(mTitleNode);
-    mTitleNode->setOrigin(glm::vec3(0.0, tileWidth, std::numeric_limits<float>::max()));
+    mTitleNode->setOrigin(
+        glm::vec3(0.0, tileWidth, std::numeric_limits<float>::max()));
     mMainNode->addChildNode(mTitleNode);
 
     mDescriptionNode = BitmapFont::getInstance()->printf(
         scene, "%s", getListItemDescription().c_str());
     scene->addActiveNode(mDescriptionNode);
-    mDescriptionNode->setOrigin(glm::vec3(0.0, -tileWidth, std::numeric_limits<float>::max()));
+    mDescriptionNode->setOrigin(
+        glm::vec3(0.0, -tileWidth, std::numeric_limits<float>::max()));
     mMainNode->addChildNode(mDescriptionNode);
-    
+
     scene->getRootNode()->addChildNode(mMainNode);
-    
 }
 
 const std::string &GameModelViewData::getHomeName() const { return mHomeName; }
@@ -602,9 +604,6 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
     for (std::vector<MLBJson::Game>::const_iterator iter = games.begin();
          iter != games.end(); ++iter) {
 
-        if (gvdVector.size() > 8) {
-            continue;
-        }
         GameModelViewData *gvd = new GameModelViewData(*iter);
         gvdVector.push_back(gvd);
 
@@ -684,25 +683,24 @@ void GameModelViewData::render() {
 }
 
 void GameModelViewData::setSelected(bool selected) {
-    if(selected) {
+    if (selected) {
         mMainNode->setScale(1.5f);
-        
+
         glm::vec3 ot = mTitleNode->getOrigin();
         ot.z = 0;
         mTitleNode->setOrigin(ot);
-        
+
         glm::vec3 od = mDescriptionNode->getOrigin();
         od.z = 0;
         mDescriptionNode->setOrigin(od);
-        
-    }
-    else {
+
+    } else {
         mMainNode->setScale(1.f);
-        
+
         glm::vec3 ot = mTitleNode->getOrigin();
         ot.z = std::numeric_limits<float>::max();
         mTitleNode->setOrigin(ot);
-        
+
         glm::vec3 od = mDescriptionNode->getOrigin();
         od.z = std::numeric_limits<float>::max();
         mDescriptionNode->setOrigin(od);

@@ -14,6 +14,7 @@
 #include <mutex>  // std::mutex
 #include <thread> // std::thread
 
+#include "ListItemNode.h"
 #include "Node.h"
 #include "Scene.h"
 #include "Shader.h"
@@ -51,18 +52,18 @@ class GameModelViewData : public Publisher, public Subscriber {
 
     NJLIC::Node *mTitleNode;
     NJLIC::Node *mDescriptionNode;
-    
-    NJLIC::Node *mMainNode;
+
+    ListItemNode *mMainNode;
 
   public:
     GameModelViewData(const MLBJson::Game &game);
     ~GameModelViewData();
 
     void load(NJLIC::Scene *scene, NJLIC::Shader *imageShader);
-//    NJLIC::Node *getImageNode() const { return mImageNode; }
-//    NJLIC::Node *getTitleNode() const { return mTitleNode; }
-    
-    NJLIC::Node *getNode() const { return mMainNode; }
+    //    NJLIC::Node *getImageNode() const { return mImageNode; }
+    //    NJLIC::Node *getTitleNode() const { return mTitleNode; }
+
+    ListItemNode *getNode() const { return mMainNode; }
 
     const std::string &getHomeName() const;
     const std::string &getAwayName() const;
@@ -94,6 +95,7 @@ class GameModelViewData : public Publisher, public Subscriber {
     virtual void render();
 
     void setSelected(bool selected);
+
   protected:
     bool download_jpeg(const char *url,
                        size_t (*fun_ptr)(void *ptr, size_t size, size_t nmemb,

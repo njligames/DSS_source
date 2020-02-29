@@ -92,9 +92,9 @@ namespace NJLIC {
 
         glm::vec3 getOrigin() const;
 
-        void setOrigin(const glm::vec3 &origin);
+        virtual void setOrigin(const glm::vec3 &origin);
 
-        void setOrigin(const glm::vec2 &origin);
+        virtual void setOrigin(const glm::vec2 &origin);
 
         glm::quat getRotation() const;
 
@@ -117,7 +117,7 @@ namespace NJLIC {
         bool isTransformDirty() const;
         void resetTransformDirty();
 
-        void update(float timestep);
+        virtual void update(float timestep);
         void render(Geometry *const geometry);
 
       private:

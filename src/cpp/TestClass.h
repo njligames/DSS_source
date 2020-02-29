@@ -74,8 +74,8 @@ class TestClass {
     std::vector<NJLIC::Node *> mCubeNodes;
     float m_Rotation = 0.0;
 
-//        unsigned char *mBufferData0;
-//        int mwidth0, mheight0, mchannels_in_file0;
+    //        unsigned char *mBufferData0;
+    //        int mwidth0, mheight0, mchannels_in_file0;
     //
     //    unsigned char *mBufferData1;
     //    int mwidth1, mheight1, mchannels_in_file1;

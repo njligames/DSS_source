@@ -569,9 +569,9 @@ void main()
     vec3 rimColor = computeRim(RimLightColor, RimLightStart, RimLightEnd, RimLightCoefficient);
     baseColor += vec4(rimColor, 0.0);
     
-//    float fresnel = pow(1.0 - abs( dot( EyeDirection_cameraspace, Normal_modelspace) ), 4.0);
-//    
-//    baseColor += (vec4(RimLightColor, 1.0) * fresnel);
+    float fresnel = pow(1.0 - abs( dot( EyeDirection_cameraspace, Normal_modelspace) ), 4.0);
+    
+    baseColor += (vec4(RimLightColor, 1.0) * fresnel);
 
     
     if(FogDensity > 0.0)
