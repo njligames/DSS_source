@@ -164,9 +164,7 @@ BitmapFont::BitmapFont()
     : mCurrentBounds(glm::vec2(std::numeric_limits<float>::max(),
                                std::numeric_limits<float>::max())),
       mCurrentFontName(""), mCurrentPrintf(""),
-      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader()) //,
-//      mMainNode(new NJLIC::Node())
-{}
+      mGeometry(new NJLIC::SpriteGeometry()), mShader(new NJLIC::Shader()) {}
 
 BitmapFont::~BitmapFont() {
     //    delete mMainNode;
@@ -214,25 +212,6 @@ bool BitmapFont::load(const std::string &fontName) {
             free(jsonFileBuffer);
         }
 
-        //        std::string defaultImage("assets/fonts/%s.png");
-        //        snprintf(buff, sizeof(buff), defaultImage.c_str(),
-        //        fontName.c_str()); std::string imageFilePath = base_path +
-        //        std::string(buff);
-        //
-        //        bfd->_imageFileData =
-        //            (void *)stbi_load(imageFilePath.c_str(), &bfd->_width,
-        //                              &bfd->_height, &bfd->_channels_in_file,
-        //                              0);
-        //
-        //#if !(defined(NDEBUG))
-        //        std::string
-        //        n(std::to_string(UtilDSS::timeSinceEpochMillisec())); n +=
-        //        "_bitmapfont_"; n += fontName; n += ".jpg";
-        //        stbi_write_jpg(n.c_str(), bfd->_width, bfd->_height,
-        //                       bfd->_channels_in_file, bfd->_imageFileData,
-        //                       100);
-        //#endif
-
         const char *vertShader =
             UtilDSS::loadFile("assets/shaders/StandardShader2.vert");
         const char *fragShader =
@@ -247,10 +226,8 @@ bool BitmapFont::load(const std::string &fontName) {
                 std::string defaultImage("assets/fonts/%s.png");
                 snprintf(buff, sizeof(buff), defaultImage.c_str(),
                          fontName.c_str());
-                //                std::string imageFilePath = base_path +
-                //                std::string(buff);
 
-                mGeometry->load(mShader, 1024);
+                mGeometry->load(mShader, 4096);
 
                 if (!mGeometry->loadDiffuseMatrial(mShader,
                                                    std::string(buff))) {
@@ -260,9 +237,6 @@ bool BitmapFont::load(const std::string &fontName) {
                 }
             }
         }
-        //        mGeometry->load(mShader, filedata, numCards);
-        //        mGeometry->loadDiffuseMatrial(mShader,
-        //        "assets/fonts/FranklinGothicMedium.png");
 
         mFontMap.insert(Pair(fontNameLower, bfd));
 
@@ -358,7 +332,7 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
 
         float kerning = 0.0;
         using KerningMap = std::map<std::string, int64_t>;
-        
+
         char buff[1024];
         sprintf(buff, "%d,%d", previousAscii, ascii);
         const std::string &key(buff);
@@ -369,7 +343,7 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
         } else {
             kerning = 0.0;
         }
-        
+
         if (ascii >= 32 and ascii <= 126) {
             // renderable letter.
 
@@ -382,6 +356,8 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
                 scale = charData.scale;
 
                 NJLIC::Node *node = renderLetter(ascii, charData);
+                float _y(((lineHeight * scale) - (charData.yoffset * scale)) - ((lineHeight * scale) - (base * scale)) - currentY);
+                
                 node->setOrigin(glm::vec2(currentX, currentY));
 
                 mainNode->addChildNode(node);

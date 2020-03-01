@@ -20,7 +20,6 @@ class ListItemNode : public NJLIC::Node, public Publisher {
     float mCurrentTime;
     int mAlgorithm;
     float mCurrentDistance;
-    
 
   public:
     ListItemNode();
@@ -30,9 +29,10 @@ class ListItemNode : public NJLIC::Node, public Publisher {
     void setPreviousPosition(const glm::vec3 &previousPosition);
     void scrollNext(float seconds = 1.0, int algorithm = 0);
     void scrollPrevious(float seconds = 1.0, int algorithm = 0);
-    
+
     virtual void update(float timestep) override;
-protected:
+
+  protected:
     // Robert Penner's easing functions in GLSL
     // https://github.com/stackgl/glsl-easings
     // http://easings.net

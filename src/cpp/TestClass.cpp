@@ -467,19 +467,17 @@ void TestClass::render() {
                 gmvd->load(mScene, mShader);
 
                 ListItemNode *imageNode = gmvd->getNode();
-                
+
                 imageNode->subscribe(this);
-                
+
                 imageNode->setName(std::to_string(j));
-                
+
                 float prev_x(x - (x_inc + x_gutter_selected));
                 float next_x(x + (x_inc + x_gutter_selected));
                 imageNode->setOrigin(glm::vec3(x, -1.5, 0));
-                
-                imageNode->setPreviousPosition(
-                    glm::vec3(prev_x, -1.5, 0));
-                imageNode->setNextPosition(
-                    glm::vec3(next_x, -1.5, 0));
+
+                imageNode->setPreviousPosition(glm::vec3(prev_x, -1.5, 0));
+                imageNode->setNextPosition(glm::vec3(next_x, -1.5, 0));
 
                 if (0 == j) {
                     gmvd->setSelected(true);
@@ -981,11 +979,11 @@ void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
     //    int mSelectedIndex = 0;
 }
 
-static int randi(int lo, int hi)
-{
+static int randi(int lo, int hi) {
     int n = hi - lo + 1;
     int i = rand() % n;
-    if (i < 0) i = -i;
+    if (i < 0)
+        i = -i;
     return lo + i;
 }
 
@@ -1004,16 +1002,14 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
 
             mpSelectedNode = mGameModelViewVector.at(mSelectedIndex);
             mpSelectedNode->setSelected(true);
-            
-            int algo=randi(0,30);
+
+            int algo = randi(0, 30);
             for (int j = 0; j < mGameModelViewVector.size(); j++) {
                 GameModelViewData *gmvd = mGameModelViewVector.at(j);
                 ListItemNode *imageNode = gmvd->getNode();
-                imageNode->scrollPrevious(.7f, algo);
-                
+                imageNode->scrollPrevious(2.f, algo);
             }
             mIsScrolling = true;
-            
         }
     } else if (keycodeName == "Left") {
         if (!mIsScrolling && mSelectedIndex > 0) {
@@ -1023,15 +1019,14 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
 
             mpSelectedNode = mGameModelViewVector.at(mSelectedIndex);
             mpSelectedNode->setSelected(true);
-            
-            int algo=randi(0,30);
+
+            int algo = randi(0, 30);
             for (int j = 0; j < mGameModelViewVector.size(); j++) {
-            GameModelViewData *gmvd = mGameModelViewVector.at(j);
+                GameModelViewData *gmvd = mGameModelViewVector.at(j);
                 ListItemNode *imageNode = gmvd->getNode();
-                imageNode->scrollNext(.7f, algo);
+                imageNode->scrollNext(2.f, algo);
             }
             mIsScrolling = true;
-            
         }
     } else if (keycodeName == "Return") {
         SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "pressed enter\n");
@@ -1076,57 +1071,55 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
 }
 
 void TestClass::update(Publisher *who, void *userdata) {
-    ListItemNode *lin = dynamic_cast<ListItemNode*>(who);
-    
-    if(nullptr != lin) {
-        //TODO: increase a count.
-        
-//        printf("%s:reached - mNumItemsReeachDestination=%d\n", lin->getName().c_str(), mNumItemsReeachDestination);
-        
+    ListItemNode *lin = dynamic_cast<ListItemNode *>(who);
+
+    if (nullptr != lin) {
+        // TODO: increase a count.
+
+        //        printf("%s:reached - mNumItemsReeachDestination=%d\n",
+        //        lin->getName().c_str(), mNumItemsReeachDestination);
+
         ++mNumItemsReeachDestination;
-        
-        
-        if(mNumItemsReeachDestination >= mGameModelViewVector.size()) {
+
+        if (mNumItemsReeachDestination >= mGameModelViewVector.size()) {
             mNumItemsReeachDestination = 0;
             mIsScrolling = false;
-            
-            
+
             const float tileWidth = 0.888888895f;
 
             float x_inc = tileWidth;
             float x_gutter_selected = tileWidth / 2.f;
             float x_gutter = tileWidth / 10.f;
-            
-//            printf("REACHED\n");
-            
+
+            //            printf("REACHED\n");
+
             for (int j = 0; j < mGameModelViewVector.size(); j++) {
                 GameModelViewData *gmvd = mGameModelViewVector.at(j);
-                
+
                 ListItemNode *imageNode = gmvd->getNode();
-                
+
                 glm::vec3 o(imageNode->getOrigin());
-                
+
                 float prev_x(o.x - (x_inc + x_gutter_selected));
                 float next_x(o.x + (x_inc + x_gutter_selected));
-                
-                imageNode->setPreviousPosition(
-                    glm::vec3(prev_x, -1.5, 0));
-                imageNode->setNextPosition(
-                    glm::vec3(next_x, -1.5, 0));
-                
-                
-//                if(j > 0)
-//                    gmvd_previous = mGameModelViewVector.at(j - 1);
-//                if(j < mGameModelViewVector.size() - 1)
-//                    gmvd_next = mGameModelViewVector.at(j + 1);
-//
-//                if(gmvd_current) {
-//
-//                    if(nullptr != gmvd_next)
-//                        gmvd_current->getNode()->setNextPosition(gmvd_next->getNode()->getOrigin());
-//                    if(nullptr != gmvd_previous)
-//                        gmvd_current->getNode()->setPreviousPosition(gmvd_previous->getNode()->getOrigin());
-//                }
+
+                imageNode->setPreviousPosition(glm::vec3(prev_x, -1.5, 0));
+                imageNode->setNextPosition(glm::vec3(next_x, -1.5, 0));
+
+                //                if(j > 0)
+                //                    gmvd_previous = mGameModelViewVector.at(j
+                //                    - 1);
+                //                if(j < mGameModelViewVector.size() - 1)
+                //                    gmvd_next = mGameModelViewVector.at(j +
+                //                    1);
+                //
+                //                if(gmvd_current) {
+                //
+                //                    if(nullptr != gmvd_next)
+                //                        gmvd_current->getNode()->setNextPosition(gmvd_next->getNode()->getOrigin());
+                //                    if(nullptr != gmvd_previous)
+                //                        gmvd_current->getNode()->setPreviousPosition(gmvd_previous->getNode()->getOrigin());
+                //                }
             }
         }
     }

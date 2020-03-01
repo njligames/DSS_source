@@ -339,8 +339,7 @@ namespace NJLIC {
     void Node::resetTransformDirty() { m_TransformDirty = false; }
 
     void Node::update(float timestep) {
-        
-        
+
         //        float mass = 1.0f;
 
         //        *m_ImpulseForce += *m_GravityForce;

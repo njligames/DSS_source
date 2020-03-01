@@ -41,7 +41,7 @@ struct LetterFrameInfo {
           sourceHeight(map["sourceHeight"]), sourceWidth(map["sourceWidth"]),
           sourceX(map["sourceX"]), sourceY(map["sourceY"]), width(map["width"]),
           x(map["x"]), xadvance(map["xadvance"]), xoffset(map["xoffset"]),
-          y(map["y"]), yoffset(map["yoffset"]), scale(.00019) {}
+          y(map["y"]), yoffset(map["yoffset"]), scale(.0003) {}
 };
 
 class BitmapFont {
