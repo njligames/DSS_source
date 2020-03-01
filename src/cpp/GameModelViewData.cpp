@@ -337,6 +337,7 @@ void GameModelViewData::load(NJLIC::Scene *scene, NJLIC::Shader *imageShader) {
     mMainNode->addChildNode(mDescriptionNode);
 
     scene->getRootNode()->addChildNode(mMainNode);
+    scene->addActiveNode(mMainNode);
 }
 
 const std::string &GameModelViewData::getHomeName() const { return mHomeName; }

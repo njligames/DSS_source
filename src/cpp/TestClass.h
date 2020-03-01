@@ -19,7 +19,7 @@ class GameModelData;
 class BitmapFont;
 class GameModelData;
 
-class TestClass {
+class TestClass : public Subscriber {
     static TestClass *sInstance;
     TestClass();
     virtual ~TestClass();
@@ -53,6 +53,8 @@ class TestClass {
                  bool withControl, bool withShift, bool withAlt, bool withGui);
     void keyUp(const std::string &keycodeName, bool withCapsLock,
                bool withControl, bool withShift, bool withAlt, bool withGui);
+    
+    virtual void update(Publisher *who, void *userdata = 0)override;
 
   protected:
     static std::string loadStringData(char *path);
@@ -85,4 +87,7 @@ class TestClass {
     std::vector<GameModelViewData *> mGameModelViewVector;
     GameModelViewData *mpSelectedNode = nullptr;
     int mSelectedIndex = 0;
+    
+    int mNumItemsReeachDestination = 0;
+    bool mIsScrolling = false;
 };
