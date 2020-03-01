@@ -176,6 +176,8 @@ void TestClass::init(const unsigned int numCards) {
     int numberOfDaysToGoBack((365 * 4) + 1);
     numberOfDaysToGoBack = 1;
     NJLIC::Date formatted_date(6, 10, 2018);
+    NJLIC::Date formatted_date2(6, 9, 2018);
+    NJLIC::Date today;
 
     GameModelData *gmd = GameModelData::generateGameModelData(formatted_date);
 
@@ -244,128 +246,8 @@ void TestClass::init(const unsigned int numCards) {
 
         if (mShader->load(vertexSource, fragmentSource)) {
             const char *objData = UtilDSS::loadFile("assets/models/sprite.obj");
-
-            if (objData) {
-                const std::string &filedata(objData);
-                //                mGeometry->load(mShader, filedata, numCards);
-                //                mGeometry->load(mShader, numCards);
-                //                mGeometry->loadDiffuseMatrial(mShader,
-                //                "assets/loading.jpg");
-
-                //                                mBufferData0 = (unsigned char
-                //                                *)UtilDSS::loadImage(
-                //                                    "assets/test1.jpg",
-                //                                    &mwidth0, &mheight0,
-                //                                    &mchannels_in_file0);
-                //                mBufferData1 = (unsigned char
-                //                *)UtilDSS::loadImage(
-                //                    "assets/test1b.jpg", &mwidth1, &mheight1,
-                //                    &mchannels_in_file1);
-
-                //                NJLIC::Node *node = nullptr;
-                //                for (auto i = 0; i < numCards; i++) {
-                ////                    if (i == 0) {
-                ////                        node =
-                /// BitmapFont::getInstance()->printf( / mScene, "%s",
-                ///"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz");
-                ////
-                //////                        node =
-                /// BitmapFont::getInstance()->printf(
-                //////                        mScene, "%s", "rj");
-                ////                    } else {
-                //                        node = new NJLIC::Node();
-                //                        node->addGeometry(mGeometry);
-                //
-                //
-                ////                    }
-                //                    mGeometry->setDimensions(node,
-                //                    glm::vec2(mGeometry->getDiffuseImageWidth(),
-                //                    mGeometry->getDiffuseImageHeight()));
-                //                    mCubeNodes.push_back(node);
-                //                }
-
-                loaded = true;
-            }
         }
     }
-
-    //    if (loaded) {
-    //        //        float start_x = -4.0f;
-    //        float start_x = 0.0f;
-    //        float x_inc = 1.0f;
-    //        float x_gutter = 0.5;
-    //
-    //        float x = start_x;
-    //        int ii = 0;
-    //
-    //        for (std::vector<NJLIC::Node *>::iterator i = mCubeNodes.begin();
-    //             i != mCubeNodes.end(); i++) {
-    //            NJLIC::Node *node = *i;
-    //
-    //            node->setOrigin(glm::vec3(x, -1.5, 0));
-    //
-    //            mScene->addActiveNode(node);
-    //            mScene->getRootNode()->addChildNode(node);
-    //
-    //            if (ii == 0) {
-    //                //                node->setScale(5.);
-    //                //                node->addGeometry(mFontGeometry);
-    //            } else {
-    //                //                node->addGeometry(mGeometry);
-    //            }
-    //
-    //            x += x_inc;
-    //            x += x_gutter;
-    //            ii++;
-    //            // node->setColorBase(glm::vec4(randomFloat(0.0f, 1.0f),
-    //            // randomFloat(0.0f, 1.0f),
-    //            // randomFloat(0.0f, 1.0f), 1.0f));
-    //
-    //            //            node->setColorBase(glm::vec4(1.0f,
-    //            //                                         1.0f,
-    //            //                                         1.0f, 1.0f));
-    //        }
-    //    }
-
-    //    BitmapFont::getInstance()->load("FranklinGothicMedium");
-    //    BitmapFont::getInstance()->load("FranklinGothicMedium");
-
-    //    for (std::vector<MLBJson::DateElement>::iterator dateElement_iterator
-    //    = data.getMutableDates().begin();
-    //         dateElement_iterator != data.getMutableDates().end();
-    //         ++dateElement_iterator) {
-    //
-    //        MLBJson::DateElement _dateElement = *dateElement_iterator;
-    //
-    //        std::vector<GameModelViewData*> gvdVector;
-    //        GameModelViewData::loadGames(_dateElement.getMutableGames(),
-    //        gvdVector);
-    //
-    //
-    ////        size_t gameNumber = 0;
-    ////
-    ////        for (std::vector<MLBJson::Game>::iterator game_iterator =
-    ///_dateElement.getMutableGames().begin(); /        game_iterator !=
-    ///_dateElement.getMutableGames().end(); /        ++game_iterator) { /
-    /// gameNumber++;
-    ////
-    ////            MLBJson::Game _game = *game_iterator;
-    ////
-    ////            GameModelViewData gvd(_game);
-    ////
-    ////            int width, height, channels_in_file;
-    ////            size_t fileSize;
-    ////
-    ////            void *data1 = gvd.getDetailImageData(&width, &height,
-    ///&channels_in_file, &fileSize); /            void *data2 =
-    /// gvd.getListItemImageData(&width, &height, &channels_in_file, &fileSize);
-    ////
-    ////            gvd.getAwayName();
-    ////
-    ////        }
-    //    }
-
-    //    SDL_LogVerbose(SDL_LOG_CATEGORY_TEST, "%s", mlbJson.c_str());
 }
 void TestClass::unInit() {
     while (!mGameModelDataVector.empty()) {
@@ -375,53 +257,6 @@ void TestClass::unInit() {
     }
 }
 void TestClass::update(float step) {
-    //    mstep += step;
-
-    for (int i = 0; i < mGameModelViewVector.size(); i++) {
-        GameModelViewData *gmvd = mGameModelViewVector.at(i);
-
-        //        NJLIC::Node *imageNode = gmvd->getImageNode();
-        //
-        //        //        glm::vec3 pos(imageNode->getOrigin());
-        //
-        //        if (mpSelectedNode == imageNode) {
-        //
-        //            //            imageNode->setScale(1.5f);
-        //
-        //        } else {
-        //        }
-    }
-
-    //    printf("%f\n", step);
-
-    //    NJLIC::Node *node = mCubeNodes.at(0);
-    //
-    //    glm::quat rot2;
-    //    rot2 = glm::rotate(rot2, m_Rotation, glm::vec3(0.0, 1.0, 0.0));
-    //    //        btQuaternion rot3(glm::vec3(0.0, 0.0, 1.0), m_Rotation);
-    //    //        node->setRotation(rot1 * rot2 * rot3);
-    ////    node->setRotation(rot2);
-    //    m_Rotation += step;
-
-    //    if(mstep > 1.) {
-    //
-    //        for(int i = 0; i < mCubeNodes.size(); i++) {
-    //            NJLIC::Node * node = mCubeNodes[i];
-    //
-    //            if(control % 2 == 0) {
-    //                mGeometry->reloadDiffuseMatrial(mShader, mBufferData0,
-    //                mwidth0, mheight0, mchannels_in_file0);
-    //            }
-    //            else {
-    //                mGeometry->reloadDiffuseMatrial(mShader, mBufferData1,
-    //                mwidth1, mheight1, mchannels_in_file1);
-    //            }
-    //
-    //
-    //        }
-    //        control++;
-    //        mstep = 0.0f;
-    //    }
 
     mScene->update(step);
 }
@@ -972,13 +807,6 @@ void TestClass::resize(int w, int h) {}
 
 bool TestClass::isDone() const { return mIsDone; }
 
-void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
-                        bool withControl, bool withShift, bool withAlt,
-                        bool withGui) {
-    //    NJLIC::Node *mpSelectedNode = nullptr;
-    //    int mSelectedIndex = 0;
-}
-
 static int randi(int lo, int hi) {
     int n = hi - lo + 1;
     int i = rand() % n;
@@ -986,11 +814,9 @@ static int randi(int lo, int hi) {
         i = -i;
     return lo + i;
 }
-
-void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
-                      bool withControl, bool withShift, bool withAlt,
-                      bool withGui) {
-
+void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
+                        bool withControl, bool withShift, bool withAlt,
+                        bool withGui) {
     bool updated = false;
 
     if (keycodeName == "Right") {
@@ -1004,10 +830,12 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
             mpSelectedNode->setSelected(true);
 
             int algo = randi(0, 30);
+            algo = 15;
+            printf("chose algo %d\n", algo);
             for (int j = 0; j < mGameModelViewVector.size(); j++) {
                 GameModelViewData *gmvd = mGameModelViewVector.at(j);
                 ListItemNode *imageNode = gmvd->getNode();
-                imageNode->scrollPrevious(2.f, algo);
+                imageNode->scrollPrevious(1.f, algo);
             }
             mIsScrolling = true;
         }
@@ -1021,10 +849,12 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
             mpSelectedNode->setSelected(true);
 
             int algo = randi(0, 30);
+            algo = 5;
+            printf("chose algo %d\n", algo);
             for (int j = 0; j < mGameModelViewVector.size(); j++) {
                 GameModelViewData *gmvd = mGameModelViewVector.at(j);
                 ListItemNode *imageNode = gmvd->getNode();
-                imageNode->scrollNext(2.f, algo);
+                imageNode->scrollNext(1.f, algo);
             }
             mIsScrolling = true;
         }
@@ -1070,14 +900,19 @@ void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
     }
 }
 
+
+
+void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
+                      bool withControl, bool withShift, bool withAlt,
+                      bool withGui) {
+
+    
+}
+
 void TestClass::update(Publisher *who, void *userdata) {
     ListItemNode *lin = dynamic_cast<ListItemNode *>(who);
 
     if (nullptr != lin) {
-        // TODO: increase a count.
-
-        //        printf("%s:reached - mNumItemsReeachDestination=%d\n",
-        //        lin->getName().c_str(), mNumItemsReeachDestination);
 
         ++mNumItemsReeachDestination;
 
@@ -1105,21 +940,6 @@ void TestClass::update(Publisher *who, void *userdata) {
 
                 imageNode->setPreviousPosition(glm::vec3(prev_x, -1.5, 0));
                 imageNode->setNextPosition(glm::vec3(next_x, -1.5, 0));
-
-                //                if(j > 0)
-                //                    gmvd_previous = mGameModelViewVector.at(j
-                //                    - 1);
-                //                if(j < mGameModelViewVector.size() - 1)
-                //                    gmvd_next = mGameModelViewVector.at(j +
-                //                    1);
-                //
-                //                if(gmvd_current) {
-                //
-                //                    if(nullptr != gmvd_next)
-                //                        gmvd_current->getNode()->setNextPosition(gmvd_next->getNode()->getOrigin());
-                //                    if(nullptr != gmvd_previous)
-                //                        gmvd_current->getNode()->setPreviousPosition(gmvd_previous->getNode()->getOrigin());
-                //                }
             }
         }
     }
