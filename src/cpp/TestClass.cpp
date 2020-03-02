@@ -27,6 +27,7 @@
 #include "SpriteGeometry.h"
 
 #include "ListItemNode.h"
+#include "MaterialProperty.h"
 
 static void UpdateFrame(void *param) {
     //  njli::NJLIGameEngine::update(1.0f / ((float)gDisplayMode.refresh_rate));
@@ -170,6 +171,7 @@ void TestClass::init(const unsigned int numCards) {
     mIsDone = false;
     //    mMutex.unlock();
 
+    NJLIC::MaterialProperty::initReferences();
 #define TEST_DL
 
 #ifdef TEST_DL
@@ -256,10 +258,7 @@ void TestClass::unInit() {
         mGameModelDataVector.pop_back();
     }
 }
-void TestClass::update(float step) {
-
-    mScene->update(step);
-}
+void TestClass::update(float step) { mScene->update(step); }
 void TestClass::render() {
     mMutex.lock();
 
@@ -273,8 +272,8 @@ void TestClass::render() {
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, 1920 * 2, 1920 * 2);
 
-    for (int i = 0; i < mGameModelViewVector.size(); i++) {
-        GameModelViewData *gmvd = mGameModelViewVector.at(i);
+    for (int i = 0; i < mListItems.size(); i++) {
+        GameModelViewData *gmvd = mListItems.at(i);
         gmvd->render();
     }
     mScene->render();
@@ -296,8 +295,9 @@ void TestClass::render() {
             gmd->hasGames()) {
             gmd->getGameModelViewVector(mGameModelViewVector);
 
-            for (int j = 0; j < mGameModelViewVector.size(); j++) {
-                GameModelViewData *gmvd = mGameModelViewVector.at(j);
+            int numAvailable = 0;
+            for (numAvailable = 0; numAvailable < mGameModelViewVector.size() && NJLIC::MaterialProperty::hasAvailableReference(); numAvailable++) {
+                GameModelViewData *gmvd = mGameModelViewVector.at(numAvailable);
 
                 gmvd->load(mScene, mShader);
 
@@ -305,7 +305,7 @@ void TestClass::render() {
 
                 imageNode->subscribe(this);
 
-                imageNode->setName(std::to_string(j));
+                imageNode->setName(std::to_string(numAvailable));
 
                 float prev_x(x - (x_inc + x_gutter_selected));
                 float next_x(x + (x_inc + x_gutter_selected));
@@ -314,7 +314,7 @@ void TestClass::render() {
                 imageNode->setPreviousPosition(glm::vec3(prev_x, -1.5, 0));
                 imageNode->setNextPosition(glm::vec3(next_x, -1.5, 0));
 
-                if (0 == j) {
+                if (0 == numAvailable) {
                     gmvd->setSelected(true);
                     mpSelectedNode = gmvd;
 
@@ -324,6 +324,11 @@ void TestClass::render() {
                     x += x_inc;
                     x += x_gutter_selected;
                 }
+                
+                mListItems.push_back(gmvd);
+            }
+            while(numAvailable < mGameModelDataVector.size()){
+                mGameModelDataVector.pop_back();
             }
         }
     }
@@ -820,20 +825,20 @@ void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
     bool updated = false;
 
     if (keycodeName == "Right") {
-        if (!mIsScrolling && mSelectedIndex < mGameModelViewVector.size() - 1) {
+        if (!mIsScrolling && mSelectedIndex < mListItems.size() - 1) {
 
             mpSelectedNode->setSelected(false);
 
             mSelectedIndex++;
 
-            mpSelectedNode = mGameModelViewVector.at(mSelectedIndex);
+            mpSelectedNode = mListItems.at(mSelectedIndex);
             mpSelectedNode->setSelected(true);
 
             int algo = randi(0, 30);
             algo = 15;
             printf("chose algo %d\n", algo);
-            for (int j = 0; j < mGameModelViewVector.size(); j++) {
-                GameModelViewData *gmvd = mGameModelViewVector.at(j);
+            for (int j = 0; j < mListItems.size(); j++) {
+                GameModelViewData *gmvd = mListItems.at(j);
                 ListItemNode *imageNode = gmvd->getNode();
                 imageNode->scrollPrevious(1.f, algo);
             }
@@ -845,14 +850,14 @@ void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
 
             mSelectedIndex--;
 
-            mpSelectedNode = mGameModelViewVector.at(mSelectedIndex);
+            mpSelectedNode = mListItems.at(mSelectedIndex);
             mpSelectedNode->setSelected(true);
 
             int algo = randi(0, 30);
             algo = 5;
             printf("chose algo %d\n", algo);
-            for (int j = 0; j < mGameModelViewVector.size(); j++) {
-                GameModelViewData *gmvd = mGameModelViewVector.at(j);
+            for (int j = 0; j < mListItems.size(); j++) {
+                GameModelViewData *gmvd = mListItems.at(j);
                 ListItemNode *imageNode = gmvd->getNode();
                 imageNode->scrollNext(1.f, algo);
             }
@@ -872,8 +877,8 @@ void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
 
         float x = start_x;
 
-        for (int i = 0; i < mGameModelViewVector.size(); i++) {
-            GameModelViewData *gmvd = mGameModelViewVector.at(i);
+        for (int i = 0; i < mListItems.size(); i++) {
+            GameModelViewData *gmvd = mListItems.at(i);
 
             //            NJLIC::Node *imageNode = gmvd->getImageNode();
             NJLIC::Node *imageNode = gmvd->getNode();
@@ -884,8 +889,8 @@ void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
                 x += x_inc;
                 x += x_gutter_selected;
             } else {
-                if (i + 1 < mGameModelViewVector.size()) {
-                    GameModelViewData *gmvd_next = mGameModelViewVector.at(i);
+                if (i + 1 < mListItems.size()) {
+                    GameModelViewData *gmvd_next = mListItems.at(i);
 
                     if (gmvd_next == mpSelectedNode) {
                         x += x_inc;
@@ -900,14 +905,9 @@ void TestClass::keyDown(const std::string &keycodeName, bool withCapsLock,
     }
 }
 
-
-
 void TestClass::keyUp(const std::string &keycodeName, bool withCapsLock,
                       bool withControl, bool withShift, bool withAlt,
-                      bool withGui) {
-
-    
-}
+                      bool withGui) {}
 
 void TestClass::update(Publisher *who, void *userdata) {
     ListItemNode *lin = dynamic_cast<ListItemNode *>(who);
@@ -916,7 +916,7 @@ void TestClass::update(Publisher *who, void *userdata) {
 
         ++mNumItemsReeachDestination;
 
-        if (mNumItemsReeachDestination >= mGameModelViewVector.size()) {
+        if (mNumItemsReeachDestination >= mListItems.size()) {
             mNumItemsReeachDestination = 0;
             mIsScrolling = false;
 
@@ -928,8 +928,8 @@ void TestClass::update(Publisher *who, void *userdata) {
 
             //            printf("REACHED\n");
 
-            for (int j = 0; j < mGameModelViewVector.size(); j++) {
-                GameModelViewData *gmvd = mGameModelViewVector.at(j);
+            for (int j = 0; j < mListItems.size(); j++) {
+                GameModelViewData *gmvd = mListItems.at(j);
 
                 ListItemNode *imageNode = gmvd->getNode();
 

@@ -205,7 +205,7 @@ f 2/1/1 4/4/1 3/2/1
 
              */
 
-            float w(mWidth), h(mHeight);
+            float w(getDiffuseImageWidth()), h(getDiffuseImageHeight());
             float ratiox = 1.0;
             float ratioy = 1.0;
             if (w > h) {
@@ -250,8 +250,8 @@ f 2/1/1 4/4/1 3/2/1
             //            float width = getMaterial()->getDiffuse()->getWidth();
             //            float height =
             //            getMaterial()->getDiffuse()->getHeight();
-            float width(mWidth);
-            float height(mHeight);
+            float width(getDiffuseImageWidth());
+            float height(getDiffuseImageHeight());
 
             float left = textureCoordOffset.x / width;
             float right =

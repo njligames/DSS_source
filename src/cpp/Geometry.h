@@ -31,6 +31,8 @@ typedef GLfloat GLfptype;
 #define GL_INDEX_TYPE (GL_FLOAT)
 #endif
 
+#include "MaterialProperty.h"
+
 namespace NJLIC {
     struct __attribute__((aligned(16))) TexturedColoredVertex {
         static void computeTangentBasis(TexturedColoredVertex *v,
@@ -204,9 +206,15 @@ namespace NJLIC {
                                   const unsigned char *diffuseFileData,
                                   int width, int height, int channels_in_file);
 
-        int getDiffuseImageWidth() const { return mWidth; }
-        int getDiffuseImageHeight() const { return mHeight; }
-        int gertDiffuseImageChannels() const { return mChannels; }
+        int getDiffuseImageWidth() const {
+            return mMaterialProperty->getWidth();
+        }
+        int getDiffuseImageHeight() const {
+            return mMaterialProperty->getHeight();
+        }
+        int gertDiffuseImageChannels() const {
+            return mMaterialProperty->getNumComponents();
+        }
 
       protected:
         const void *getModelViewTransformArrayBufferPtr() const;
@@ -282,14 +290,15 @@ namespace NJLIC {
         bool m_ModelViewBufferChanged;
         bool m_ShaderChanged;
 
-        GLuint mDiffuseTexture;
+        //        GLuint mDiffuseTexture;
+        NJLIC::MaterialProperty *mMaterialProperty;
 
         GLenum mFormat;
 
-      protected:
-        int mWidth;
-        int mHeight;
-        int mChannels;
+        //      protected:
+        //        int mWidth;
+        //        int mHeight;
+        //        int mChannels;
     };
 } // namespace NJLIC
 

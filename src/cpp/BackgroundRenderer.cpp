@@ -9,6 +9,7 @@
 #include "SDL.h"
 #include "UtilDSS.h"
 #include <string>
+#include "MaterialProperty.h"
 
 namespace NJLIC {
 
@@ -217,6 +218,10 @@ namespace NJLIC {
                 "assets/MLBBackground.jpg", &mwidth, &mheight,
                 &mchannels_in_file);
 
+            mTextureIndex = 0;
+//            MaterialProperty::addReference(size_t(mTextureIndex));
+            MaterialProperty::addReference(mTextureIndex);
+            
             // Create a new texture from the camera frame data, display that
             // using the shaders
             glGenTextures(1, &mVideoFrameTexture);
@@ -244,6 +249,8 @@ namespace NJLIC {
 
             setupVertexBuffer(mVao, mVertexBuffer, mIndexBuffer);
 
+            glActiveTexture(GL_TEXTURE0 + mTextureIndex);
+            UtilDSS::glErrorCheck();
             glBindTexture(GL_TEXTURE_2D, mVideoFrameTexture);
             UtilDSS::glErrorCheck();
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, GLsizei(width),
@@ -268,13 +275,13 @@ namespace NJLIC {
         glUseProgram(mProgram);
         UtilDSS::glErrorCheck();
 
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0 + mTextureIndex);
         UtilDSS::glErrorCheck();
         glBindTexture(GL_TEXTURE_2D, mVideoFrameTexture);
         UtilDSS::glErrorCheck();
 
         // Update uniform values
-        glUniform1i(mUniforms[UNIFORM_VIDEOFRAME], 0);
+        glUniform1i(mUniforms[UNIFORM_VIDEOFRAME], mTextureIndex);
         UtilDSS::glErrorCheck();
 
         glBindVertexArrayAPPLE(mVao);

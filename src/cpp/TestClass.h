@@ -90,4 +90,6 @@ class TestClass : public Subscriber {
 
     int mNumItemsReeachDestination = 0;
     bool mIsScrolling = false;
+    
+    std::vector<GameModelViewData *> mListItems;
 };

@@ -28,6 +28,7 @@ namespace NJLIC {
         bool mLoadedJson = false;
         bool mShouldReload = false;
 
+        int mTextureIndex;
       public:
         static BackgroundRenderer *getInstance();
         static void destroyInstance();

@@ -203,7 +203,10 @@ namespace NJLIC {
     bool Shader::setUniformValue(const char *uniformName, int value) {
         int location = getUniformLocation(uniformName);
         if (location != -1) {
-            glUniform1i(location, value);
+            int v;
+            getUniformValue(uniformName, v);
+            if (v != value)
+                glUniform1i(location, value);
             return true;
         }
         return false;

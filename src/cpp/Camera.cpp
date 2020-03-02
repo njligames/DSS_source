@@ -229,13 +229,12 @@ namespace NJLIC {
 
     void Camera::render(Shader *const shader, bool shouldRedraw) {
         if (m_ModelViewDirty || shouldRedraw) {
-            assert(shader->setUniformValue("modelView", getModelView()));
+            (shader->setUniformValue("modelView", getModelView()));
             m_ModelViewDirty = false;
         }
 
         if (m_ProjectionDirty || shouldRedraw) {
-            assert(shader->setUniformValue("projection",
-                                           m_ProjectionMatrixBuffer));
+            (shader->setUniformValue("projection", m_ProjectionMatrixBuffer));
             m_ProjectionDirty = false;
         }
     }

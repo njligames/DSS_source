@@ -356,8 +356,9 @@ NJLIC::Node *BitmapFont::printf(NJLIC::Scene *scene, const char *fmt, ...) {
                 scale = charData.scale;
 
                 NJLIC::Node *node = renderLetter(ascii, charData);
-                float _y(((lineHeight * scale) - (charData.yoffset * scale)) - ((lineHeight * scale) - (base * scale)) - currentY);
-                
+                float _y(((lineHeight * scale) - (charData.yoffset * scale)) -
+                         ((lineHeight * scale) - (base * scale)) - currentY);
+
                 node->setOrigin(glm::vec2(currentX, currentY));
 
                 mainNode->addChildNode(node);
