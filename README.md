@@ -2,7 +2,7 @@
 
 Screenshot
 
-![Alt text](http://bit.ly/DSS_Screenshot)
+![Alt text](https://www.dropbox.com/s/c84c16b7iroj3jd/screenshot.png)
 
 This project was created from my SDL2 Template repository, using pieces from my personal Game Engine.
 It would not take much to make this project work for:
