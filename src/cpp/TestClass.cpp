@@ -296,7 +296,10 @@ void TestClass::render() {
             gmd->getGameModelViewVector(mGameModelViewVector);
 
             int numAvailable = 0;
-            for (numAvailable = 0; numAvailable < mGameModelViewVector.size() && NJLIC::MaterialProperty::hasAvailableReference(); numAvailable++) {
+            for (numAvailable = 0;
+                 numAvailable < mGameModelViewVector.size() &&
+                 NJLIC::MaterialProperty::hasAvailableReference();
+                 numAvailable++) {
                 GameModelViewData *gmvd = mGameModelViewVector.at(numAvailable);
 
                 gmvd->load(mScene, mShader);
@@ -324,10 +327,10 @@ void TestClass::render() {
                     x += x_inc;
                     x += x_gutter_selected;
                 }
-                
+
                 mListItems.push_back(gmvd);
             }
-            while(numAvailable < mGameModelDataVector.size()){
+            while (numAvailable < mGameModelDataVector.size()) {
                 mGameModelDataVector.pop_back();
             }
         }

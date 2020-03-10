@@ -235,6 +235,9 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
     MLBJson::Cut largest_cut;
     int64_t largestSize = 0;
 
+    size_t mediaCuts = _media.getImage().getCuts().size();
+    printf("There are %d media images.\n", mediaCuts);
+
     for (std::vector<MLBJson::Cut>::const_iterator cut_iterator =
              _media.getImage().getCuts().begin();
          cut_iterator != _media.getImage().getCuts().end(); ++cut_iterator) {
@@ -246,6 +249,7 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
             largestSize = w * h;
             largest_cut = cut;
         }
+        printf("%dx%d\n", w, h);
     }
 
     mDetailImageUrl = largest_cut.getSrc().c_str();
@@ -259,6 +263,9 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
     MLBJson::Cut find_cut;
     bool found_cut = false;
 
+    size_t imageCuts = _photo.getCuts().size();
+    printf("There are %d photo images.\n", mediaCuts);
+
     largestSize = 0;
     for (std::map<std::string, MLBJson::Cut>::const_iterator cuts_iterator =
              _photo.getCuts().begin();
@@ -269,6 +276,7 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
 
         int64_t w = value.getWidth();
         int64_t h = value.getHeight();
+        printf("%dx%d\n", w, h);
         if (!found_cut && FIND_WIDTH == w && FIND_HEIGHT == h &&
             UtilDSS::validUrl(value.getSrc())) {
             find_cut = value;
@@ -602,8 +610,13 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
     //    char *buff1 = new char[1024];
     //    char *buff2 = new char[1024];
 
+    int max=2;
+    int count = 0;
     for (std::vector<MLBJson::Game>::const_iterator iter = games.begin();
          iter != games.end(); ++iter) {
+        if(count >= max)
+            continue;
+        ++count;
 
         GameModelViewData *gvd = new GameModelViewData(*iter);
         gvdVector.push_back(gvd);

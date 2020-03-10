@@ -42,7 +42,7 @@ namespace NJLIC {
     }
 
     void MaterialProperty::addReference(MaterialProperty *property) {
-        
+
         int idx = -1;
         MaterialProperty::addReference(idx);
         property->setTextureIndex(idx);
@@ -106,16 +106,16 @@ namespace NJLIC {
         }
         return false;
     }
-    
-bool MaterialProperty::hasAvailableReference() {
-    
-    for (int i = 0; i < s_TextureIDReferences.size() ; ++i) {
-        if (0 == s_TextureIDReferences[i]) {
-            return true;
+
+    bool MaterialProperty::hasAvailableReference() {
+
+        for (int i = 0; i < s_TextureIDReferences.size(); ++i) {
+            if (0 == s_TextureIDReferences[i]) {
+                return true;
+            }
         }
+        return false;
     }
-    return false;
-}
 
     MaterialProperty::MaterialProperty()
         : mDiffuseTexture(-1), mWidth(2), mHeight(2), mChannels(1) {}

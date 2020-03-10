@@ -923,7 +923,7 @@ static void Update() {
       
     handleInput();
 
-      TestClass::getInstance()->update(0.06);
+      TestClass::getInstance()->update(0.1);
       
     RenderFrame(gGraphics.get());
 

@@ -6,10 +6,10 @@
 //
 
 #include "BackgroundRenderer.h"
+#include "MaterialProperty.h"
 #include "SDL.h"
 #include "UtilDSS.h"
 #include <string>
-#include "MaterialProperty.h"
 
 namespace NJLIC {
 
@@ -219,9 +219,9 @@ namespace NJLIC {
                 &mchannels_in_file);
 
             mTextureIndex = 0;
-//            MaterialProperty::addReference(size_t(mTextureIndex));
+            //            MaterialProperty::addReference(size_t(mTextureIndex));
             MaterialProperty::addReference(mTextureIndex);
-            
+
             // Create a new texture from the camera frame data, display that
             // using the shaders
             glGenTextures(1, &mVideoFrameTexture);

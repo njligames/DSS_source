@@ -50,7 +50,7 @@ namespace NJLIC {
         static void addReference(int &idx);
         static void removeReference(const int idx);
         static bool hasReference(const int idx);
-        
+
         static bool hasAvailableReference();
 
         MaterialProperty();
