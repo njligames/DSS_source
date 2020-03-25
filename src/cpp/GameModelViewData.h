@@ -11,6 +11,7 @@
 #include "MLBJsonModel.h"
 #include "PubSub.h"
 #include "ThreadPool.h"
+#include <map>
 #include <mutex>  // std::mutex
 #include <thread> // std::thread
 
@@ -21,6 +22,8 @@
 #include "SpriteGeometry.h"
 
 struct FileData;
+class Image;
+#include "SpriteAtlasGenerator.h"
 
 class GameModelViewData : public Publisher, public Subscriber {
     std::string mHomeName;
@@ -54,6 +57,8 @@ class GameModelViewData : public Publisher, public Subscriber {
     NJLIC::Node *mDescriptionNode;
 
     ListItemNode *mMainNode;
+
+    NJLIC::SpriteAtlasGenerator *mSpriteAtlasGenerator;
 
   public:
     GameModelViewData(const MLBJson::Game &game);
@@ -95,6 +100,8 @@ class GameModelViewData : public Publisher, public Subscriber {
     virtual void render();
 
     void setSelected(bool selected);
+
+    void generateSpriteAtlas();
 
   protected:
     bool download_jpeg(const char *url,

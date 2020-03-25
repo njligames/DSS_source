@@ -10,8 +10,8 @@
 #define __JLIGameEngineTest__Image__
 
 #include "glm/glm.hpp"
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace NJLIC {
 
@@ -37,9 +37,8 @@ namespace NJLIC {
          *
          *  @return <#return value description#>
          */
-        static Image *createSubImage(const Image &imageSource,
-                                     const glm::vec2 &position,
-                                     const glm::vec2 &dimensions);
+        //        static Image *createSubImage(const Image &imageSource,
+        //                                     const glm::vec2 &position);
 
         // TODO: fill in specific methods for Image
         /**
@@ -80,8 +79,9 @@ namespace NJLIC {
          *
          *  @return <#return value description#>
          */
-        bool setPixels(const glm::vec2 &position, const glm::vec2 &dimensions,
-                       const glm::vec4 &color);
+        //        bool setPixels(const glm::vec2 &position, const glm::vec2
+        //        &dimensions,
+        //                       const glm::vec4 &color);
 
         /**
          *  <#Description#>
@@ -94,9 +94,14 @@ namespace NJLIC {
          *
          *  @return <#return value description#>
          */
-        bool setPixels(const glm::vec2 &position, const glm::vec2 &dimensions,
-                       const Image &sourceImage,
-                       const glm::vec2 &sourceImageOffset = glm::vec2(0, 0));
+        //        bool setPixels(const glm::vec2 &position, const glm::vec2
+        //        &dimensions,
+        //                       const Image &sourceImage,
+        //                       const glm::vec2 &sourceImageOffset =
+        //                       glm::vec2(0, 0));
+
+        bool setPixels(const glm::vec2 &toPosition, const Image &fromImage,
+                       const glm::vec2 &fromOffsetPosition = glm::vec2(0, 0));
 
         /**
          *  <#Description#>
@@ -109,10 +114,11 @@ namespace NJLIC {
          *
          *  @return <#return value description#>
          */
-        bool getPixels(
-            const glm::vec2 &position, const glm::vec2 &dimension,
-            Image &destinationImage,
-            const glm::vec2 &destinationImageOffset = glm::vec2(0, 0)) const;
+        //        bool getPixels(
+        //            const glm::vec2 &position, const glm::vec2 &dimension,
+        //            Image &destinationImage,
+        //            const glm::vec2 &destinationImageOffset = glm::vec2(0, 0))
+        //            const;
 
         /**
          *  <#Description#>
@@ -155,8 +161,8 @@ namespace NJLIC {
          */
         //    const int* getDataRaw() const;
 
-//        bool isPvr() const;
-//        bool isCompressed() const;
+        //        bool isPvr() const;
+        //        bool isCompressed() const;
 
         //        njliImageType getImageType() const;
 
@@ -270,20 +276,34 @@ namespace NJLIC {
 
         bool isWidthHeightPowerOf2() const;
 
-      protected:
-                bool copyData(void *dataPtr, long dataSize, int width, int height,
-                        int components, const std::string &filename);
+        bool copyData(void *dataPtr, int width, int height, int components,
+                      const std::string &filename);
 
-//        bool copyData(const WorldResourceLoader::ImageFileData *fileData);
+        void setId(int _id) { mId = _id; }
+        int getId() const { return mId; }
+
+      protected:
+        static void copyPixelRow(const Image &src, unsigned int srcY,
+                                 Image &dest, unsigned int destY,
+                                 unsigned int srcXOffset = 0,
+                                 unsigned int destXOffset = 0);
+        static bool setPixel(Image &image, const glm::vec2 &pos,
+                             const glm::vec4 &color);
+        static bool getPixel(const Image &image, const glm::vec2 &pos,
+                             glm::vec4 &color);
+
+        //        bool copyData(const WorldResourceLoader::ImageFileData
+        //        *fileData);
         int getClosestValidGLDim(const int dim) const;
         //    void setDataRawFromWorldResourceLoader(int*, int x, int y, int
         //    numberOfComponents, const char* filename);
         //    bool isInWorldResourceLoader() const;
 
-        void setPixelRow(int *data, int row, int width, int xOffset = 0);
-        void getPixelRow(int *data, int row, int width);
+        //        void setPixelRow(unsigned char *data, int row, int width, int
+        //        xOffset = 0); void getPixelRow(unsigned char *data, int row,
+        //        int width);
 
-        int *createFillRow_createsmemory(
+        unsigned char *createFillRow_createsmemory(
             int xOffset, int fillWidth,
             const glm::vec4 &fillColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
@@ -298,7 +318,7 @@ namespace NJLIC {
         //       3           red, green, blue
         //       4           red, green, blue, alpha
 
-        int *m_RawData;
+        unsigned char *m_RawData;
 
         long m_RawDataSize;
 
@@ -307,6 +327,8 @@ namespace NJLIC {
         int m_Componenents;
 
         std::string m_Filename;
+
+        int mId;
         //    bool m_hasAlpha;
 
         //    bool m_IsInWorldResourceLoader;

@@ -7,6 +7,11 @@
 
 #include "UtilDSS.h"
 
+#ifndef STB_RECT_PACK_IMPLEMENTATION
+#define STB_RECT_PACK_IMPLEMENTATION
+#include "stb_rect_pack.h"
+#endif
+
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

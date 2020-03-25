@@ -46,6 +46,9 @@ struct FileData {
     char *_current_ptr;
     char *_buffer;
     size_t _size;
+    int _width;
+    int _height;
+    int _channels_in_file;
 
     CURL *_curlCtx;
     std::string _url;
@@ -225,7 +228,8 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
       mImageNode(new NJLIC::Node()),
       mImageGeometry(new NJLIC::SpriteGeometry()), mpImageShader(nullptr),
       mTitleNode(nullptr), mDescriptionNode(nullptr),
-      mMainNode(new ListItemNode)
+      mMainNode(new ListItemNode),
+      mSpriteAtlasGenerator(new NJLIC::SpriteAtlasGenerator())
 
 {
 
@@ -236,7 +240,7 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
     int64_t largestSize = 0;
 
     size_t mediaCuts = _media.getImage().getCuts().size();
-    printf("There are %d media images.\n", mediaCuts);
+    //    printf("There are %d media images.\n", mediaCuts);
 
     for (std::vector<MLBJson::Cut>::const_iterator cut_iterator =
              _media.getImage().getCuts().begin();
@@ -249,7 +253,7 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
             largestSize = w * h;
             largest_cut = cut;
         }
-        printf("%dx%d\n", w, h);
+        //        printf("%dx%d\n", w, h);
     }
 
     mDetailImageUrl = largest_cut.getSrc().c_str();
@@ -264,7 +268,7 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
     bool found_cut = false;
 
     size_t imageCuts = _photo.getCuts().size();
-    printf("There are %d photo images.\n", mediaCuts);
+    //    printf("There are %d photo images.\n", mediaCuts);
 
     largestSize = 0;
     for (std::map<std::string, MLBJson::Cut>::const_iterator cuts_iterator =
@@ -276,7 +280,7 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
 
         int64_t w = value.getWidth();
         int64_t h = value.getHeight();
-        printf("%dx%d\n", w, h);
+        //        printf("%dx%d\n", w, h);
         if (!found_cut && FIND_WIDTH == w && FIND_HEIGHT == h &&
             UtilDSS::validUrl(value.getSrc())) {
             find_cut = value;
@@ -296,7 +300,7 @@ GameModelViewData::GameModelViewData(const MLBJson::Game &game)
 }
 
 GameModelViewData::~GameModelViewData() {
-
+    delete mSpriteAtlasGenerator;
     delete mMainNode;
     delete mImageNode;
     delete mImageGeometry;
@@ -458,18 +462,23 @@ void GameModelViewData::setImageData(const std::string &url, FileData *fd) {
 
     if (nullptr != fd) {
         int width, height, channels_in_file;
-        void *ptr =
-            stbi_load_from_memory((const stbi_uc *)fd->_buffer, fd->_size,
-                                  &width, &height, &channels_in_file, 0);
+        void *ptr = stbi_load_from_memory((const stbi_uc *)fd->_buffer,
+                                          fd->_size, &fd->_width, &fd->_height,
+                                          &fd->_channels_in_file, 0);
+
+        fd->_buffer = (char *)ptr;
 
         if (nullptr != ptr) {
-            size_t fileSize = ((width) * (height) * (channels_in_file));
+            //            size_t fileSize = ((width) * (height) *
+            //            (channels_in_file));
 
 #if !(defined(NDEBUG))
             std::string n(std::to_string(UtilDSS::timeSinceEpochMillisec()));
             n += "_stbi.jpg";
-            stbi_write_jpg(n.c_str(), width, height, channels_in_file, ptr,
+            stbi_write_jpg(n.c_str(), fd->_width, fd->_height,
+                           fd->_channels_in_file, (const void *)fd->_buffer,
                            100);
+
 #endif
 
             if (url == mListItemImageUrl) {
@@ -588,12 +597,33 @@ static void multi_image_download(CURLM *multi_handle,
         }
     }
 
+    NJLIC::SpriteAtlasGenerator *pSpriteAtlasGenerator =
+        new NJLIC::SpriteAtlasGenerator();
+
     while (!fileDataVector.empty()) {
         FileData *fd = fileDataVector.back();
         fd->_gvd_ptr->setImageData(fd->_url, fd);
         fileDataVector.pop_back();
-        delete fd;
+
+        pSpriteAtlasGenerator->addImage(fd->_buffer, fd->_width, fd->_height,
+                                        fd->_channels_in_file);
+
+        //        delete fd;
     }
+
+    
+    std::vector<NJLIC::SpriteAtlas *> spriteAtlasVector;
+    
+    auto start_time = std::chrono::high_resolution_clock::now();
+    
+
+    
+    pSpriteAtlasGenerator->generate(spriteAtlasVector, 16384, 16384, 3);
+    
+    auto current_time = std::chrono::high_resolution_clock::now();
+
+    printf("%lld seconds.", std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count());
+    
 
     curl_multi_cleanup(multi_handle);
 }
@@ -610,13 +640,8 @@ void GameModelViewData::loadGames(const std::vector<MLBJson::Game> &games,
     //    char *buff1 = new char[1024];
     //    char *buff2 = new char[1024];
 
-    int max=2;
-    int count = 0;
     for (std::vector<MLBJson::Game>::const_iterator iter = games.begin();
          iter != games.end(); ++iter) {
-        if(count >= max)
-            continue;
-        ++count;
 
         GameModelViewData *gvd = new GameModelViewData(*iter);
         gvdVector.push_back(gvd);
@@ -721,6 +746,10 @@ void GameModelViewData::setSelected(bool selected) {
     }
 }
 
+void GameModelViewData::generateSpriteAtlas() {
+    //    mSpriteAtlasGenerator->generate();
+}
+
 void GameModelViewData::update(Publisher *who, void *userdata) {
     //    std::unique_lock<std::mutex> lock(mMutex);
 
@@ -732,6 +761,21 @@ void GameModelViewData::update(Publisher *who, void *userdata) {
 
         SDL_LogVerbose(SDL_LOG_CATEGORY_TEST,
                        "This image is now loaded. (%s)\n", fd->_url.c_str());
+        //        mSpriteAtlasGenerator
+        //        bool addImage(const std::string &name, void *buffer, int
+        //        width,
+        //                             int height, int components);
+        //        mSpriteAtlasGenerator->addImage("somename", fd->_)
+        /*
+         char *_current_ptr;
+         char *_buffer;
+         size_t _size;
+         int _width;
+         int _height;
+         int _channels_in_file;
+         */
+        //        mSpriteAtlasGenerator->addImage(fd->_url, fd->_buffer,
+        //        fd->_width, fd->_height, fd->_channels_in_file);
     }
 }
 
